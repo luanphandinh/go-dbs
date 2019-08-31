@@ -24,7 +24,7 @@ type Column struct {
 }
 
 
-func (col *Column) validate() error {
+func (col *Column) Validate() error {
 	if col.Name == "" {
 		return fmt.Errorf("column name should not empty")
 	}
@@ -40,7 +40,7 @@ func (col *Column) validate() error {
 	return nil
 }
 
-func (col *Column) toString() string {
+func (col *Column) ToString() string {
 	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
 
 	if col.AutoIncrement {
@@ -58,13 +58,13 @@ func (col *Column) toString() string {
 	return columnString
 }
 
-func (table *Table) validate() error  {
+func (table *Table) Validate() error  {
 	if table.Name == "" {
 		return fmt.Errorf("table name should not empty")
 	}
 
 	for _, col := range table.Columns {
-		if err := col.validate(); err != nil {
+		if err := col.Validate(); err != nil {
 			return err
 		}
 	}
@@ -72,14 +72,14 @@ func (table *Table) validate() error  {
 	return nil
 }
 
-func (table *Table) toString() (tableString string) {
+func (table *Table) ToString() (tableString string) {
 	tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
 	cols := table.Columns
 	for i := 0; i < len(cols); i++ {
 		if i == 0 {
-			tableString += fmt.Sprintf("%s", cols[i].toString())
+			tableString += fmt.Sprintf("%s", cols[i].ToString())
 		} else {
-			tableString += fmt.Sprintf(", %s", cols[i].toString())
+			tableString += fmt.Sprintf(", %s", cols[i].ToString())
 		}
 	}
 
