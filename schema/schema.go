@@ -87,10 +87,10 @@ func (table *Table) ToString() (tableString string) {
 	return tableString + ")"
 }
 
-func (schema *Schema) Install(db *sql.DB) {
+func (schema *Schema) Install(db *sql.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// create table
@@ -98,9 +98,10 @@ func (schema *Schema) Install(db *sql.DB) {
 		_, err := tx.Exec(table.ToString())
 		if err != nil {
 			tx.Rollback()
-			log.Fatal(err)
+			return err
 		}
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	return err
 }
