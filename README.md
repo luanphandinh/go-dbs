@@ -1,6 +1,24 @@
-# go_db [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
+# go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
 Manage databse schema, intall database, mirgrate database, ...
+```
+
+#Usage
+```go
+	dbSchema := &dbs.Schema{
+		Name: "workspace",
+		Tables: []dbs.Table{
+			{
+				"user",
+				[]dbs.Column{
+					{"id", "INT", true, true, true},
+					{"name", "NVARCHAR(50)", true, false, false},
+				},
+			},
+		},
+	}
+
+	dbSchema.Install(db)
 ```
 #TODO
 
