@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
 	"testing"
@@ -43,7 +44,7 @@ func TestSchemaInstall(t *testing.T) {
 				"user",
 				[]Column{
 					{"id", "INT", true, true, true},
-					{"name", "NVARCHAR(50)", true, false, false},
+					{Name: "name", Type: "NVARCHAR(50)", NotNull: true},
 				},
 			},
 		},
@@ -51,15 +52,18 @@ func TestSchemaInstall(t *testing.T) {
 
 	db, err := sql.Open("sqlite3", "test.sqlite")
 	if err != nil {
+		fmt.Println(err.Error())
 		t.Fail()
 	}
 
 	if err := dbSchema.Install(db); err != nil {
+		fmt.Println(err.Error())
 		t.Fail()
 	}
 
 	_, err = db.Exec("INSERT INTO user (id, name) VALUES(1, \"Luan Phan\")")
 	if err != nil {
+		fmt.Println(err.Error())
 		t.Fail()
 	}
 
