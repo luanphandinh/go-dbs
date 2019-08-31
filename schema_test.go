@@ -13,7 +13,7 @@ func TestSchemaValidate(t *testing.T) {
 		{
 			Columns: []Column{
 				{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
-				{Name: "name", Type: "NVARCHAR(50)", NotNull: true},
+				{Name: "name", Type: TEXT, NotNull: true},
 			},
 		},
 	}

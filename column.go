@@ -10,7 +10,6 @@ type Column struct {
 	NotNull       bool   `json:"not_null"`
 	Primary       bool   `json:"primary"`
 	AutoIncrement bool   `json:"auto_increment"`
-	Length        int    `json:"length"`
 }
 
 func (col *Column) ValidateName() error {
@@ -24,6 +23,18 @@ func (col *Column) ValidateName() error {
 func (col *Column) ValidateType() error {
 	if col.Type == "" {
 		return fmt.Errorf("column type should not empty")
+	}
+
+	found := false
+	for _, dbType := range allTypes {
+		if col.Type == dbType {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return fmt.Errorf("incorrect type name")
 	}
 
 	return nil
