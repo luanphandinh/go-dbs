@@ -57,3 +57,31 @@ func (col *Column) toString() string {
 
 	return columnString
 }
+
+func (table *Table) validate() error  {
+	if table.Name == "" {
+		return fmt.Errorf("table name should not empty")
+	}
+
+	for _, col := range table.Columns {
+		if err := col.validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (table *Table) toString() (tableString string) {
+	tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
+	cols := table.Columns
+	for i := 0; i < len(cols); i++ {
+		if i == 0 {
+			tableString += fmt.Sprintf("%s", cols[i].toString())
+		} else {
+			tableString += fmt.Sprintf(", %s", cols[i].toString())
+		}
+	}
+
+	return tableString + ")"
+}
