@@ -23,5 +23,7 @@ dbSchema.Install(db)
 # TODO
 
 * Query Builder
-* Use sqlite for testing installation on CI/CD
 * Column Types
+* Support Migrate Schema
+* Support check current database schema
+* Support get, set, create function for tables, columns
