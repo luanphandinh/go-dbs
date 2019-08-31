@@ -3,24 +3,24 @@
 Manage databse schema, intall database, mirgrate database, ...
 ```
 
-#Usage
+# Usage
 ```go
-	dbSchema := &dbs.Schema{
-		Name: "workspace",
-		Tables: []dbs.Table{
-			{
-				"user",
-				[]dbs.Column{
-					{"id", "INT", true, true, true},
-					{"name", "NVARCHAR(50)", true, false, false},
-				},
-			},
-		},
-	}
+dbSchema := &Schema{
+    Name: "workspace",
+    Tables: []Table{
+        {
+            "user",
+            []Column{
+                {Name: "id", Type: "INT", Primary: true, NotNull: true, AutoIncrement: true},
+                {Name: "name", Type: "NVARCHAR(50)", NotNull: true},
+            },
+        },
+    },
+}
 
-	dbSchema.Install(db)
+dbSchema.Install(db)
 ```
-#TODO
+# TODO
 
 * Query Builder
 * Use sqlite for testing installation on CI/CD

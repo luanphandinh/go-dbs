@@ -43,7 +43,7 @@ func TestSchemaInstall(t *testing.T) {
 			{
 				"user",
 				[]Column{
-					{"id", "INT", true, true, true},
+					{Name: "id", Type: "INT", Primary: true, NotNull: true, AutoIncrement: true},
 					{Name: "name", Type: "NVARCHAR(50)", NotNull: true},
 				},
 			},
