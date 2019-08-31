@@ -1,12 +1,20 @@
 package dbs
 
-import (
-	"database/sql"
-)
+import "database/sql"
 
 type Schema struct {
 	Name   string  `json:"name"`
 	Tables []Table `json:"tables"`
+}
+
+func (schema *Schema) Validate() error  {
+	for _, table := range schema.Tables {
+		if err := table.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (schema *Schema) Install(db *sql.DB) error {
