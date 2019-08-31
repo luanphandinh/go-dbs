@@ -18,6 +18,7 @@ func TestColumnValidate(t *testing.T) {
 	}
 
 	id.Type = "NVARCHAR"
+	id.AutoIncrement = true
 	if err := id.Validate(); err != nil {
 		if err.Error() != "NVARCHAR can not auto_increment" {
 			t.Fail()

@@ -20,6 +20,9 @@ dbSchema := &Schema{
 
 dbSchema.Install(db)
 ```
+
+Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.
+
 # TODO
 
 * Query Builder
