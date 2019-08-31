@@ -1,4 +1,4 @@
-package go_db
+package schema
 
 import "testing"
 
