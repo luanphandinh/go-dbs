@@ -21,15 +21,15 @@ func TestTableValidate(t *testing.T) {
 }
 
 func TestToTableString(t *testing.T) {
-	id := Column{"id", "INT", true, true, true}
-	name := Column{Name: "name", Type: "NVARCHAR(50)", NotNull:true}
+	id := Column{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true}
+	name := Column{Name: "name", Type: TEXT, NotNull:true}
 	age := Column{}
 	age.Name = "age"
-	age.Type = "INT"
+	age.Type = INT
 
 	cols := []Column{id, name, age}
 	table := Table{"user", cols}
-	if table.ToString() != "CREATE TABLE IF NOT EXISTS user (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, name NVARCHAR(50) NOT NULL, age INT)" {
+	if table.ToString() != "CREATE TABLE IF NOT EXISTS user (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, name TEXT NOT NULL, age INT)" {
 		t.Fail()
 	}
 }

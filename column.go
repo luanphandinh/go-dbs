@@ -10,9 +10,10 @@ type Column struct {
 	NotNull       bool   `json:"not_null"`
 	Primary       bool   `json:"primary"`
 	AutoIncrement bool   `json:"auto_increment"`
+	Length        int    `json:"length"`
 }
 
-func (col *Column) ValidateName() error  {
+func (col *Column) ValidateName() error {
 	if col.Name == "" {
 		return fmt.Errorf("column name should not empty")
 	}
@@ -20,7 +21,7 @@ func (col *Column) ValidateName() error  {
 	return nil
 }
 
-func (col *Column) ValidateType() error  {
+func (col *Column) ValidateType() error {
 	if col.Type == "" {
 		return fmt.Errorf("column type should not empty")
 	}
@@ -28,8 +29,8 @@ func (col *Column) ValidateType() error  {
 	return nil
 }
 
-func (col *Column) ValidateAutoIncrement() error  {
-	if col.Type != "INT" && col.AutoIncrement {
+func (col *Column) ValidateAutoIncrement() error {
+	if col.Type != INT && col.AutoIncrement {
 		return fmt.Errorf("%s can not auto_increment", col.Type)
 	}
 

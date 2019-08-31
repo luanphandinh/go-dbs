@@ -17,23 +17,23 @@ func TestColumnValidate(t *testing.T) {
 		}
 	}
 
-	id.Type = "NVARCHAR"
+	id.Type = TEXT
 	id.AutoIncrement = true
 	if err := id.Validate(); err != nil {
-		if err.Error() != "NVARCHAR can not auto_increment" {
+		if err.Error() != "TEXT can not auto_increment" {
 			t.Fail()
 		}
 	}
 }
 
 func TestToColumnString(t *testing.T) {
-	id := Column{"id", "INT", true, true, true}
+	id := Column{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true}
 	if id.ToString() != "id INT AUTO_INCREMENT PRIMARY KEY NOT NULL" {
 		t.Fail()
 	}
 
-	name := Column{"name", "NVARCHAR(50)", true, false, false}
-	if name.ToString() != "name NVARCHAR(50) NOT NULL" {
+	name := Column{Name: "name", Type: TEXT, NotNull: true}
+	if name.ToString() != "name TEXT NOT NULL" {
 		t.Fail()
 	}
 

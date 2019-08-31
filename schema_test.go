@@ -12,8 +12,8 @@ func TestSchemaValidate(t *testing.T) {
 	tables := []Table{
 		{
 			Columns: []Column{
-				{"id", "INT", true, true, true},
-				{"name", "NVARCHAR(50)", true, false, false},
+				{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+				{Name: "name", Type: "NVARCHAR(50)", NotNull: true},
 			},
 		},
 	}
@@ -43,8 +43,8 @@ func TestSchemaInstall(t *testing.T) {
 			{
 				"user",
 				[]Column{
-					{Name: "id", Type: "INT", Primary: true, NotNull: true, AutoIncrement: true},
-					{Name: "name", Type: "NVARCHAR(50)", NotNull: true},
+					{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+					{Name: "name", Type: TEXT, NotNull: true},
 				},
 			},
 		},
