@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 )
@@ -84,4 +85,22 @@ func (table *Table) ToString() (tableString string) {
 	}
 
 	return tableString + ")"
+}
+
+func (schema *Schema) Install(db *sql.DB) {
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// create table
+	for _, table := range schema.Tables {
+		_, err := tx.Exec(table.ToString())
+		if err != nil {
+			tx.Rollback()
+			log.Fatal(err)
+		}
+	}
+
+	tx.Commit()
 }
