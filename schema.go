@@ -1,4 +1,4 @@
-package schema
+package dbs
 
 import (
 	"database/sql"
