@@ -1,4 +1,4 @@
-# go_db
+# go_db [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
 Manage databse schema, intall database, mirgrate database, ...
 ```
