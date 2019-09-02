@@ -1,8 +1,6 @@
 package dbs
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Column struct {
 	Name          string `json:"name"`
