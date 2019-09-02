@@ -38,7 +38,7 @@ func (col *Column) ValidateAutoIncrement() error {
 
 func (col *Column) ValidateUnsigned() error {
 	if !col.isOneOf(integerTypes) && col.Unsigned {
-		return fmt.Errorf("only integer types cant be unsigned")
+		return fmt.Errorf("only integer types can be unsigned")
 	}
 
 	return nil
@@ -54,6 +54,10 @@ func (col *Column) Validate() error {
 	}
 
 	if err := col.ValidateAutoIncrement(); err != nil {
+		return err
+	}
+
+	if err := col.ValidateUnsigned(); err != nil {
 		return err
 	}
 
