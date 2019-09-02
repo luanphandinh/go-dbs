@@ -7,16 +7,6 @@ type Schema struct {
 	Tables []Table `json:"tables"`
 }
 
-func (schema *Schema) Validate() error  {
-	for _, table := range schema.Tables {
-		if err := table.Validate(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (schema *Schema) Install(db *sql.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
