@@ -1,9 +1,13 @@
 # go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
-Manage databse schema, intall database, mirgrate database, ...
+Manage databse schema.
+Generate install database scripts with trasaction.
 ```
 
 # Usage
+
+The package contain some simple validation for `column`, `table`, `schema`, you could decide to use them or not, all function is contain in `_validator.go` files.
+
 ```go
 dbSchema := &Schema{
     Name: "workspace",
@@ -18,6 +22,7 @@ dbSchema := &Schema{
     },
 }
 
+dbSchema.Validate() // Optional
 dbSchema.Install(db)
 ```
 
