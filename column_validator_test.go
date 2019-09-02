@@ -44,3 +44,18 @@ func TestColumnValidateAutoIncrement(t *testing.T) {
 		assertNotHasError(t, id.Validate())
 	}
 }
+
+func TestColumnValidateUnsigned(t *testing.T) {
+	id := Column{Name: "id", Type: TEXT, AutoIncrement: true, Unsigned: true}
+	assertHasErrorMessage(t, "only integer types cant be unsigned", id.ValidateUnsigned())
+
+	for _, integerType := range integerTypes {
+		id.Type = integerType
+		assertNotHasError(t, id.ValidateUnsigned())
+	}
+
+	for _, floatingType := range floatingTypes {
+		id.Type = floatingType
+		assertHasError(t, id.ValidateUnsigned())
+	}
+}
