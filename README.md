@@ -11,8 +11,8 @@ dbSchema := &Schema{
         {
             "user",
             []Column{
-                {Name: "id", Type: "INT", Primary: true, NotNull: true, AutoIncrement: true},
-                {Name: "name", Type: "NVARCHAR(50)", NotNull: true},
+                {Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+                {Name: "name", Type: TEXT, NotNull: true},
             },
         },
     },
