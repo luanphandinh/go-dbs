@@ -1,6 +1,8 @@
 package dbs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (col *Column) ValidateName() error {
 	if col.Name == "" {
@@ -15,15 +17,7 @@ func (col *Column) ValidateType() error {
 		return fmt.Errorf("column type should not empty")
 	}
 
-	found := false
-	for _, dbType := range allTypes {
-		if col.Type == dbType {
-			found = true
-			break
-		}
-	}
-
-	if !found {
+	if !col.isOneOf(allTypes) {
 		return fmt.Errorf("incorrect type name")
 	}
 
@@ -52,4 +46,15 @@ func (col *Column) Validate() error {
 	}
 
 	return nil
+}
+
+// Temporary use linear search
+func (col *Column) isOneOf(types []string) bool  {
+	for _, dbType := range allTypes {
+		if col.Type == dbType {
+			return true
+		}
+	}
+
+	return false
 }
