@@ -71,3 +71,8 @@ var integerTypes = []string{
 	INT,
 	BIGINT,
 }
+
+var floatingTypes = []string{
+	DOUBLE,
+	FLOAT,
+}

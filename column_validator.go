@@ -25,8 +25,12 @@ func (col *Column) ValidateType() error {
 }
 
 func (col *Column) ValidateAutoIncrement() error {
-	if col.Type != INT && col.AutoIncrement {
+	if !col.isOneOf(integerTypes) && !col.isOneOf(floatingTypes) && col.AutoIncrement {
 		return fmt.Errorf("%s can not auto_increment", col.Type)
+	}
+
+	if !col.NotNull {
+		return fmt.Errorf("auto_increment must not null")
 	}
 
 	return nil
@@ -50,7 +54,7 @@ func (col *Column) Validate() error {
 
 // Temporary use linear search
 func (col *Column) isOneOf(types []string) bool  {
-	for _, dbType := range allTypes {
+	for _, dbType := range types {
 		if col.Type == dbType {
 			return true
 		}
