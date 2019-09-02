@@ -7,6 +7,7 @@ const (
 	INT        string = "INT"
 	BIGINT     string = "BIGINT"
 	DECIMAL    string = "DECIMAL"
+	NUMERIC	   string = "NUMERIC"
 	FLOAT      string = "FLOAT"
 	DOUBLE     string = "DOUBLE"
 	BIT        string = "BIT"
@@ -38,6 +39,7 @@ var allTypes = []string{
 	INT,
 	BIGINT,
 	DECIMAL,
+	NUMERIC,
 	FLOAT,
 	DOUBLE,
 	BIT,
