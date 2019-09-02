@@ -12,7 +12,5 @@ func TestToTableString(t *testing.T) {
 
 	cols := []Column{id, name, age}
 	table := Table{"user", cols}
-	if table.ToString() != "CREATE TABLE IF NOT EXISTS user (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, name TEXT NOT NULL, age INT)" {
-		t.Fail()
-	}
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.ToString())
 }

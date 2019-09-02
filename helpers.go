@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func assertStringEquals(t *testing.T, expected string, actual string) {
+	if expected != actual {
+		compareLog(expected, actual)
+		t.Fail()
+	}
+}
+
 func assertHasError(t *testing.T, err error) {
 	if err == nil {
 		fmt.Println("no error found.")
@@ -14,7 +21,7 @@ func assertHasError(t *testing.T, err error) {
 
 func assertNotHasError(t *testing.T, err error) {
 	if err != nil {
-		fmt.Printf("expected[-] / actual[+] \n - %s but \n + %s \n", "nil", err.Error())
+		compareLog("nil", err.Error())
 		t.Fail()
 	}
 }
@@ -23,7 +30,11 @@ func assertHasErrorMessage(t *testing.T, message string, err error) {
 	assertHasError(t, err)
 
 	if message != err.Error() {
-		fmt.Printf("expected[-] / actual[+] \n - %s but \n + %s \n", message, err.Error())
+		compareLog(message, err.Error())
 		t.Fail()
 	}
+}
+
+func compareLog(expected string, actual string)  {
+	fmt.Printf("expected[-] / actual[+] \n - %s \n + %s \n", expected, actual)
 }

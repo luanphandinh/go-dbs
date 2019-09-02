@@ -16,8 +16,9 @@ func TestSchemaInstall(t *testing.T) {
 			{
 				"user",
 				[]Column{
-					{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+					{Name: "id", Type: INT, Primary: true, NotNull: true, Unsigned: true},
 					{Name: "name", Type: TEXT, NotNull: true},
+					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
 				},
 			},
 		},
@@ -34,7 +35,7 @@ func TestSchemaInstall(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = db.Exec("INSERT INTO user (id, name) VALUES(1, \"Luan Phan\")")
+	_, err = db.Exec("INSERT INTO user (id, name, age) VALUES(1, \"Luan Phan\", 22)")
 	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()

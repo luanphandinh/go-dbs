@@ -14,20 +14,20 @@ type Column struct {
 func (col *Column) ToString() string {
 	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
 
-	if col.AutoIncrement {
-		columnString += " AUTO_INCREMENT"
-	}
-
-	if col.Primary {
-		columnString += " PRIMARY KEY"
+	if col.Unsigned {
+		columnString += " UNSIGNED"
 	}
 
 	if col.NotNull {
 		columnString += " NOT NULL"
 	}
 
-	if col.Unsigned {
-		columnString += " UNSIGNED"
+	if col.Primary {
+		columnString += " PRIMARY KEY"
+	}
+
+	if col.AutoIncrement {
+		columnString += " AUTO_INCREMENT"
 	}
 
 	return columnString
