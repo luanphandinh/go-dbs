@@ -17,7 +17,7 @@ func TestSchemaValidate(t *testing.T) {
 		Tables: tables,
 	}
 
-	assertHasErrorMessage(t, dbSchema.Validate(), "table name should not empty")
+	assertHasErrorMessage(t, "table name should not empty", dbSchema.Validate())
 
 	tables[0].Name = "user"
 	assertNotHasError(t, dbSchema.Validate())

@@ -4,7 +4,7 @@ import "testing"
 
 func TestColumnNameValidate(t *testing.T) {
 	id := Column{}
-	assertHasErrorMessage(t, id.Validate(), "column name should not empty")
+	assertHasErrorMessage(t, "column name should not empty", id.Validate())
 }
 
 func TestColumnTypeValidate(t *testing.T) {
@@ -20,18 +20,18 @@ func TestColumnTypeValidate(t *testing.T) {
 
 	id := Column{}
 	id.Name = "id"
-	assertHasErrorMessage(t, id.ValidateType(), "column type should not empty")
+	assertHasErrorMessage(t, "column type should not empty", id.ValidateType())
 
 	id.Type = "SOMETHING"
-	assertHasErrorMessage(t, id.ValidateType(), "incorrect type name")
+	assertHasErrorMessage(t, "incorrect type name", id.ValidateType())
 }
 
 func TestColumnValidateAutoIncrement(t *testing.T) {
 	id := Column{Name: "id", Type: TEXT, AutoIncrement: true}
-	assertHasErrorMessage(t, id.Validate(), "TEXT can not auto_increment")
+	assertHasErrorMessage(t, "TEXT can not auto_increment", id.Validate())
 
 	id.Type = INT
-	assertHasErrorMessage(t, id.Validate(), "auto_increment must not null")
+	assertHasErrorMessage(t, "auto_increment must not null", id.Validate())
 
 	id.NotNull = true
 	for _, integerType := range integerTypes {

@@ -19,7 +19,7 @@ func assertNotHasError(t *testing.T, err error) {
 	}
 }
 
-func assertHasErrorMessage(t *testing.T, err error, message string) {
+func assertHasErrorMessage(t *testing.T, message string, err error) {
 	assertHasError(t, err)
 
 	if message != err.Error() {

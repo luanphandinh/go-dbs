@@ -4,9 +4,9 @@ import "testing"
 
 func TestTableValidate(t *testing.T) {
 	user := Table{}
-	assertHasErrorMessage(t, user.Validate(), "table name should not empty")
+	assertHasErrorMessage(t, "table name should not empty", user.Validate())
 
 	user.Name = "user"
 	user.Columns = []Column{{}}
-	assertHasErrorMessage(t, user.Validate(), "column name should not empty")
+	assertHasErrorMessage(t, "column name should not empty", user.Validate())
 }
