@@ -30,6 +30,7 @@ Since Database and Schema a mostly the same stuff in MySQL, we will just care ab
 
 # TODO
 
+* Support MySQL, SQLite
 * Query Builder
 * Column Types
 * Support Migrate Schema
