@@ -17,14 +17,8 @@ func TestSchemaValidate(t *testing.T) {
 		Tables: tables,
 	}
 
-	if err := dbSchema.Validate(); err != nil {
-		if err.Error() != "table name should not empty" {
-			t.Fail()
-		}
-	}
+	assertHasErrorMessage(t, dbSchema.Validate(), "table name should not empty")
 
 	tables[0].Name = "user"
-	if err := dbSchema.Validate(); err != nil {
-		t.Fail()
-	}
+	assertNotHasError(t, dbSchema.Validate())
 }

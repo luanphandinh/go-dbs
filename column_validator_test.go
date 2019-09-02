@@ -4,14 +4,7 @@ import "testing"
 
 func TestColumnNameValidate(t *testing.T) {
 	id := Column{}
-	err := id.Validate()
-	if err == nil {
-		t.Fail()
-	} else {
-		if err.Error() != "column name should not empty" {
-			t.Fail()
-		}
-	}
+	assertHasErrorMessage(t, id.Validate(), "column name should not empty")
 }
 
 func TestColumnTypeValidate(t *testing.T) {
@@ -23,64 +16,31 @@ func TestColumnTypeValidate(t *testing.T) {
 	}
 
 	test := Column{Type: "WRONG"}
-	if err := test.ValidateType(); err == nil {
-		t.Fail()
-	}
+	assertHasError(t, test.ValidateType())
 
 	id := Column{}
 	id.Name = "id"
-	if err := id.Validate(); err == nil {
-		t.Fail()
-	} else {
-		if err.Error() != "column type should not empty" {
-			t.Fail()
-		}
-	}
+	assertHasErrorMessage(t, id.ValidateType(), "column type should not empty")
 
 	id.Type = "SOMETHING"
-	if err := id.Validate(); err == nil {
-		t.Fail()
-	} else {
-		if err.Error() != "incorrect type name" {
-			t.Fail()
-		}
-	}
+	assertHasErrorMessage(t, id.ValidateType(), "incorrect type name")
 }
 
 func TestColumnValidateAutoIncrement(t *testing.T) {
-	id := Column{}
-	id.Name = "id"
-	id.Type = TEXT
-	id.AutoIncrement = true
-	if err := id.Validate(); err == nil {
-		t.Fail()
-	} else {
-		if err.Error() != "TEXT can not auto_increment" {
-			t.Fail()
-		}
-	}
+	id := Column{Name: "id", Type: TEXT, AutoIncrement: true}
+	assertHasErrorMessage(t, id.Validate(), "TEXT can not auto_increment")
 
 	id.Type = INT
-	if err := id.Validate(); err == nil {
-		t.Fail()
-	} else {
-		if err.Error() != "auto_increment must not null" {
-			t.Fail()
-		}
-	}
+	assertHasErrorMessage(t, id.Validate(), "auto_increment must not null")
 
 	id.NotNull = true
 	for _, integerType := range integerTypes {
 		id.Type = integerType
-		if err := id.Validate(); err != nil {
-			t.Fail()
-		}
+		assertNotHasError(t, id.Validate())
 	}
 
 	for _, floatingType := range floatingTypes {
 		id.Type = floatingType
-		if err := id.Validate(); err != nil {
-			t.Fail()
-		}
+		assertNotHasError(t, id.Validate())
 	}
 }
