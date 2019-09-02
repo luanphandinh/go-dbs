@@ -1,7 +1,6 @@
 package dbs
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
@@ -24,7 +23,7 @@ func TestSchemaInstall(t *testing.T) {
 		},
 	}
 
-	db, err := sql.Open("sqlite3", "test.sqlite")
+	db, err := (&DBSource{Name: "test.sqlite", Driver: "sqlite3"}).Connection()
 	if err != nil {
 		fmt.Println(err.Error())
 		t.Fail()
