@@ -6,7 +6,7 @@ Generate install database scripts with trasaction.
 
 # Usage
 
-The package contain some simple validation for `column`, `table`, `schema`, you could decide to use them or not, all function is contain in `_validator.go` files.
+The package contains some simple validation for `column`, `table`, `schema`, you could decide to use them or not, all function is contain in `_validator.go` files.
 
 ```go
 dbSchema := &Schema{
@@ -35,3 +35,6 @@ Since Database and Schema a mostly the same stuff in MySQL, we will just care ab
 * Support Migrate Schema
 * Support check current database schema
 * Support get, set, create function for tables, columns
+
+# ISSUE
+* Currently using sqlite for testing (problem with auto_increment and stuffs) -> need to use real MySql
