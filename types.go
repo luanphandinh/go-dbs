@@ -63,3 +63,11 @@ var allTypes = []string{
 	TIMESTAMP,
 	YEAR,
 }
+
+var integerTypes = []string{
+	TINYINT,
+	SMALLINT,
+	MEDIUMINT,
+	INT,
+	BIGINT,
+}

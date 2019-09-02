@@ -16,7 +16,8 @@ func TestToColumnString(t *testing.T) {
 	age := Column{}
 	age.Name = "age"
 	age.Type = "INT"
-	if age.ToString() != "age INT" {
+	age.Unsigned = true
+	if age.ToString() != "age INT UNSIGNED" {
 		t.Fail()
 	}
 }
