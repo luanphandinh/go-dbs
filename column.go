@@ -8,6 +8,7 @@ type Column struct {
 	NotNull       bool   `json:"not_null"`
 	Primary       bool   `json:"primary"`
 	AutoIncrement bool   `json:"auto_increment"`
+	Unsigned	  bool   `json:"unsigned"`
 }
 
 func (col *Column) ToString() string {
@@ -23,6 +24,10 @@ func (col *Column) ToString() string {
 
 	if col.NotNull {
 		columnString += " NOT NULL"
+	}
+
+	if col.Unsigned {
+		columnString += " UNSIGNED"
 	}
 
 	return columnString
