@@ -1,5 +1,10 @@
 package dbs
 
+const (
+	MYSQL   string = "mysql"
+	SQLITE3 string = "sqlite3"
+)
+
 // https://dev.mysql.com/doc/refman/8.0/en/data-types.html
 
 const (
