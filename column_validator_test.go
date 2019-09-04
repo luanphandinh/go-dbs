@@ -27,7 +27,11 @@ func TestColumnTypeValidate(t *testing.T) {
 }
 
 func TestColumnValidateAutoIncrement(t *testing.T) {
-	id := Column{Name: "id", Type: TEXT, AutoIncrement: true}
+	id := Column{
+		Name:          "id",
+		Type:          TEXT,
+		AutoIncrement: true,
+	}
 	assertHasErrorMessage(t, "TEXT can not auto_increment", id.Validate())
 
 	id.Type = INT
@@ -46,7 +50,13 @@ func TestColumnValidateAutoIncrement(t *testing.T) {
 }
 
 func TestColumnValidateUnsigned(t *testing.T) {
-	id := Column{Name: "id", Type: TEXT, NotNull: true, AutoIncrement: true, Unsigned: true}
+	id := Column{
+		Name:          "id",
+		Type:          TEXT,
+		NotNull:       true,
+		AutoIncrement: true,
+		Unsigned:      true,
+	}
 	assertHasErrorMessage(t, "only integer types can be unsigned", id.ValidateUnsigned())
 
 	for _, integerType := range integerTypes {
