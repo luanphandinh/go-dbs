@@ -3,8 +3,9 @@ package dbs
 import "database/sql"
 
 type Schema struct {
-	Name   string  `json:"name"`
-	Tables []Table `json:"tables"`
+	Name     string  `json:"name"`
+	Platform string  `json:"platform"`
+	Tables   []Table `json:"tables"`
 }
 
 func (schema *Schema) Install(db *sql.DB) error {
@@ -15,7 +16,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 	// create table
 	for _, table := range schema.Tables {
-		_, err := tx.Exec(table.GetSQLCreateTable())
+		_, err := tx.Exec(table.GetSQLCreateTable(GetPlatform(schema.Platform)))
 		if err != nil {
 			tx.Rollback()
 			return err

@@ -31,6 +31,7 @@ func prepareLocalDBSource() *DBSource {
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := &Schema{
 		Name: "workspace",
+		Platform: MYSQL,
 		Tables: []Table{
 			{
 				"user",

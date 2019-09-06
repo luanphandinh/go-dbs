@@ -11,23 +11,23 @@ type Column struct {
 	Unsigned	  bool   `json:"unsigned"`
 }
 
-func (col *Column) GetSQLDeclaration() string {
+func (col *Column) GetSQLDeclaration(platform Platform) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
 
 	if col.Unsigned {
-		columnString += " UNSIGNED"
+		columnString += " " + platform.GetUnsignedDeclaration()
 	}
 
 	if col.NotNull {
-		columnString += " NOT NULL"
+		columnString += " " + platform.GetNotNullDeclaration()
 	}
 
 	if col.Primary {
-		columnString += " PRIMARY KEY"
+		columnString += " " + platform.GetPrimaryDeclaration()
 	}
 
 	if col.AutoIncrement {
-		columnString += " AUTO_INCREMENT"
+		columnString += " " + platform.GetAutoIncrementDeclaration()
 	}
 
 	return columnString

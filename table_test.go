@@ -2,7 +2,7 @@ package dbs
 
 import "testing"
 
-func TestToTableString(t *testing.T) {
+func TestToTableDeclaration(t *testing.T) {
 	id := Column{
 		Name:          "id",
 		Type:          INT,
@@ -30,5 +30,6 @@ func TestToTableString(t *testing.T) {
 			age,
 		},
 	}
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.GetSQLCreateTable())
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.GetSQLCreateTable(&MySqlPlatform{}))
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, age INT)", table.GetSQLCreateTable(&SqlitePlatform{}))
 }
