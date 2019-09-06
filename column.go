@@ -11,7 +11,7 @@ type Column struct {
 	Unsigned	  bool   `json:"unsigned"`
 }
 
-func (col *Column) ToString() string {
+func (col *Column) GetSQLDeclaration() string {
 	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
 
 	if col.Unsigned {

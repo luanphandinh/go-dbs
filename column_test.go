@@ -10,14 +10,14 @@ func TestToColumnString(t *testing.T) {
 		NotNull:       true,
 		AutoIncrement: true,
 	}
-	assertStringEquals(t, "id INT NOT NULL PRIMARY KEY AUTO_INCREMENT", id.ToString())
+	assertStringEquals(t, "id INT NOT NULL PRIMARY KEY AUTO_INCREMENT", id.GetSQLDeclaration())
 
 	name := Column{Name: "name", Type: TEXT, NotNull: true}
-	assertStringEquals(t, "name TEXT NOT NULL", name.ToString())
+	assertStringEquals(t, "name TEXT NOT NULL", name.GetSQLDeclaration())
 
 	age := Column{}
 	age.Name = "age"
 	age.Type = "INT"
 	age.Unsigned = true
-	assertStringEquals(t, "age INT UNSIGNED", age.ToString())
+	assertStringEquals(t, "age INT UNSIGNED", age.GetSQLDeclaration())
 }

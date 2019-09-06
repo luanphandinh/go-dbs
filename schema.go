@@ -15,7 +15,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 	// create table
 	for _, table := range schema.Tables {
-		_, err := tx.Exec(table.ToString())
+		_, err := tx.Exec(table.GetSQLCreateTable())
 		if err != nil {
 			tx.Rollback()
 			return err

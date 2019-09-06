@@ -30,5 +30,5 @@ func TestToTableString(t *testing.T) {
 			age,
 		},
 	}
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.ToString())
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.GetSQLCreateTable())
 }
