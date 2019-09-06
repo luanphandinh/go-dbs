@@ -34,9 +34,10 @@ func TestSchemaInstall(t *testing.T) {
 		Platform: MYSQL,
 		Tables: []Table{
 			{
-				"user",
-				[]Column{
-					{Name: "id", Type: INT, Primary: true, NotNull: true, Unsigned: true, AutoIncrement:true},
+				Name: "user",
+				PrimaryKey: []string{"id"},
+				Columns: []Column{
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
 				},

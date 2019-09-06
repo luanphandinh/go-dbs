@@ -1,6 +1,9 @@
 package dbs
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type Schema struct {
 	Name     string  `json:"name"`
@@ -9,6 +12,10 @@ type Schema struct {
 }
 
 func (schema *Schema) Install(db *sql.DB) error {
+	platform := GetPlatform(schema.Platform)
+	if platform == nil {
+		return fmt.Errorf("Invalid ")
+	}
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -16,7 +23,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 	// create table
 	for _, table := range schema.Tables {
-		_, err := tx.Exec(table.GetSQLCreateTable(GetPlatform(schema.Platform)))
+		_, err := tx.Exec(platform.GetTableSQLCreate(&table))
 		if err != nil {
 			tx.Rollback()
 			return err

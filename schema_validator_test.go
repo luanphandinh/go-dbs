@@ -6,7 +6,7 @@ func TestSchemaValidate(t *testing.T) {
 	tables := []Table{
 		{
 			Columns: []Column{
-				{Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+				{Name: "id", Type: INT, NotNull: true, AutoIncrement: true},
 				{Name: "name", Type: TEXT, NotNull: true},
 			},
 		},
