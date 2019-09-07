@@ -35,11 +35,14 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 
 	columnString := fmt.Sprintf("%s %s", name, dbType)
 
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
+	}
+
 	return columnString
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	// tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
 	cols := ""
 	for index, col := range table.Columns {
 		if index == 0 {
