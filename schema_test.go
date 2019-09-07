@@ -1,21 +1,65 @@
 package dbs
 
 import (
-	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
 	"testing"
 )
 
+func getTestEnv() string {
+	if env := os.Getenv("ENV"); env != "" {
+		return env
+	}
+
+	return ""
+}
+
+func getTestPlatform() string {
+	if driver := os.Getenv("DRIVER"); driver != "" {
+		return driver
+	}
+
+	return SQLITE3
+}
+
+func prepareDBSource(env string, platform string) *DBSource {
+	if env == "CI" {
+		return prepareCIDBSource(platform)
+	}
+
+	return prepareLocalDBSource(platform)
+}
+
+func prepareCIDBSource(platform string) *DBSource {
+	if platform == MYSQL {
+		return &DBSource{ServerName: "127.0.0.1", Name: "workspace", Driver: MYSQL, User: "root"}
+	}
+
+	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
+}
+
+func prepareLocalDBSource(platform string) *DBSource {
+	if platform == MYSQL {
+		return nil
+	}
+
+	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
+}
+
 // Use SQlite for testing schema install process
 func TestSchemaInstall(t *testing.T) {
+	env := getTestEnv()
+	platform := getTestPlatform()
 	dbSchema := &Schema{
 		Name: "workspace",
+		Platform: platform,
 		Tables: []Table{
 			{
-				"user",
-				[]Column{
-					{Name: "id", Type: INT, Primary: true, NotNull: true, Unsigned: true},
+				Name: "user",
+				PrimaryKey: []string{"id"},
+				Columns: []Column{
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
 				},
@@ -23,29 +67,22 @@ func TestSchemaInstall(t *testing.T) {
 		},
 	}
 
-	db, err := (&DBSource{Name: "test.sqlite", Driver: "sqlite3"}).Connection()
-	if err != nil {
-		fmt.Println(err.Error())
-		t.Fail()
-	}
+	dbSource := prepareDBSource(env, platform)
 
-	if err := dbSchema.Install(db); err != nil {
-		fmt.Println(err.Error())
-		t.Fail()
-	}
+	db, err := dbSource.Connection()
+	assertNotHasError(t, err)
 
-	_, err = db.Exec("INSERT INTO user (id, name, age) VALUES(1, \"Luan Phan\", 22)")
-	if err != nil {
-		fmt.Println(err.Error())
-		t.Fail()
-	}
+	assertNotHasError(t, dbSchema.Install(db))
 
-	var id int
+	_, err = db.Exec("INSERT INTO user (name, age) VALUES(\"Luan Phan\", 22)")
+	assertNotHasError(t, err)
+
+	var id, age int
 	var name string
-	err = db.QueryRow("select id, name from user").Scan(&id, &name)
-	if name != "Luan Phan" {
-		t.Fail()
-	}
+	err = db.QueryRow("select id, name, age from user").Scan(&id, &name, &age)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan", name)
+	assertIntEquals(t, 22, age)
 
 	os.Remove("test.sqlite")
 }

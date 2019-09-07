@@ -2,11 +2,13 @@ package dbs
 
 import "testing"
 
-func TestToTableString(t *testing.T) {
+func TestToTableDeclaration(t *testing.T) {
+	mysqlPlatform := GetPlatform(MYSQL)
+	sqlitePlatform := GetPlatform(SQLITE3)
+
 	id := Column{
 		Name:          "id",
 		Type:          INT,
-		Primary:       true,
 		NotNull:       true,
 		AutoIncrement: true,
 	}
@@ -24,11 +26,15 @@ func TestToTableString(t *testing.T) {
 
 	table := Table{
 		Name: "user",
+		PrimaryKey: []string{"id"},
 		Columns: []Column{
 			id,
 			name,
 			age,
 		},
 	}
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name TEXT NOT NULL, age INT)", table.ToString())
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, age INT, PRIMARY KEY (id))", mysqlPlatform.GetTableCreateSQL(&table))
+	assertStringEquals(t, "PRIMARY KEY (id)", mysqlPlatform.GetPrimaryKeyCreateSQL(&table))
+
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INTEGER, name TEXT, age INTEGER, PRIMARY KEY (id))", sqlitePlatform.GetTableCreateSQL(&table))
 }

@@ -12,6 +12,13 @@ func assertStringEquals(t *testing.T, expected string, actual string) {
 	}
 }
 
+func assertIntEquals(t *testing.T, expected int, actual int) {
+	if expected != actual {
+		compareLog(expected, actual)
+		t.Fail()
+	}
+}
+
 func assertHasError(t *testing.T, err error) {
 	if err == nil {
 		fmt.Println("no error found.")
@@ -35,6 +42,8 @@ func assertHasErrorMessage(t *testing.T, message string, err error) {
 	}
 }
 
-func compareLog(expected string, actual string)  {
-	fmt.Printf("expected[-] / actual[+] \n - %s \n + %s \n", expected, actual)
+func compareLog(expected interface{}, actual interface{})  {
+	fmt.Println("expected[-] / actual[+]")
+	fmt.Println("- ", expected)
+	fmt.Println("+ ", actual)
 }

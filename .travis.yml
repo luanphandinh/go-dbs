@@ -1,10 +1,21 @@
 language: go
 
-go:
-  - 1.12.x
+matrix:
+  include:
+    - name: "Test MySql"
+      go: 1.12.x
+      services:
+        - mysql
+      env: ENV=CI DRIVER=mysql
+      before_install:
+        - go get -v github.com/go-sql-driver/mysql
+        - mysql -e 'CREATE DATABASE workspace;'
 
-before_install:
-  - go get -v github.com/mattn/go-sqlite3
+    - name: "Test SQLite"
+      go: 1.12.x
+      env: ENV=CI DRIVER=sqlite3
+      before_install:
+        - go get -v github.com/mattn/go-sqlite3
 
 script:
   - go test ./...
