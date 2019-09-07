@@ -23,6 +23,10 @@ func GetPlatform(platform string) Platform {
 		return &SqlitePlatform{}
 	}
 
+	if platform == POSTGRES {
+		return &PostgresPlatform{}
+	}
+
 	return nil
 }
 

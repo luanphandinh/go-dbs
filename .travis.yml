@@ -2,7 +2,7 @@ language: go
 
 matrix:
   include:
-    - name: "Test MySql"
+    - name: "Test MySQL"
       go: 1.12.x
       services:
         - mysql
@@ -13,6 +13,19 @@ matrix:
         - DB_USER=root
       before_install:
         - go get -v github.com/go-sql-driver/mysql
+        - mysql -e 'CREATE DATABASE workspace;'
+
+    - name: "Test PostgresSQL"
+      go: 1.12.x
+      services:
+        - mysql
+      env:
+        - PLATFORM=postgresql
+        - SERVER_NAME=127.0.0.1
+        - DB_NAME=workspace
+        - DB_USER=root
+      before_install:
+        - go get -v github.com/lib/pq
         - mysql -e 'CREATE DATABASE workspace;'
 
     - name: "Test SQLite"

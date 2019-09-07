@@ -2,6 +2,7 @@ package dbs
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
 	"testing"
@@ -27,7 +28,7 @@ func prepareDBSource(platform string) *DBSource {
 func TestSchemaInstall(t *testing.T) {
 	platform := getEnvPlatform()
 	dbSchema := &Schema{
-		Name: "workspace",
+		Name: "public",
 		Platform: platform,
 		Tables: []Table{
 			{

@@ -8,6 +8,7 @@ import (
 type DBSource struct {
 	Driver     string `json:"driver"`
 	ServerName string `json:"server_name"`
+	Port       int    `json:"port"`
 	Name       string `json:"name"`
 	User       string `json:"user"`
 	Password   string `json:"password"`
@@ -23,11 +24,21 @@ func (dbSource *DBSource) Connection() (*sql.DB, error) {
 }
 
 func (dbSource *DBSource) Source() string {
-	if dbSource.Driver == "mysql" {
+	if dbSource.Driver == MYSQL {
 		return fmt.Sprintf("%s:%s@tcp(%s)/%s", dbSource.User, dbSource.Password, dbSource.ServerName, dbSource.Name)
 	}
 
-	if dbSource.Driver == "sqlite3" {
+	if dbSource.Driver == POSTGRES {
+		return fmt.Sprintf(
+			"host=%s port=5432 user=%s password=%s dbname=%s sslmode=disable",
+			dbSource.ServerName,
+			dbSource.User,
+			dbSource.Password,
+			dbSource.Name,
+		)
+	}
+
+	if dbSource.Driver == SQLITE3 {
 		return dbSource.Name
 	}
 
