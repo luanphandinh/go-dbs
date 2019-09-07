@@ -7,50 +7,25 @@ import (
 	"testing"
 )
 
-func getTestEnv() string {
-	if env := os.Getenv("ENV"); env != "" {
-		return env
-	}
-
-	return ""
-}
-
-func getTestPlatform() string {
-	if driver := os.Getenv("DRIVER"); driver != "" {
+func getEnvPlatform() string {
+	if driver := os.Getenv("PLATFORM"); driver != "" {
 		return driver
 	}
 
 	return SQLITE3
 }
 
-func prepareDBSource(env string, platform string) *DBSource {
-	if env == "CI" {
-		return prepareCIDBSource(platform)
-	}
+func prepareDBSource(platform string) *DBSource {
+	serverName := os.Getenv("SERVER_NAME")
+	dbName := os.Getenv("DB_NAME")
+	user := os.Getenv("USER")
+	password := os.Getenv("PASSWORD")
 
-	return prepareLocalDBSource(platform)
+	return &DBSource{ServerName: serverName, Name: dbName, Driver: platform, User: user, Password: password}
 }
 
-func prepareCIDBSource(platform string) *DBSource {
-	if platform == MYSQL {
-		return &DBSource{ServerName: "127.0.0.1", Name: "workspace", Driver: MYSQL, User: "root"}
-	}
-
-	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
-}
-
-func prepareLocalDBSource(platform string) *DBSource {
-	if platform == MYSQL {
-		return nil
-	}
-
-	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
-}
-
-// Use SQlite for testing schema install process
 func TestSchemaInstall(t *testing.T) {
-	env := getTestEnv()
-	platform := getTestPlatform()
+	platform := getEnvPlatform()
 	dbSchema := &Schema{
 		Name: "workspace",
 		Platform: platform,
@@ -61,7 +36,7 @@ func TestSchemaInstall(t *testing.T) {
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
+					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
 				},
 			},
 			{
@@ -69,14 +44,14 @@ func TestSchemaInstall(t *testing.T) {
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
-					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
+					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 			},
 		},
 	}
 
-	dbSource := prepareDBSource(env, platform)
+	dbSource := prepareDBSource(platform)
 
 	db, err := dbSource.Connection()
 	assertNotHasError(t, err)
@@ -98,5 +73,4 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, rank)
-	os.Remove("test.sqlite")
 }

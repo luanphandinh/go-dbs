@@ -7,4 +7,5 @@ type Column struct {
 	AutoIncrement bool   `json:"auto_increment"`
 	Unsigned      bool   `json:"unsigned"`
 	Unique        bool   `json:"unique"`
+	Length        int    `json:"length"`
 }
