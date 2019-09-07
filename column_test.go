@@ -25,4 +25,8 @@ func TestColumnDeclaration(t *testing.T) {
 	age.Unsigned = true
 	assertStringEquals(t, "age INT UNSIGNED", mysqlPlatform.GetColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INTEGER", sqlitePlatform.GetColumnDeclarationSQL(&age))
+
+	age.Length = 2
+	assertStringEquals(t, "age INT(2) UNSIGNED", mysqlPlatform.GetColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER(2)", sqlitePlatform.GetColumnDeclarationSQL(&age))
 }

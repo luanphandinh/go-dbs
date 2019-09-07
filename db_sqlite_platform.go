@@ -6,6 +6,19 @@ type SqlitePlatform struct {
 
 }
 
+func (platform *SqlitePlatform) GetTypeDeclaration(col *Column) string {
+	dbType := col.Type
+	if inStringArray(col.Type, integerTypes) {
+		dbType = "INTEGER"
+	}
+
+	if col.Length > 0 {
+		return fmt.Sprintf("%s(%d)", dbType, col.Length)
+	}
+
+	return dbType
+}
+
 func (platform *SqlitePlatform) GetUniqueDeclaration() string {
 	return "UNIQUE"
 }
@@ -27,13 +40,7 @@ func (platform *SqlitePlatform) GetUnsignedDeclaration() string {
 }
 
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
-	name := col.Name
-	dbType := col.Type
-	if inStringArray(col.Type, integerTypes) {
-		dbType = "INTEGER"
-	}
-
-	columnString := fmt.Sprintf("%s %s", name, dbType)
+	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.Unique {
 		columnString += " " + platform.GetUniqueDeclaration()

@@ -1,6 +1,7 @@
 package dbs
 
 type Platform interface {
+	GetTypeDeclaration(col *Column) string
 	GetUniqueDeclaration() string
 	GetNotNullDeclaration() string
 	GetPrimaryDeclaration() string

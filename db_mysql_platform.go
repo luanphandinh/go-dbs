@@ -5,6 +5,14 @@ import "fmt"
 type MySqlPlatform struct {
 }
 
+func (platform *MySqlPlatform) GetTypeDeclaration(col *Column) string {
+	if col.Length > 0 {
+		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
+	}
+
+	return col.Type
+}
+
 func (platform *MySqlPlatform) GetUniqueDeclaration() string {
 	return "UNIQUE"
 }
@@ -26,7 +34,7 @@ func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
 }
 
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
+	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.Unsigned {
 		columnString += " " + platform.GetUnsignedDeclaration()

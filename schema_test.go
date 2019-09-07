@@ -36,7 +36,7 @@ func TestSchemaInstall(t *testing.T) {
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
+					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
 				},
 			},
 			{
@@ -44,8 +44,8 @@ func TestSchemaInstall(t *testing.T) {
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
-					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
+					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 			},
 		},
