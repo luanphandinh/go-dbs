@@ -33,6 +33,10 @@ func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
+func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string {
+	return table.Name
+}
+
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
@@ -55,11 +59,11 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *MySqlPlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, table)
+func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *MySqlPlatform) GetTableDropSQL(table *Table) (tableString string) {
-	return _getTableDropSQL(platform, table)
+func (platform *MySqlPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+	return _getTableDropSQL(platform, schema, table)
 }
 

@@ -5,11 +5,11 @@ import "fmt"
 type PostgresPlatform struct {
 }
 
-func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
-	if col.Length > 0 {
-		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
-	}
+func (platform *PostgresPlatform) GetSchemaDeclarationSQL(schema string) string {
+	return schema
+}
 
+func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
 
@@ -33,19 +33,15 @@ func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
+func (platform *PostgresPlatform) GetTableName(schema string, table *Table) string {
+	return fmt.Sprintf("%s.%s", schema, table.Name)
+}
+
 func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
-	if col.Unsigned {
-		columnString += " " + platform.GetUnsignedDeclaration()
-	}
-
 	if col.NotNull {
 		columnString += " " + platform.GetNotNullDeclaration()
-	}
-
-	if col.AutoIncrement {
-		columnString += " " + platform.GetAutoIncrementDeclaration()
 	}
 
 	if col.Unique {
@@ -55,12 +51,12 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *PostgresPlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, table)
+func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *PostgresPlatform) GetTableDropSQL(table *Table) (tableString string) {
-	return _getTableDropSQL(platform, table)
+func (platform *PostgresPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+	return fmt.Sprintf("DROP TABLE IF EXISTS public.%s", table.Name)
 }
 
 

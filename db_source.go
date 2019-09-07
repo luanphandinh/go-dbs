@@ -30,7 +30,7 @@ func (dbSource *DBSource) Source() string {
 
 	if dbSource.Driver == POSTGRES {
 		return fmt.Sprintf(
-			"host=%s port=5432 user=%s password=%s dbname=%s sslmode=disable",
+			"host=%s port=5432 user=%s password=%s dbname=%s sslmode=disable search_path=public",
 			dbSource.ServerName,
 			dbSource.User,
 			dbSource.Password,
