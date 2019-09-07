@@ -20,15 +20,15 @@ func (platform *SqlitePlatform) GetTypeDeclaration(col *Column) string {
 }
 
 func (platform *SqlitePlatform) GetUniqueDeclaration() string {
-	return "UNIQUE"
+	return _getUniqueDeclaration()
 }
 
 func (platform *SqlitePlatform) GetNotNullDeclaration() string {
-	return "NOT NULL"
+	return _getNotNullDeclaration()
 }
 
-func (platform *SqlitePlatform) GetPrimaryDeclaration() string {
-	return "PRIMARY KEY"
+func (platform *SqlitePlatform) GetPrimaryDeclaration(table *Table) string {
+	return _getPrimaryDeclaration(table)
 }
 
 func (platform *SqlitePlatform) GetAutoIncrementDeclaration() string {
@@ -36,7 +36,7 @@ func (platform *SqlitePlatform) GetAutoIncrementDeclaration() string {
 }
 
 func (platform *SqlitePlatform) GetUnsignedDeclaration() string {
-	return "UNSIGNED"
+	return _getUnsignedDeclaration()
 }
 
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
@@ -50,23 +50,5 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	cols := ""
-	for index, col := range table.Columns {
-		if index == 0 {
-			cols += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
-		} else {
-			cols += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
-		}
-	}
-
-	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-		table.Name,
-		cols,
-		platform.GetPrimaryKeyCreateSQL(table),
-	)
-}
-
-func (platform *SqlitePlatform) GetPrimaryKeyCreateSQL(table *Table) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
+	return _getTableCreateSQL(platform, table)
 }

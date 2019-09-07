@@ -14,23 +14,23 @@ func (platform *MySqlPlatform) GetTypeDeclaration(col *Column) string {
 }
 
 func (platform *MySqlPlatform) GetUniqueDeclaration() string {
-	return "UNIQUE"
+	return _getUniqueDeclaration()
 }
 
 func (platform *MySqlPlatform) GetNotNullDeclaration() string {
-	return "NOT NULL"
+	return _getNotNullDeclaration()
 }
 
-func (platform *MySqlPlatform) GetPrimaryDeclaration() string {
-	return "PRIMARY KEY"
+func (platform *MySqlPlatform) GetPrimaryDeclaration(table *Table) string {
+	return _getPrimaryDeclaration(table)
 }
 
 func (platform *MySqlPlatform) GetAutoIncrementDeclaration() string {
-	return "AUTO_INCREMENT"
+	return _getAutoIncrementDeclaration()
 }
 
 func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
-	return "UNSIGNED"
+	return _getUnsignedDeclaration()
 }
 
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
@@ -56,23 +56,6 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 }
 
 func (platform *MySqlPlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	cols := ""
-	for index, col := range table.Columns {
-		if index == 0 {
-			cols += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
-		} else {
-			cols += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
-		}
-	}
-
-	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-			table.Name,
-			cols,
-			platform.GetPrimaryKeyCreateSQL(table),
-		)
+	return _getTableCreateSQL(platform, table)
 }
 
-func (platform *MySqlPlatform) GetPrimaryKeyCreateSQL(table *Table) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
-}
