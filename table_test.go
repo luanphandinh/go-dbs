@@ -26,12 +26,15 @@ func TestToTableDeclaration(t *testing.T) {
 
 	table := Table{
 		Name: "user",
+		PrimaryKey: []string{"id"},
 		Columns: []Column{
 			id,
 			name,
 			age,
 		},
 	}
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, age INT)", mysqlPlatform.GetTableSQLCreate(&table))
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL AUTOINCREMENT, name TEXT NOT NULL, age INT)", sqlitePlatform.GetTableSQLCreate(&table))
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, age INT)", mysqlPlatform.GetTableCreateSQL(&table))
+	assertStringEquals(t, "ALTER TABLE user ADD PRIMARY KEY (id)", mysqlPlatform.GetPrimaryKeyCreateSQL(&table))
+
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INTEGER, name TEXT, age INTEGER, PRIMARY KEY (id))", sqlitePlatform.GetTableCreateSQL(&table))
 }

@@ -25,7 +25,7 @@ func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
 	return "UNSIGNED"
 }
 
-func (platform *MySqlPlatform) GetColumnSQLDeclaration(col *Column) string {
+func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, col.Type)
 
 	if col.Unsigned {
@@ -43,15 +43,19 @@ func (platform *MySqlPlatform) GetColumnSQLDeclaration(col *Column) string {
 	return columnString
 }
 
-func (platform *MySqlPlatform) GetTableSQLCreate(table *Table) (tableString string) {
+func (platform *MySqlPlatform) GetTableCreateSQL(table *Table) (tableString string) {
 	tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
 	for index, col := range table.Columns {
 		if index == 0 {
-			tableString += fmt.Sprintf("%s", platform.GetColumnSQLDeclaration(&col))
+			tableString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
 		} else {
-			tableString += fmt.Sprintf(", %s", platform.GetColumnSQLDeclaration(&col))
+			tableString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
 		}
 	}
 
 	return tableString + ")"
+}
+
+func (platform *MySqlPlatform) GetPrimaryKeyCreateSQL(table *Table) string {
+	return fmt.Sprintf("ALTER TABLE %s ADD PRIMARY KEY (%s)", table.Name, concatString(table.PrimaryKey, ","))
 }

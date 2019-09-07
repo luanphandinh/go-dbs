@@ -7,31 +7,53 @@ import (
 	"testing"
 )
 
-func prepareDBSource() *DBSource {
-	if os.Getenv("ENV") == "CI" {
-		return prepareCIDBSource()
+func getTestEnv() string {
+	if env := os.Getenv("ENV"); env != "" {
+		return env
 	}
 
-	return prepareLocalDBSource()
+	return ""
 }
 
-func prepareCIDBSource() *DBSource {
-	if os.Getenv("DRIVER") == MYSQL {
+func getTestPlatform() string {
+	if driver := os.Getenv("DRIVER"); driver != "" {
+		return driver
+	}
+
+	return SQLITE3
+}
+
+func prepareDBSource(env string, platform string) *DBSource {
+	if env == "CI" {
+		return prepareCIDBSource(platform)
+	}
+
+	return prepareLocalDBSource(platform)
+}
+
+func prepareCIDBSource(platform string) *DBSource {
+	if platform == MYSQL {
 		return &DBSource{ServerName: "127.0.0.1", Name: "workspace", Driver: MYSQL, User: "root"}
 	}
 
 	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
 }
 
-func prepareLocalDBSource() *DBSource {
+func prepareLocalDBSource(platform string) *DBSource {
+	if platform == MYSQL {
+		return nil
+	}
+
 	return &DBSource{Name: "test.sqlite", Driver: SQLITE3}
 }
 
 // Use SQlite for testing schema install process
 func TestSchemaInstall(t *testing.T) {
+	env := getTestEnv()
+	platform := getTestPlatform()
 	dbSchema := &Schema{
 		Name: "workspace",
-		Platform: MYSQL,
+		Platform: platform,
 		Tables: []Table{
 			{
 				Name: "user",
@@ -45,7 +67,7 @@ func TestSchemaInstall(t *testing.T) {
 		},
 	}
 
-	dbSource := prepareDBSource()
+	dbSource := prepareDBSource(env, platform)
 
 	db, err := dbSource.Connection()
 	assertNotHasError(t, err)

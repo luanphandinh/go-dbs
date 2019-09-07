@@ -66,11 +66,5 @@ func (col *Column) Validate() error {
 
 // Temporary use linear search
 func (col *Column) isOneOf(types []string) bool  {
-	for _, dbType := range types {
-		if col.Type == dbType {
-			return true
-		}
-	}
-
-	return false
+	return inStringArray(col.Type, types)
 }

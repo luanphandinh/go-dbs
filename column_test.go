@@ -12,17 +12,17 @@ func TestColumnDeclaration(t *testing.T) {
 		NotNull:       true,
 		AutoIncrement: true,
 	}
-	assertStringEquals(t, "id INT NOT NULL AUTO_INCREMENT", mysqlPlatform.GetColumnSQLDeclaration(&id))
-	assertStringEquals(t, "id INT NOT NULL AUTOINCREMENT", sqlitePlatform.GetColumnSQLDeclaration(&id))
+	assertStringEquals(t, "id INT NOT NULL AUTO_INCREMENT", mysqlPlatform.GetColumnDeclarationSQL(&id))
+	assertStringEquals(t, "id INTEGER", sqlitePlatform.GetColumnDeclarationSQL(&id))
 
 	name := Column{Name: "name", Type: TEXT, NotNull: true}
-	assertStringEquals(t, "name TEXT NOT NULL", mysqlPlatform.GetColumnSQLDeclaration(&name))
-	assertStringEquals(t, "name TEXT NOT NULL", sqlitePlatform.GetColumnSQLDeclaration(&name))
+	assertStringEquals(t, "name TEXT NOT NULL", mysqlPlatform.GetColumnDeclarationSQL(&name))
+	assertStringEquals(t, "name TEXT", sqlitePlatform.GetColumnDeclarationSQL(&name))
 
 	age := Column{}
 	age.Name = "age"
 	age.Type = "INT"
 	age.Unsigned = true
-	assertStringEquals(t, "age INT UNSIGNED", mysqlPlatform.GetColumnSQLDeclaration(&age))
-	assertStringEquals(t, "age INT UNSIGNED", sqlitePlatform.GetColumnSQLDeclaration(&age))
+	assertStringEquals(t, "age INT UNSIGNED", mysqlPlatform.GetColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER", sqlitePlatform.GetColumnDeclarationSQL(&age))
 }

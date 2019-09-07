@@ -6,8 +6,9 @@ type Platform interface {
 	GetPrimaryDeclaration() string
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
-	GetColumnSQLDeclaration(col *Column) string
-	GetTableSQLCreate(table *Table) string
+	GetColumnDeclarationSQL(col *Column) string
+	GetTableCreateSQL(table *Table) string
+	GetPrimaryKeyCreateSQL(table *Table) string
 }
 
 func GetPlatform(platform string) Platform {

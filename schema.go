@@ -14,17 +14,22 @@ type Schema struct {
 func (schema *Schema) Install(db *sql.DB) error {
 	platform := GetPlatform(schema.Platform)
 	if platform == nil {
-		return fmt.Errorf("Invalid ")
+		return fmt.Errorf("invalid platform")
 	}
+
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	// create table
+	// create tables
 	for _, table := range schema.Tables {
-		_, err := tx.Exec(platform.GetTableSQLCreate(&table))
-		if err != nil {
+		if _, err := tx.Exec(platform.GetTableCreateSQL(&table)); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if _, err = tx.Exec(platform.GetPrimaryKeyCreateSQL(&table)); err != nil {
 			tx.Rollback()
 			return err
 		}
