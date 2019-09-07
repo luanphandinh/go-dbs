@@ -33,3 +33,26 @@ func (schema *Schema) Install(db *sql.DB) error {
 	err = tx.Commit()
 	return err
 }
+
+func (schema *Schema) Drop(db *sql.DB) error {
+	platform := GetPlatform(schema.Platform)
+	if platform == nil {
+		return fmt.Errorf("invalid platform")
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	// create tables
+	for _, table := range schema.Tables {
+		if _, err := tx.Exec(platform.GetTableDropSQL(&table)); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	return err
+}
