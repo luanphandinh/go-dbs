@@ -70,5 +70,5 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 }
 
 func _getTableDropSQL(platform Platform, schema string, table *Table) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", table.Name)
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
 }

@@ -26,7 +26,7 @@ func (platform *PostgresPlatform) GetPrimaryDeclaration(table *Table) string {
 }
 
 func (platform *PostgresPlatform) GetAutoIncrementDeclaration() string {
-	return _getAutoIncrementDeclaration()
+	return ""
 }
 
 func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
@@ -56,7 +56,7 @@ func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table)
 }
 
 func (platform *PostgresPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
-	return fmt.Sprintf("DROP TABLE IF EXISTS public.%s", table.Name)
+	return _getTableDropSQL(platform, schema, table)
 }
 
 
