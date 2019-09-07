@@ -11,12 +11,15 @@ The package contains some simple validation for `column`, `table`, `schema`, you
 ```go
 dbSchema := &Schema{
     Name: "workspace",
+    Platform: "mysql", // or "sqlite3"
     Tables: []Table{
         {
-            "user",
-            []Column{
-                {Name: "id", Type: INT, Primary: true, NotNull: true, AutoIncrement: true},
+            Name: "user",
+            PrimaryKey: []string{"id"},
+            Columns: []Column{
+                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
                 {Name: "name", Type: TEXT, NotNull: true},
+                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
             },
         },
     },

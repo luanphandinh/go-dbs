@@ -44,18 +44,23 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 }
 
 func (platform *MySqlPlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
+	cols := ""
 	for index, col := range table.Columns {
 		if index == 0 {
-			tableString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
+			cols += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
 		} else {
-			tableString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
+			cols += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
 		}
 	}
 
-	return tableString + ")"
+	return fmt.Sprintf(
+		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
+			table.Name,
+			cols,
+			platform.GetPrimaryKeyCreateSQL(table),
+		)
 }
 
 func (platform *MySqlPlatform) GetPrimaryKeyCreateSQL(table *Table) string {
-	return fmt.Sprintf("ALTER TABLE %s ADD PRIMARY KEY (%s)", table.Name, concatString(table.PrimaryKey, ","))
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
 }

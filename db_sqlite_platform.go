@@ -39,18 +39,24 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
+	// tableString = fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table.Name)
+	cols := ""
 	for index, col := range table.Columns {
 		if index == 0 {
-			tableString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
+			cols += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
 		} else {
-			tableString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
+			cols += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
 		}
 	}
 
-	return tableString + fmt.Sprintf(", PRIMARY KEY (%s))", table.PrimaryKey[0])
+	return fmt.Sprintf(
+		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
+		table.Name,
+		cols,
+		platform.GetPrimaryKeyCreateSQL(table),
+	)
 }
 
 func (platform *SqlitePlatform) GetPrimaryKeyCreateSQL(table *Table) string {
-	return ""
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
 }

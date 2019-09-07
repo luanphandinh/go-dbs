@@ -28,11 +28,6 @@ func (schema *Schema) Install(db *sql.DB) error {
 			tx.Rollback()
 			return err
 		}
-
-		if _, err = tx.Exec(platform.GetPrimaryKeyCreateSQL(&table)); err != nil {
-			tx.Rollback()
-			return err
-		}
 	}
 
 	err = tx.Commit()
