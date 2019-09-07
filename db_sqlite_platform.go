@@ -6,6 +6,10 @@ type SqlitePlatform struct {
 
 }
 
+func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetTypeDeclaration(col *Column) string {
 	dbType := col.Type
 	if inStringArray(col.Type, integerTypes) {
@@ -39,6 +43,10 @@ func (platform *SqlitePlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
+func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string {
+	return table.Name
+}
+
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
@@ -49,10 +57,10 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *SqlitePlatform) GetTableCreateSQL(table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, table)
+func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) GetTableDropSQL(table *Table) (tableString string) {
-	return _getTableDropSQL(platform, table)
+func (platform *SqlitePlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+	return _getTableDropSQL(platform, schema, table)
 }

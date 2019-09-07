@@ -10,8 +10,9 @@ type Platform interface {
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetColumnDeclarationSQL(col *Column) string
-	GetTableCreateSQL(table *Table) string
-	GetTableDropSQL(table *Table) string
+	GetTableName(schema string, table *Table) string
+	GetTableCreateSQL(schema string, table *Table) string
+	GetTableDropSQL(schema string, table *Table) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -21,6 +22,10 @@ func GetPlatform(platform string) Platform {
 
 	if platform == SQLITE3 {
 		return &SqlitePlatform{}
+	}
+
+	if platform == POSTGRES {
+		return &PostgresPlatform{}
 	}
 
 	return nil
@@ -46,7 +51,7 @@ func _getUnsignedDeclaration() string {
 	return "UNSIGNED"
 }
 
-func _getTableCreateSQL(platform Platform, table *Table) string {
+func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	cols := ""
 	for index, col := range table.Columns {
 		if index == 0 {
@@ -58,12 +63,12 @@ func _getTableCreateSQL(platform Platform, table *Table) string {
 
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-		table.Name,
+		platform.GetTableName(schema, table),
 		cols,
 		platform.GetPrimaryDeclaration(table),
 	)
 }
 
-func _getTableDropSQL(platform Platform, table *Table) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", table.Name)
+func _getTableDropSQL(platform Platform, schema string, table *Table) string {
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
 }
