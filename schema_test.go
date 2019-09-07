@@ -64,6 +64,15 @@ func TestSchemaInstall(t *testing.T) {
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true},
 				},
 			},
+			{
+				Name: "company",
+				PrimaryKey: []string{"id"},
+				Columns: []Column{
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
+					{Name: "name", Type: TEXT, NotNull: true},
+					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+				},
+			},
 		},
 	}
 
@@ -75,14 +84,19 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Install(db))
 
 	_, err = db.Exec("INSERT INTO user (name, age) VALUES(\"Luan Phan\", 22)")
+	_, err = db.Exec("INSERT INTO company (name, rank) VALUES(\"Luan Phan Corps\", 1)")
 	assertNotHasError(t, err)
 
-	var id, age int
+	var id, age, rank int
 	var name string
 	err = db.QueryRow("select id, name, age from user").Scan(&id, &name, &age)
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Luan Phan", name)
 	assertIntEquals(t, 22, age)
 
+	err = db.QueryRow("select name, rank from company").Scan(&name, &rank)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan Corps", name)
+	assertIntEquals(t, 1, rank)
 	os.Remove("test.sqlite")
 }

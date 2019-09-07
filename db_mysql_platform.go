@@ -40,6 +40,10 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetAutoIncrementDeclaration()
 	}
 
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
+	}
+
 	return columnString
 }
 

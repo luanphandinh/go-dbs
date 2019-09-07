@@ -5,5 +5,6 @@ type Column struct {
 	Type          string `json:"type"`
 	NotNull       bool   `json:"not_null"`
 	AutoIncrement bool   `json:"auto_increment"`
-	Unsigned	  bool   `json:"unsigned"`
+	Unsigned      bool   `json:"unsigned"`
+	Unique        bool   `json:"unique"`
 }
