@@ -52,3 +52,7 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 func (platform *SqlitePlatform) GetTableCreateSQL(table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, table)
 }
+
+func (platform *SqlitePlatform) GetTableDropSQL(table *Table) (tableString string) {
+	return _getTableDropSQL(platform, table)
+}

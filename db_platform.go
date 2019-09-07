@@ -11,6 +11,7 @@ type Platform interface {
 	GetUnsignedDeclaration() string
 	GetColumnDeclarationSQL(col *Column) string
 	GetTableCreateSQL(table *Table) string
+	GetTableDropSQL(table *Table) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -61,4 +62,8 @@ func _getTableCreateSQL(platform Platform, table *Table) string {
 		cols,
 		platform.GetPrimaryDeclaration(table),
 	)
+}
+
+func _getTableDropSQL(platform Platform, table *Table) string {
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", table.Name)
 }

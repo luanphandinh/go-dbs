@@ -55,7 +55,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	db, err := dbSource.Connection()
 	assertNotHasError(t, err)
-
+	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
 	_, err = db.Exec("INSERT INTO user (name, age) VALUES(\"Luan Phan\", 22)")

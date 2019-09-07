@@ -59,3 +59,7 @@ func (platform *MySqlPlatform) GetTableCreateSQL(table *Table) (tableString stri
 	return _getTableCreateSQL(platform, table)
 }
 
+func (platform *MySqlPlatform) GetTableDropSQL(table *Table) (tableString string) {
+	return _getTableDropSQL(platform, table)
+}
+
