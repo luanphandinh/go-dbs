@@ -81,8 +81,8 @@ func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema *Schema) stri
 	return ""
 }
 
-func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
+func (platform *SqlitePlatform) GetTableName(schema string, table string) string {
+	return table
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

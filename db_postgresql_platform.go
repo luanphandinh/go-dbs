@@ -75,8 +75,8 @@ func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) strin
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetTableName(schema string, table *Table) string {
-	return fmt.Sprintf("%s.%s", schema, table.Name)
+func (platform *PostgresPlatform) GetTableName(schema string, table string) string {
+	return fmt.Sprintf("%s.%s", schema, table)
 }
 
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

@@ -21,7 +21,7 @@ type Platform interface {
 	GetSchemaDropDeclarationSQL(schema *Schema) string
 
 	// table SQL declarations
-	GetTableName(schema string, table *Table) string
+	GetTableName(schema string, table string) string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table *Table) string
 }
@@ -93,12 +93,12 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString stri
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-		platform.GetTableName(schema, table),
+		platform.GetTableName(schema, table.Name),
 		platform.GetColumnsDeclarationSQL(table.Columns),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 	)
 }
 
 func _getTableDropSQL(platform Platform, schema string, table *Table) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table.Name))
 }

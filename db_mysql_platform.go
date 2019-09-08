@@ -85,8 +85,8 @@ func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) strin
 	return ""
 }
 
-func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
+func (platform *MySqlPlatform) GetTableName(schema string, table string) string {
+	return table
 }
 
 func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
