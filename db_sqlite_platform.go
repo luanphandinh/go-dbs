@@ -47,6 +47,10 @@ func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string 
 	return _getDefaultDeclaration(expression)
 }
 
+func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) string {
+	return _getColumnsDeclarationSQL(platform, cols)
+}
+
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
