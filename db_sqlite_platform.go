@@ -47,6 +47,14 @@ func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string
 	return table.Name
 }
 
+func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
+func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 

@@ -28,20 +28,21 @@ func prepareDBSource(platform string) *DBSource {
 func TestSchemaInstall(t *testing.T) {
 	platform := getEnvPlatform()
 	dbSchema := &Schema{
-		Name: "public",
+		Name: "company",
 		Platform: platform,
 		Tables: []Table{
 			{
-				Name: "user",
+				Name: "employee",
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
+					{Name: "department_id", Type: INT},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
 				},
 			},
 			{
-				Name: "company",
+				Name: "department",
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
@@ -59,19 +60,21 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
-	if platform != POSTGRES { // Temporary disabled for postgres
-		_, err = db.Exec("INSERT INTO user (name, age) VALUES ('Luan Phan', 22)")
-		_, err = db.Exec("INSERT INTO company (name, rank) VALUES ('Luan Phan Corps', 1)")
+	// Temporary disabled for postgres
+	// @TODO query builder will help to create query across platforms
+	if platform != POSTGRES {
+		_, err = db.Exec("INSERT INTO department (name, rank) VALUES ('Luan Phan Corps', 1)")
+		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 22)")
 		assertNotHasError(t, err)
 
 		var id, age, rank int
 		var name string
-		err = db.QueryRow("select id, name, age from user").Scan(&id, &name, &age)
+		err = db.QueryRow("select id, name, age from employee").Scan(&id, &name, &age)
 		assertNotHasError(t, err)
 		assertStringEquals(t, "Luan Phan", name)
 		assertIntEquals(t, 22, age)
 
-		err = db.QueryRow("select name, rank from company").Scan(&name, &rank)
+		err = db.QueryRow("select name, rank from department").Scan(&name, &rank)
 		assertNotHasError(t, err)
 		assertStringEquals(t, "Luan Phan Corps", name)
 		assertIntEquals(t, 1, rank)

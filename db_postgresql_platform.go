@@ -37,6 +37,14 @@ func (platform *PostgresPlatform) GetTableName(schema string, table *Table) stri
 	return fmt.Sprintf("%s.%s", schema, table.Name)
 }
 
+func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+	return _getSchemaCreateDeclarationSQL(schema)
+}
+
+func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+	return _getSchemaDropDeclarationSQL(schema)
+}
+
 func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 

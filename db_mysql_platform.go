@@ -37,6 +37,14 @@ func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string 
 	return table.Name
 }
 
+func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
+func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
