@@ -3,13 +3,21 @@ package dbs
 import "fmt"
 
 type Platform interface {
+	// Column attributes declarations
 	GetTypeDeclaration(col *Column) string
 	GetUniqueDeclaration() string
 	GetNotNullDeclaration() string
 	GetPrimaryDeclaration(table *Table) string
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
+
 	GetColumnDeclarationSQL(col *Column) string
+
+	// schema SQL declarations
+	GetSchemaCreateDeclarationSQL(schema *Schema) string
+	GetSchemaDropDeclarationSQL(schema *Schema) string
+
+	// table SQL declarations
 	GetTableName(schema string, table *Table) string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table *Table) string
@@ -49,6 +57,14 @@ func _getAutoIncrementDeclaration() string {
 
 func _getUnsignedDeclaration() string {
 	return "UNSIGNED"
+}
+
+func _getSchemaCreateDeclarationSQL(schema *Schema) string {
+	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema.Name)
+}
+
+func _getSchemaDropDeclarationSQL(schema *Schema) string {
+	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema.Name)
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {

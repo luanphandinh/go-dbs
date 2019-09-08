@@ -22,6 +22,14 @@ func (schema *Schema) Install(db *sql.DB) error {
 		return err
 	}
 
+	// create schema
+	if schemaCreation := platform.GetSchemaCreateDeclarationSQL(schema); schemaCreation != "" {
+		if _, err := tx.Exec(schemaCreation); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
 	// create tables
 	for _, table := range schema.Tables {
 		if _, err := tx.Exec(platform.GetTableCreateSQL(schema.Name, &table)); err != nil {
@@ -45,9 +53,17 @@ func (schema *Schema) Drop(db *sql.DB) error {
 		return err
 	}
 
-	// create tables
+	// drop tables
 	for _, table := range schema.Tables {
 		if _, err := tx.Exec(platform.GetTableDropSQL(schema.Name, &table)); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// drop schema
+	if schemaDrop := platform.GetSchemaDropDeclarationSQL(schema); schemaDrop != "" {
+		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()
 			return err
 		}
