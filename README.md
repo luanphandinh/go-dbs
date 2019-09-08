@@ -18,7 +18,7 @@ dbSchema := &Schema{
                 {Name: "name", Type: TEXT, NotNull: true},
                 {Name: "department_id", Type: INT},
                 {Name: "valid", Type: SMALLINT, Default: "1"},
-                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
+                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 1"},
             },
         },
         {
