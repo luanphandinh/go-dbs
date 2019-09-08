@@ -9,4 +9,5 @@ type Column struct {
 	Unique        bool   `json:"unique"`
 	Length        int    `json:"length"`
 	Default       string `json:"default"`
+	Check         string `json:"check"`
 }

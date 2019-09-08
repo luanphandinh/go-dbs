@@ -48,11 +48,19 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
 	}
 
+	if col.Check != "" {
+		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+	}
+
 	return columnString
 }
 
 func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) string {
 	return _getColumnsDeclarationSQL(platform, cols)
+}
+
+func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) string {
+	return _getColumnCheckDeclaration(expression)
 }
 
 func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {

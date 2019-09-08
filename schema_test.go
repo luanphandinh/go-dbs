@@ -39,7 +39,7 @@ func TestSchemaInstall(t *testing.T) {
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "department_id", Type: INT},
 					{Name: "valid", Type: SMALLINT, Default: "1"},
-					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
+					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
 				},
 			},
 			{
@@ -62,11 +62,19 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
+	// Check constraint is parsed but will be ignore in mysql5.7
+	// @TODO Will tested with POSTGRESQL later
+	if platform == SQLITE3 {
+		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 5)")
+		assertHasError(t, err)
+	}
+
 	// Temporary disabled for postgres
 	// @TODO query builder will help to create query across platforms
 	if platform != POSTGRES {
 		_, err = db.Exec("INSERT INTO department (name, rank) VALUES ('Luan Phan Corps', 1)")
 		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 22)")
+
 		assertNotHasError(t, err)
 
 		var valid, age, rank int

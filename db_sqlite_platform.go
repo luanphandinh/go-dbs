@@ -51,6 +51,10 @@ func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
+func (platform *SqlitePlatform) GetColumnCheckDeclaration(expression string) string {
+	return _getColumnCheckDeclaration(expression)
+}
+
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
@@ -60,6 +64,10 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 
 	if col.Default != "" {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	if col.Check != "" {
+		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
 	}
 
 	return columnString
