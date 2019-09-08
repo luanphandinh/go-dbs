@@ -8,7 +8,7 @@ Manage databse(mysql, postgresql, sqlite3) schema.
 ```go
 dbSchema := &Schema{
     Name:     "company",
-    Platform: platform,
+    Platform: "mysql", // or sqlite, postgresql
     Tables: []Table{
         {
             Name:       "employee",
