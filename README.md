@@ -7,25 +7,27 @@ Manage databse(mysql, postgresql, sqlite3) schema.
 
 ```go
 dbSchema := &Schema{
-    Name: "company", // Only postgresql will create a schema with this name
-    Platform: "mysql", // or postgresql, sqlite3
+    Name:     "company",
+    Platform: platform,
     Tables: []Table{
         {
-            Name: "employee",
+            Name:       "employee",
             PrimaryKey: []string{"id"},
             Columns: []Column{
-                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
+                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
                 {Name: "name", Type: TEXT, NotNull: true},
                 {Name: "department_id", Type: INT},
+                {Name: "valid", Type: SMALLINT, Default: "1"},
                 {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
             },
         },
         {
-            Name: "department",
+            Name:       "department",
             PrimaryKey: []string{"id"},
             Columns: []Column{
-                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
+                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
                 {Name: "name", Type: TEXT, NotNull: true, Length: 2},
+                {Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
                 {Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
             },
         },

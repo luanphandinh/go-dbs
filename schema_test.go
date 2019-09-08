@@ -28,14 +28,14 @@ func prepareDBSource(platform string) *DBSource {
 func TestSchemaInstall(t *testing.T) {
 	platform := getEnvPlatform()
 	dbSchema := &Schema{
-		Name: "company",
+		Name:     "company",
 		Platform: platform,
 		Tables: []Table{
 			{
-				Name: "employee",
+				Name:       "employee",
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
-					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "department_id", Type: INT},
 					{Name: "valid", Type: SMALLINT, Default: "1"},
@@ -43,10 +43,10 @@ func TestSchemaInstall(t *testing.T) {
 				},
 			},
 			{
-				Name: "department",
+				Name:       "department",
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
-					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
 					{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
 					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
