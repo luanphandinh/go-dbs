@@ -7,7 +7,7 @@ type Platform interface {
 	GetTypeDeclaration(col *Column) string
 	GetUniqueDeclaration() string
 	GetNotNullDeclaration() string
-	GetPrimaryDeclaration(table *Table) string
+	GetPrimaryDeclaration(key []string) string
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
@@ -17,13 +17,13 @@ type Platform interface {
 	GetColumnsDeclarationSQL(cols []Column) string
 
 	// schema SQL declarations
-	GetSchemaCreateDeclarationSQL(schema *Schema) string
-	GetSchemaDropDeclarationSQL(schema *Schema) string
+	GetSchemaCreateDeclarationSQL(schema string) string
+	GetSchemaDropDeclarationSQL(schema string) string
 
 	// table SQL declarations
-	GetTableName(schema string, table *Table) string
+	GetTableName(schema string, table string) string
 	GetTableCreateSQL(schema string, table *Table) string
-	GetTableDropSQL(schema string, table *Table) string
+	GetTableDropSQL(schema string, table string) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -50,8 +50,8 @@ func _getNotNullDeclaration() string {
 	return "NOT NULL"
 }
 
-func _getPrimaryDeclaration(table *Table) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
+func _getPrimaryDeclaration(key []string) string {
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ","))
 }
 
 func _getAutoIncrementDeclaration() string {
@@ -70,12 +70,12 @@ func _getColumnCheckDeclaration(expression string) string {
 	return fmt.Sprintf("CHECK (%s)", expression)
 }
 
-func _getSchemaCreateDeclarationSQL(schema *Schema) string {
-	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema.Name)
+func _getSchemaCreateDeclarationSQL(schema string) string {
+	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
 
-func _getSchemaDropDeclarationSQL(schema *Schema) string {
-	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema.Name)
+func _getSchemaDropDeclarationSQL(schema string) string {
+	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema)
 }
 
 func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString string) {
@@ -93,12 +93,12 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString stri
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
-		platform.GetTableName(schema, table),
+		platform.GetTableName(schema, table.Name),
 		platform.GetColumnsDeclarationSQL(table.Columns),
-		platform.GetPrimaryDeclaration(table),
+		platform.GetPrimaryDeclaration(table.PrimaryKey),
 	)
 }
 
-func _getTableDropSQL(platform Platform, schema string, table *Table) string {
+func _getTableDropSQL(platform Platform, schema string, table string) string {
 	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
 }

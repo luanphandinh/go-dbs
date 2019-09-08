@@ -23,8 +23,8 @@ func (platform *MySqlPlatform) GetNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *MySqlPlatform) GetPrimaryDeclaration(table *Table) string {
-	return _getPrimaryDeclaration(table)
+func (platform *MySqlPlatform) GetPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
 }
 
 func (platform *MySqlPlatform) GetAutoIncrementDeclaration() string {
@@ -77,23 +77,23 @@ func (platform *MySqlPlatform) GetColumnsDeclarationSQL(cols []Column) string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
-func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
+func (platform *MySqlPlatform) GetTableName(schema string, table string) string {
+	return table
 }
 
 func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *MySqlPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+func (platform *MySqlPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 

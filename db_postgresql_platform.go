@@ -21,8 +21,8 @@ func (platform *PostgresPlatform) GetNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *PostgresPlatform) GetPrimaryDeclaration(table *Table) string {
-	return _getPrimaryDeclaration(table)
+func (platform *PostgresPlatform) GetPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
 }
 
 func (platform *PostgresPlatform) GetAutoIncrementDeclaration() string {
@@ -63,11 +63,11 @@ func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) s
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return _getSchemaCreateDeclarationSQL(schema)
 }
 
-func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return _getSchemaDropDeclarationSQL(schema)
 }
 
@@ -75,15 +75,15 @@ func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) strin
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetTableName(schema string, table *Table) string {
-	return fmt.Sprintf("%s.%s", schema, table.Name)
+func (platform *PostgresPlatform) GetTableName(schema string, table string) string {
+	return fmt.Sprintf("%s.%s", schema, table)
 }
 
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *PostgresPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 

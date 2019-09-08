@@ -31,8 +31,8 @@ func (platform *SqlitePlatform) GetNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *SqlitePlatform) GetPrimaryDeclaration(table *Table) string {
-	return _getPrimaryDeclaration(table)
+func (platform *SqlitePlatform) GetPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
 }
 
 func (platform *SqlitePlatform) GetAutoIncrementDeclaration() string {
@@ -73,22 +73,22 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
+func (platform *SqlitePlatform) GetTableName(schema string, table string) string {
+	return table
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
