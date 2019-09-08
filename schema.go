@@ -23,7 +23,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 	}
 
 	// create schema
-	if schemaCreation := platform.GetSchemaCreateDeclarationSQL(schema); schemaCreation != "" {
+	if schemaCreation := platform.GetSchemaCreateDeclarationSQL(schema.Name); schemaCreation != "" {
 		if _, err := tx.Exec(schemaCreation); err != nil {
 			tx.Rollback()
 			return err

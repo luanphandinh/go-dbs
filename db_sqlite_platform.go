@@ -73,7 +73,7 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
 

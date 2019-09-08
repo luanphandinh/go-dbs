@@ -77,7 +77,7 @@ func (platform *MySqlPlatform) GetColumnsDeclarationSQL(cols []Column) string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
-func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
 

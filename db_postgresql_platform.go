@@ -63,7 +63,7 @@ func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) s
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return _getSchemaCreateDeclarationSQL(schema)
 }
 

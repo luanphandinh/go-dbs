@@ -17,7 +17,7 @@ type Platform interface {
 	GetColumnsDeclarationSQL(cols []Column) string
 
 	// schema SQL declarations
-	GetSchemaCreateDeclarationSQL(schema *Schema) string
+	GetSchemaCreateDeclarationSQL(schema string) string
 	GetSchemaDropDeclarationSQL(schema *Schema) string
 
 	// table SQL declarations
@@ -70,8 +70,8 @@ func _getColumnCheckDeclaration(expression string) string {
 	return fmt.Sprintf("CHECK (%s)", expression)
 }
 
-func _getSchemaCreateDeclarationSQL(schema *Schema) string {
-	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema.Name)
+func _getSchemaCreateDeclarationSQL(schema string) string {
+	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
 
 func _getSchemaDropDeclarationSQL(schema *Schema) string {
