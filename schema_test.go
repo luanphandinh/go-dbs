@@ -60,7 +60,9 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
-	if platform != POSTGRES { // Temporary disabled for postgres
+	// Temporary disabled for postgres
+	// @TODO query builder will help to create query across platforms
+	if platform != POSTGRES {
 		_, err = db.Exec("INSERT INTO department (name, rank) VALUES ('Luan Phan Corps', 1)")
 		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 22)")
 		assertNotHasError(t, err)
