@@ -39,6 +39,10 @@ func (platform *MySqlPlatform) GetDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
 }
 
+func (platform *MySqlPlatform) GetColumnCheckDeclaration(expression string) string {
+	return _getColumnCheckDeclaration(expression)
+}
+
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
@@ -60,6 +64,10 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 
 	if col.Default != "" {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	if col.Check != "" {
+		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
 	}
 
 	return columnString
