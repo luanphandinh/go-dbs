@@ -5,6 +5,7 @@ import "testing"
 func TestToTableDeclaration(t *testing.T) {
 	mysqlPlatform := GetPlatform(MYSQL)
 	sqlitePlatform := GetPlatform(SQLITE3)
+	postgresPlatform := GetPlatform(POSTGRES)
 
 	id := Column{
 		Name:          "id",
@@ -39,4 +40,8 @@ func TestToTableDeclaration(t *testing.T) {
 
 	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INTEGER, name TEXT, age INTEGER(4), PRIMARY KEY (id))", sqlitePlatform.GetTableCreateSQL("", &table))
 	assertStringEquals(t, "PRIMARY KEY (id)", sqlitePlatform.GetPrimaryDeclaration(&table))
+
+
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS public.user (id INT NOT NULL, name TEXT NOT NULL, age INT, PRIMARY KEY (id))", postgresPlatform.GetTableCreateSQL("public", &table))
+	assertStringEquals(t, "PRIMARY KEY (id)", postgresPlatform.GetPrimaryDeclaration(&table))
 }
