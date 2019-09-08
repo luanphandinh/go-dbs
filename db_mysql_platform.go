@@ -65,6 +65,10 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
+func (platform *MySqlPlatform) GetColumnsDeclarationSQL(cols []Column) string {
+	return _getColumnsDeclarationSQL(platform, cols)
+}
+
 func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
 	return ""
 }

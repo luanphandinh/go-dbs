@@ -13,6 +13,7 @@ type Platform interface {
 	GetDefaultDeclaration(expression string) string
 
 	GetColumnDeclarationSQL(col *Column) string
+	GetColumnsDeclarationSQL(cols []Column) string
 
 	// schema SQL declarations
 	GetSchemaCreateDeclarationSQL(schema *Schema) string
@@ -72,20 +73,23 @@ func _getSchemaDropDeclarationSQL(schema *Schema) string {
 	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema.Name)
 }
 
-func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
-	cols := ""
-	for index, col := range table.Columns {
+func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString string) {
+	for index, col := range cols {
 		if index == 0 {
-			cols += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
+			colString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
 		} else {
-			cols += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
+			colString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
 		}
 	}
 
+	return colString
+}
+
+func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
 		platform.GetTableName(schema, table),
-		cols,
+		platform.GetColumnsDeclarationSQL(table.Columns),
 		platform.GetPrimaryDeclaration(table),
 	)
 }
