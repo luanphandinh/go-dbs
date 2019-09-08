@@ -33,18 +33,6 @@ func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
-func (platform *PostgresPlatform) GetTableName(schema string, table *Table) string {
-	return fmt.Sprintf("%s.%s", schema, table.Name)
-}
-
-func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
-	return _getSchemaCreateDeclarationSQL(schema)
-}
-
-func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
-	return _getSchemaDropDeclarationSQL(schema)
-}
-
 func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
@@ -56,7 +44,27 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetUniqueDeclaration()
 	}
 
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
 	return columnString
+}
+
+func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+	return _getSchemaCreateDeclarationSQL(schema)
+}
+
+func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+	return _getSchemaDropDeclarationSQL(schema)
+}
+
+func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) string {
+	return _getDefaultDeclaration(expression)
+}
+
+func (platform *PostgresPlatform) GetTableName(schema string, table *Table) string {
+	return fmt.Sprintf("%s.%s", schema, table.Name)
 }
 
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

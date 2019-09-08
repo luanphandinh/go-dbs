@@ -12,6 +12,13 @@ func assertStringEquals(t *testing.T, expected string, actual string) {
 	}
 }
 
+func assertFloatEquals(t *testing.T, expected float32, actual float32) {
+	if expected != actual {
+		compareLog(expected, actual)
+		t.Fail()
+	}
+}
+
 func assertIntEquals(t *testing.T, expected int, actual int) {
 	if expected != actual {
 		compareLog(expected, actual)

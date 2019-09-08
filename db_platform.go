@@ -10,6 +10,7 @@ type Platform interface {
 	GetPrimaryDeclaration(table *Table) string
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
+	GetDefaultDeclaration(expression string) string
 
 	GetColumnDeclarationSQL(col *Column) string
 
@@ -57,6 +58,10 @@ func _getAutoIncrementDeclaration() string {
 
 func _getUnsignedDeclaration() string {
 	return "UNSIGNED"
+}
+
+func _getDefaultDeclaration(expression string) string {
+	return fmt.Sprintf("DEFAULT %s", expression)
 }
 
 func _getSchemaCreateDeclarationSQL(schema *Schema) string {
