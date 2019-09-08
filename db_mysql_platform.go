@@ -81,7 +81,7 @@ func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema string) stri
 	return ""
 }
 
-func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return ""
 }
 

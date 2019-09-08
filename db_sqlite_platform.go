@@ -77,7 +77,7 @@ func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema string) str
 	return ""
 }
 
-func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return ""
 }
 

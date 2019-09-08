@@ -67,7 +67,7 @@ func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) s
 	return _getSchemaCreateDeclarationSQL(schema)
 }
 
-func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
 	return _getSchemaDropDeclarationSQL(schema)
 }
 

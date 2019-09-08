@@ -62,7 +62,7 @@ func (schema *Schema) Drop(db *sql.DB) error {
 	}
 
 	// drop schema
-	if schemaDrop := platform.GetSchemaDropDeclarationSQL(schema); schemaDrop != "" {
+	if schemaDrop := platform.GetSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
 		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()
 			return err
