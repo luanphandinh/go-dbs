@@ -5,6 +5,8 @@ import "fmt"
 type MySqlPlatform struct {
 }
 
+// Column declarations
+
 func (platform *MySqlPlatform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
 		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
@@ -33,16 +35,8 @@ func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
-func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
-}
-
-func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
-	return ""
-}
-
-func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
-	return ""
+func (platform *MySqlPlatform) GetDefaultDeclaration(expression string) string {
+	return _getDefaultDeclaration(expression)
 }
 
 func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
@@ -64,7 +58,23 @@ func (platform *MySqlPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetUniqueDeclaration()
 	}
 
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
 	return columnString
+}
+
+func (platform *MySqlPlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
+func (platform *MySqlPlatform) GetSchemaDropDeclarationSQL(schema *Schema) string {
+	return ""
+}
+
+func (platform *MySqlPlatform) GetTableName(schema string, table* Table) string {
+	return table.Name
 }
 
 func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

@@ -34,4 +34,9 @@ func TestColumnDeclaration(t *testing.T) {
 	assertStringEquals(t, "age INT(2) UNSIGNED", mysqlPlatform.GetColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INTEGER(2)", sqlitePlatform.GetColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INT", postgresPlatfrom.GetColumnDeclarationSQL(&age))
+
+	age.Default = "10"
+	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10", mysqlPlatform.GetColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER(2) DEFAULT 10", sqlitePlatform.GetColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INT DEFAULT 10", postgresPlatfrom.GetColumnDeclarationSQL(&age))
 }

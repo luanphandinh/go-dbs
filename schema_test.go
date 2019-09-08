@@ -38,6 +38,7 @@ func TestSchemaInstall(t *testing.T) {
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "department_id", Type: INT},
+					{Name: "valid", Type: SMALLINT, Default: "1"},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2},
 				},
 			},
@@ -47,6 +48,7 @@ func TestSchemaInstall(t *testing.T) {
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement:true},
 					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
+					{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
 					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 			},
@@ -67,16 +69,19 @@ func TestSchemaInstall(t *testing.T) {
 		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 22)")
 		assertNotHasError(t, err)
 
-		var id, age, rank int
+		var valid, age, rank int
 		var name string
-		err = db.QueryRow("select id, name, age from employee").Scan(&id, &name, &age)
+		var revenue float32
+		err = db.QueryRow("select valid, name, age from employee").Scan(&valid, &name, &age)
 		assertNotHasError(t, err)
 		assertStringEquals(t, "Luan Phan", name)
 		assertIntEquals(t, 22, age)
+		assertIntEquals(t, 1, valid)
 
-		err = db.QueryRow("select name, rank from department").Scan(&name, &rank)
+		err = db.QueryRow("select name, rank, revenue from department").Scan(&name, &rank, &revenue)
 		assertNotHasError(t, err)
 		assertStringEquals(t, "Luan Phan Corps", name)
 		assertIntEquals(t, 1, rank)
+		assertFloatEquals(t, 1.01, revenue)
 	}
 }

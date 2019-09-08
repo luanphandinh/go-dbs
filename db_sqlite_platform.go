@@ -43,8 +43,22 @@ func (platform *SqlitePlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
-func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string {
-	return table.Name
+func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string {
+	return _getDefaultDeclaration(expression)
+}
+
+func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
+	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
+
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
+	}
+
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	return columnString
 }
 
 func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema *Schema) string {
@@ -55,14 +69,8 @@ func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema *Schema) stri
 	return ""
 }
 
-func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
-
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	return columnString
+func (platform *SqlitePlatform) GetTableName(schema string, table* Table) string {
+	return table.Name
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
