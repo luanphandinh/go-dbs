@@ -21,8 +21,8 @@ func (platform *PostgresPlatform) GetNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *PostgresPlatform) GetPrimaryDeclaration(table *Table) string {
-	return _getPrimaryDeclaration(table)
+func (platform *PostgresPlatform) GetPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
 }
 
 func (platform *PostgresPlatform) GetAutoIncrementDeclaration() string {

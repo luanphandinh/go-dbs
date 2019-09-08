@@ -23,8 +23,8 @@ func (platform *MySqlPlatform) GetNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *MySqlPlatform) GetPrimaryDeclaration(table *Table) string {
-	return _getPrimaryDeclaration(table)
+func (platform *MySqlPlatform) GetPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
 }
 
 func (platform *MySqlPlatform) GetAutoIncrementDeclaration() string {

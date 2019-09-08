@@ -7,7 +7,7 @@ type Platform interface {
 	GetTypeDeclaration(col *Column) string
 	GetUniqueDeclaration() string
 	GetNotNullDeclaration() string
-	GetPrimaryDeclaration(table *Table) string
+	GetPrimaryDeclaration(key []string) string
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
@@ -50,8 +50,8 @@ func _getNotNullDeclaration() string {
 	return "NOT NULL"
 }
 
-func _getPrimaryDeclaration(table *Table) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(table.PrimaryKey, ","))
+func _getPrimaryDeclaration(key []string) string {
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ","))
 }
 
 func _getAutoIncrementDeclaration() string {
@@ -95,7 +95,7 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
 		platform.GetTableName(schema, table),
 		platform.GetColumnsDeclarationSQL(table.Columns),
-		platform.GetPrimaryDeclaration(table),
+		platform.GetPrimaryDeclaration(table.PrimaryKey),
 	)
 }
 
