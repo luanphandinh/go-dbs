@@ -23,7 +23,7 @@ type Platform interface {
 	// table SQL declarations
 	GetTableName(schema string, table string) string
 	GetTableCreateSQL(schema string, table *Table) string
-	GetTableDropSQL(schema string, table *Table) string
+	GetTableDropSQL(schema string, table string) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -99,6 +99,6 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	)
 }
 
-func _getTableDropSQL(platform Platform, schema string, table *Table) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table.Name))
+func _getTableDropSQL(platform Platform, schema string, table string) string {
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
 }

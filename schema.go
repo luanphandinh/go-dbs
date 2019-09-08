@@ -55,7 +55,7 @@ func (schema *Schema) Drop(db *sql.DB) error {
 
 	// drop tables
 	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.GetTableDropSQL(schema.Name, &table)); err != nil {
+		if _, err := tx.Exec(platform.GetTableDropSQL(schema.Name, table.Name)); err != nil {
 			tx.Rollback()
 			return err
 		}

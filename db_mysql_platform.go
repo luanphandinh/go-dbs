@@ -93,7 +93,7 @@ func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (t
 	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *MySqlPlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+func (platform *MySqlPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 

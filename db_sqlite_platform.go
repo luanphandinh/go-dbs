@@ -89,6 +89,6 @@ func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (
 	return _getTableCreateSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) GetTableDropSQL(schema string, table *Table) (tableString string) {
+func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
