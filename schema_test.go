@@ -1,6 +1,7 @@
 package dbs
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
@@ -62,34 +63,34 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
+	// @TODO query builder will help to create query across platforms
+	dbPlatform := GetPlatform(platform)
+	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
+	department := dbPlatform.GetTableName(dbSchema.Name, "department")
+
 	// Check constraint is parsed but will be ignore in mysql5.7
-	// @TODO Will tested with POSTGRESQL later
-	if platform == SQLITE3 {
-		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 5)")
+	if platform != MYSQL {
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 5)", employee))
 		assertHasError(t, err)
 	}
 
-	// Temporary disabled for postgres
-	// @TODO query builder will help to create query across platforms
-	if platform != POSTGRES {
-		_, err = db.Exec("INSERT INTO department (name, rank) VALUES ('Luan Phan Corps', 1)")
-		_, err = db.Exec("INSERT INTO employee (name, age) VALUES ('Luan Phan', 22)")
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, rank) VALUES (1, 'Luan Phan Corps', 1)", department))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
 
-		assertNotHasError(t, err)
+	assertNotHasError(t, err)
 
-		var valid, age, rank int
-		var name string
-		var revenue float32
-		err = db.QueryRow("select valid, name, age from employee").Scan(&valid, &name, &age)
-		assertNotHasError(t, err)
-		assertStringEquals(t, "Luan Phan", name)
-		assertIntEquals(t, 22, age)
-		assertIntEquals(t, 1, valid)
+	var valid, age, rank int
+	var name string
+	var revenue float32
+	err = db.QueryRow(fmt.Sprintf("select valid, name, age from %s", employee)).Scan(&valid, &name, &age)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan", name)
+	assertIntEquals(t, 22, age)
+	assertIntEquals(t, 1, valid)
 
-		err = db.QueryRow("select name, rank, revenue from department").Scan(&name, &rank, &revenue)
-		assertNotHasError(t, err)
-		assertStringEquals(t, "Luan Phan Corps", name)
-		assertIntEquals(t, 1, rank)
-		assertFloatEquals(t, 1.01, revenue)
-	}
+	err = db.QueryRow(fmt.Sprintf("select name, rank, revenue from %s", department)).Scan(&name, &rank, &revenue)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan Corps", name)
+	assertIntEquals(t, 1, rank)
+	assertFloatEquals(t, 1.01, revenue)
 }
