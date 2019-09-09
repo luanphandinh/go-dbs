@@ -3,7 +3,7 @@ package dbs
 import "testing"
 
 func TestToTableDeclaration(t *testing.T) {
-	mysqlPlatform := GetPlatform(MYSQL)
+	mysqlPlatform := GetPlatform(MYSQL57)
 	sqlitePlatform := GetPlatform(SQLITE3)
 	postgresPlatform := GetPlatform(POSTGRES)
 

@@ -7,7 +7,7 @@ matrix:
       services:
         - mysql
       env:
-        - PLATFORM=mysql
+        - PLATFORM=mysql:5.7
         - SERVER_NAME=127.0.0.1
         - DB_NAME=workspace
         - DB_USER=root

@@ -33,8 +33,8 @@ type Platform interface {
 }
 
 func GetPlatform(platform string) Platform {
-	if platform == MYSQL {
-		return &MySqlPlatform{}
+	if platform == MYSQL57 {
+		return &MySql57Platform{}
 	}
 
 	if platform == SQLITE3 {

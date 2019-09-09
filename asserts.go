@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func assertNotNil(t *testing.T, actual interface{}) {
+	if actual == nil {
+		compareLog("nil", actual)
+		t.Fail()
+	}
+}
+
 func assertStringEquals(t *testing.T, expected string, actual string) {
 	if expected != actual {
 		compareLog(expected, actual)

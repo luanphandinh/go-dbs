@@ -49,6 +49,8 @@ func TestSchemaInstall(t *testing.T) {
 	}
 
 	dbPlatform := GetPlatform(platform)
+	assertNotNil(t, dbPlatform)
+
 	db, err := sql.Open(
 		dbPlatform.GetDriverName(),
 		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
@@ -62,7 +64,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	// Check constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
-	if platform != MYSQL {
+	if platform != MYSQL57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 5)", employee))
 		assertHasError(t, err)
 
