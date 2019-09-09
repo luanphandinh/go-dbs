@@ -2,12 +2,33 @@ language: go
 
 matrix:
   include:
-    - name: "Test MySQL"
+    - name: "Test MySql:5.7"
       go: 1.12.x
       services:
         - mysql
       env:
-        - PLATFORM=mysql
+        - PLATFORM=mysql:5.7
+        - SERVER_NAME=127.0.0.1
+        - DB_NAME=workspace
+        - DB_USER=root
+      before_install:
+        - go get -v github.com/go-sql-driver/mysql
+        - mysql -e 'CREATE DATABASE workspace;'
+
+    - name: "Test MySql"
+      go: 1.12.x
+      services:
+        - mysql
+      before_script:
+        - wget https://repo.mysql.com//mysql-apt-config_0.8.10-1_all.deb
+        - sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
+        - sudo apt-get update -q
+        - sudo apt-get install -q -y --allow-unauthenticated -o Dpkg::Options::=--force-confnew mysql-server
+        - sudo systemctl restart mysql
+        - sudo mysql_upgrade
+        - mysql --version
+      env:
+        - PLATFORM=mysql:8.0
         - SERVER_NAME=127.0.0.1
         - DB_NAME=workspace
         - DB_USER=root

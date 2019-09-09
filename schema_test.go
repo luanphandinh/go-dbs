@@ -42,13 +42,13 @@ func TestSchemaInstall(t *testing.T) {
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
 					{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-					{Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
+					{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 			},
 		},
 	}
-
 	dbPlatform := GetPlatform(platform)
+	assertNotNil(t, dbPlatform)
 	db, err := sql.Open(
 		dbPlatform.GetDriverName(),
 		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
@@ -62,7 +62,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	// Check constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
-	if platform != MYSQL {
+	if platform != MYSQL57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 5)", employee))
 		assertHasError(t, err)
 
@@ -73,12 +73,12 @@ func TestSchemaInstall(t *testing.T) {
 		assertHasError(t, err)
 	}
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, rank) VALUES (1, 'Luan Phan Corps', 1)", department))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, position) VALUES (1, 'Luan Phan Corps', 1)", department))
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
 
 	assertNotHasError(t, err)
 
-	var valid, age, rank int
+	var valid, age, position int
 	var name string
 	var revenue float32
 	err = db.QueryRow(fmt.Sprintf("select valid, name, age from %s", employee)).Scan(&valid, &name, &age)
@@ -87,9 +87,9 @@ func TestSchemaInstall(t *testing.T) {
 	assertIntEquals(t, 22, age)
 	assertIntEquals(t, 1, valid)
 
-	err = db.QueryRow(fmt.Sprintf("select name, rank, revenue from %s", department)).Scan(&name, &rank, &revenue)
+	err = db.QueryRow(fmt.Sprintf("select name, position, revenue from %s", department)).Scan(&name, &position, &revenue)
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Luan Phan Corps", name)
-	assertIntEquals(t, 1, rank)
+	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
 }
