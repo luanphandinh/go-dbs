@@ -2,7 +2,13 @@ package dbs
 
 import "fmt"
 
+const POSTGRES string = "postgres"
+
 type PostgresPlatform struct {
+}
+
+func (platform *PostgresPlatform) GetDriverName() string {
+	return POSTGRES
 }
 
 func (platform *PostgresPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {

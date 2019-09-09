@@ -50,7 +50,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	dbPlatform := GetPlatform(platform)
 	db, err := sql.Open(
-		platform,
+		dbPlatform.GetDriverName(),
 		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
 	)
 	assertNotHasError(t, err)

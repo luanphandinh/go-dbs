@@ -2,8 +2,13 @@ package dbs
 
 import "fmt"
 
-type SqlitePlatform struct {
+const SQLITE3 string = "sqlite3"
 
+type SqlitePlatform struct {
+}
+
+func (platform *SqlitePlatform) GetDriverName() string {
+	return SQLITE3
 }
 
 func (platform *SqlitePlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {

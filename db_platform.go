@@ -3,6 +3,7 @@ package dbs
 import "fmt"
 
 type Platform interface {
+	GetDriverName() string
 	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
 
 	// Column attributes declarations
@@ -57,10 +58,6 @@ func _getNotNullDeclaration() string {
 
 func _getPrimaryDeclaration(key []string) string {
 	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ","))
-}
-
-func _getAutoIncrementDeclaration() string {
-	return "AUTO_INCREMENT"
 }
 
 func _getUnsignedDeclaration() string {
