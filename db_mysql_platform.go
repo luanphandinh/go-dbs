@@ -89,6 +89,10 @@ func (platform *MySqlPlatform) GetTableName(schema string, table string) string 
 	return table
 }
 
+func (platform *MySqlPlatform) GetTableCheckDeclaration(expressions []string) string {
+	return _getTableCheckDeclaration(expressions)
+}
+
 func (platform *MySqlPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }

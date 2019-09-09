@@ -11,7 +11,8 @@ type Platform interface {
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
-	GetColumnCheckDeclaration(expression string) string // Check constraint is parsed but will be ignore in mysql5.7
+	// Check constraint is parsed but will be ignored in mysql5.7
+	GetColumnCheckDeclaration(expression string) string
 
 	GetColumnDeclarationSQL(col *Column) string
 	GetColumnsDeclarationSQL(cols []Column) string
@@ -22,6 +23,8 @@ type Platform interface {
 
 	// table SQL declarations
 	GetTableName(schema string, table string) string
+	// Check constraint is parsed but will be ignored in mysql5.7
+	GetTableCheckDeclaration(expressions []string) string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 }
@@ -70,6 +73,18 @@ func _getColumnCheckDeclaration(expression string) string {
 	return fmt.Sprintf("CHECK (%s)", expression)
 }
 
+func _getTableCheckDeclaration(expressions []string) (evaluatedExpression string) {
+	for index, expression := range expressions {
+		if index == 0 {
+			evaluatedExpression += fmt.Sprintf("CHECK (%s)", expression)
+		} else {
+			evaluatedExpression += fmt.Sprintf(", CHECK (%s)", expression)
+		}
+	}
+
+	return evaluatedExpression
+}
+
 func _getSchemaCreateDeclarationSQL(schema string) string {
 	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
@@ -91,11 +106,17 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString stri
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
+	check := ""
+	if len(table.Check) > 0 {
+		check = fmt.Sprintf(", %s", platform.GetTableCheckDeclaration(table.Check))
+	}
+
 	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (%s, %s)",
+		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
 		platform.GetTableName(schema, table.Name),
 		platform.GetColumnsDeclarationSQL(table.Columns),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
+		check,
 	)
 }
 

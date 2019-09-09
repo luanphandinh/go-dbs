@@ -79,6 +79,10 @@ func (platform *PostgresPlatform) GetTableName(schema string, table string) stri
 	return fmt.Sprintf("%s.%s", schema, table)
 }
 
+func (platform *PostgresPlatform) GetTableCheckDeclaration(expressions []string) string {
+	return _getTableCheckDeclaration(expressions)
+}
+
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }
