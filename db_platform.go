@@ -37,6 +37,10 @@ func GetPlatform(platform string) Platform {
 		return &MySql57Platform{}
 	}
 
+	if platform == MYSQL80 {
+		return &MySql80Platform{}
+	}
+
 	if platform == SQLITE3 {
 		return &SqlitePlatform{}
 	}
