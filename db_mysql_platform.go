@@ -2,7 +2,13 @@ package dbs
 
 import "fmt"
 
+const MYSQL string = "mysql"
+
 type MySqlPlatform struct {
+}
+
+func (platform *MySqlPlatform) GetDriverName() string {
+	return MYSQL
 }
 
 func (platform *MySqlPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
@@ -14,8 +20,6 @@ func (platform *MySqlPlatform) GetDBConnectionString(server string, port int, us
 		dbName,
 	)
 }
-
-// Column declarations
 
 func (platform *MySqlPlatform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
@@ -38,7 +42,7 @@ func (platform *MySqlPlatform) GetPrimaryDeclaration(key []string) string {
 }
 
 func (platform *MySqlPlatform) GetAutoIncrementDeclaration() string {
-	return _getAutoIncrementDeclaration()
+	return "AUTO_INCREMENT"
 }
 
 func (platform *MySqlPlatform) GetUnsignedDeclaration() string {
