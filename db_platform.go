@@ -3,6 +3,8 @@ package dbs
 import "fmt"
 
 type Platform interface {
+	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
+
 	// Column attributes declarations
 	GetTypeDeclaration(col *Column) string
 	GetUniqueDeclaration() string

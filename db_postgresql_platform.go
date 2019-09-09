@@ -5,6 +5,16 @@ import "fmt"
 type PostgresPlatform struct {
 }
 
+func (platform *PostgresPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s sslmode=disable",
+		server,
+		user,
+		password,
+		dbName,
+	)
+}
+
 func (platform *PostgresPlatform) GetSchemaDeclarationSQL(schema string) string {
 	return schema
 }

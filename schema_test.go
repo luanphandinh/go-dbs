@@ -1,6 +1,7 @@
 package dbs
 
 import (
+	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -9,25 +10,15 @@ import (
 	"testing"
 )
 
-func getEnvPlatform() string {
-	if driver := os.Getenv("PLATFORM"); driver != "" {
-		return driver
-	}
-
-	return SQLITE3
-}
-
-func prepareDBSource(platform string) *DBSource {
-	serverName := os.Getenv("SERVER_NAME")
-	dbName := os.Getenv("DB_NAME")
-	user := os.Getenv("USER")
-	password := os.Getenv("PASSWORD")
-
-	return &DBSource{ServerName: serverName, Name: dbName, Driver: platform, User: user, Password: password}
-}
+var (
+	platform   = os.Getenv("PLATFORM")
+	serverName = os.Getenv("SERVER_NAME")
+	dbName     = os.Getenv("DB_NAME")
+	user       = os.Getenv("USER")
+	password   = os.Getenv("PASSWORD")
+)
 
 func TestSchemaInstall(t *testing.T) {
-	platform := getEnvPlatform()
 	dbSchema := &Schema{
 		Name:     "company",
 		Platform: platform,
@@ -57,19 +48,20 @@ func TestSchemaInstall(t *testing.T) {
 		},
 	}
 
-	dbSource := prepareDBSource(platform)
-
-	db, err := dbSource.Connection()
+	dbPlatform := GetPlatform(platform)
+	db, err := sql.Open(
+		platform,
+		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
+	)
 	assertNotHasError(t, err)
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
-	// @TODO query builder will help to create query across platforms
-	dbPlatform := GetPlatform(platform)
 	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
 	department := dbPlatform.GetTableName(dbSchema.Name, "department")
 
-	// Check constraint is parsed but will be ignore in mysql5.7
+	// Check constraint is parsed but will be ignored in mysql5.7
+	// @TODO query builder will help to create query across platforms
 	if platform != MYSQL {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 5)", employee))
 		assertHasError(t, err)

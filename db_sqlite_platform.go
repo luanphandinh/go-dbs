@@ -6,6 +6,10 @@ type SqlitePlatform struct {
 
 }
 
+func (platform *SqlitePlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
+	return dbName
+}
+
 func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {
 	return ""
 }

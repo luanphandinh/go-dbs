@@ -5,6 +5,16 @@ import "fmt"
 type MySqlPlatform struct {
 }
 
+func (platform *MySqlPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
+	return fmt.Sprintf(
+		"%s:%s@tcp(%s)/%s",
+		user,
+		password,
+		server,
+		dbName,
+	)
+}
+
 // Column declarations
 
 func (platform *MySqlPlatform) GetTypeDeclaration(col *Column) string {
