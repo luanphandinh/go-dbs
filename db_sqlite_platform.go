@@ -85,6 +85,10 @@ func (platform *SqlitePlatform) GetTableName(schema string, table string) string
 	return table
 }
 
+func (platform *SqlitePlatform) GetTableCheckDeclaration(expressions []string) string {
+	return _getTableCheckDeclaration(expressions)
+}
+
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }

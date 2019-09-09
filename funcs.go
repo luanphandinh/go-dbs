@@ -7,7 +7,7 @@ func concatString(values []string, glue string) (s string) {
 		if index == 0 {
 			s += fmt.Sprintf("%s", value)
 		} else {
-			s += fmt.Sprintf("%s, %s", glue, value)
+			s += fmt.Sprintf("%s %s", glue, value)
 		}
 	}
 

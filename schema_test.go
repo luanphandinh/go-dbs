@@ -42,6 +42,7 @@ func TestSchemaInstall(t *testing.T) {
 					{Name: "valid", Type: SMALLINT, Default: "1"},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
 				},
+				Check: []string{"age < 50", "length(name) < 10"},
 			},
 			{
 				Name:       "department",
@@ -71,6 +72,12 @@ func TestSchemaInstall(t *testing.T) {
 	// Check constraint is parsed but will be ignore in mysql5.7
 	if platform != MYSQL {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 5)", employee))
+		assertHasError(t, err)
+
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 51)", employee))
+		assertHasError(t, err)
+
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan Wrong', 22)", employee))
 		assertHasError(t, err)
 	}
 
