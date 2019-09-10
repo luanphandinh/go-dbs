@@ -109,3 +109,11 @@ func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (
 func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
+
+func (platform *SqlitePlatform) GetSequenceCreateSQL(schema string, sequence string) string {
+	return ""
+}
+
+func (platform *SqlitePlatform) GetSequenceDropSQL(schema string, sequence string) string {
+	return ""
+}

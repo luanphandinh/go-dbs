@@ -103,4 +103,10 @@ func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (
 	return _getTableDropSQL(platform, schema, table)
 }
 
+func (platform *PostgresPlatform) GetSequenceCreateSQL(schema string, sequence string) string {
+	return _getSequenceCreateSQL(schema, sequence)
+}
 
+func (platform *PostgresPlatform) GetSequenceDropSQL(schema string, sequence string) string {
+	return _getSequenceDropSQL(schema, sequence)
+}
