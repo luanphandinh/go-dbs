@@ -52,12 +52,12 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetNotNullDeclaration()
 	}
 
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
 	if col.Default != "" {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
 	}
 
 	if col.Check != "" {
