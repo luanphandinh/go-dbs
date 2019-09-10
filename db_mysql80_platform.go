@@ -68,16 +68,16 @@ func (platform *MySql80Platform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetNotNullDeclaration()
 	}
 
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
 	if col.AutoIncrement {
 		columnString += " " + platform.GetAutoIncrementDeclaration()
 	}
 
 	if col.Unique {
 		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
 	}
 
 	if col.Check != "" {
