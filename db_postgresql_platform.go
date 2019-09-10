@@ -21,10 +21,6 @@ func (platform *PostgresPlatform) GetDBConnectionString(server string, port int,
 	)
 }
 
-func (platform *PostgresPlatform) GetSchemaDeclarationSQL(schema string) string {
-	return schema
-}
-
 func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
