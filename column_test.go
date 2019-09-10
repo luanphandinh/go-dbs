@@ -14,12 +14,12 @@ func TestColumnDeclaration(t *testing.T) {
 		AutoIncrement: true,
 	}
 	assertStringEquals(t, "id INT NOT NULL AUTO_INCREMENT", mysqlPlatform.GetColumnDeclarationSQL(&id))
-	assertStringEquals(t, "id INTEGER", sqlitePlatform.GetColumnDeclarationSQL(&id))
+	assertStringEquals(t, "id INTEGER NOT NULL", sqlitePlatform.GetColumnDeclarationSQL(&id))
 	assertStringEquals(t, "id INT NOT NULL", postgresPlatfrom.GetColumnDeclarationSQL(&id))
 
 	name := Column{Name: "name", Type: TEXT, NotNull: true}
 	assertStringEquals(t, "name TEXT NOT NULL", mysqlPlatform.GetColumnDeclarationSQL(&name))
-	assertStringEquals(t, "name TEXT", sqlitePlatform.GetColumnDeclarationSQL(&name))
+	assertStringEquals(t, "name TEXT NOT NULL", sqlitePlatform.GetColumnDeclarationSQL(&name))
 	assertStringEquals(t, "name TEXT NOT NULL", postgresPlatfrom.GetColumnDeclarationSQL(&name))
 
 	age := Column{}
@@ -42,6 +42,6 @@ func TestColumnDeclaration(t *testing.T) {
 
 	age.Check = "age < 150"
 	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10 CHECK (age < 150)", mysqlPlatform.GetColumnDeclarationSQL(&age))
-	assertStringEquals(t, "age INTEGER(2) DEFAULT 10 CHECK (age < 150)", sqlitePlatform.GetColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER(2) CHECK (age < 150) DEFAULT 10", sqlitePlatform.GetColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INT DEFAULT 10 CHECK (age < 150)", postgresPlatfrom.GetColumnDeclarationSQL(&age))
 }
