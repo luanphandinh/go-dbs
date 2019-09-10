@@ -18,8 +18,8 @@ var (
 	password   = os.Getenv("PASSWORD")
 )
 
-func TestSchemaInstall(t *testing.T) {
-	dbSchema := &Schema{
+func getSchema(platform string) *Schema {
+	return &Schema{
 		Name:     "company",
 		Platform: platform,
 		Tables: []Table{
@@ -47,8 +47,9 @@ func TestSchemaInstall(t *testing.T) {
 			},
 		},
 	}
-	dbPlatform := GetPlatform(platform)
-	assertNotNil(t, dbPlatform)
+}
+
+func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
 		dbPlatform.GetDriverName(),
 		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
@@ -56,6 +57,15 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, err)
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
+
+	return db, err
+}
+
+func TestSchemaInstall(t *testing.T) {
+	dbSchema := getSchema(platform)
+	dbPlatform := GetPlatform(platform)
+
+	db, err := setupDB(t, dbPlatform, dbSchema)
 
 	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
 	department := dbPlatform.GetTableName(dbSchema.Name, "department")
