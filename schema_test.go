@@ -71,6 +71,9 @@ func TestSchemaInstall(t *testing.T) {
 
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan Wrong', 22)", employee))
 		assertHasError(t, err)
+
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, NULL, 22)", employee))
+		assertHasError(t, err)
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, position) VALUES (1, 'Luan Phan Corps', 1)", department))

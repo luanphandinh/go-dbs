@@ -67,16 +67,20 @@ func (platform *SqlitePlatform) GetColumnCheckDeclaration(expression string) str
 func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
+	if col.NotNull {
+		columnString += " " + platform.GetNotNullDeclaration()
+	}
+
 	if col.Unique {
 		columnString += " " + platform.GetUniqueDeclaration()
 	}
 
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
-	}
-
 	if col.Check != "" {
 		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+	}
+
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
 	}
 
 	return columnString

@@ -39,7 +39,7 @@ func TestToTableDeclaration(t *testing.T) {
 		Check: []string{"age > 50"},
 	}
 	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INT NOT NULL AUTO_INCREMENT, name TEXT NOT NULL, age INT(4) DEFAULT 10 CHECK (age < 1000), PRIMARY KEY (id), CHECK (age > 50))",mysqlPlatform.GetTableCreateSQL("", &table))
-	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INTEGER, name TEXT, age INTEGER(4) DEFAULT 10 CHECK (age < 1000), PRIMARY KEY (id), CHECK (age > 50))", sqlitePlatform.GetTableCreateSQL("", &table))
+	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS user (id INTEGER NOT NULL, name TEXT NOT NULL, age INTEGER(4) CHECK (age < 1000) DEFAULT 10, PRIMARY KEY (id), CHECK (age > 50))", sqlitePlatform.GetTableCreateSQL("", &table))
 	assertStringEquals(t, "CREATE TABLE IF NOT EXISTS public.user (id INT NOT NULL, name TEXT NOT NULL, age INT DEFAULT 10 CHECK (age < 1000), PRIMARY KEY (id), CHECK (age > 50))", postgresPlatform.GetTableCreateSQL("public", &table))
 
 	table.PrimaryKey = []string{"id", "name"}

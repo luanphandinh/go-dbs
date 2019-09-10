@@ -8,7 +8,7 @@ Manage databse(mysql, postgresql, sqlite3) schema.
 ```go
 dbSchema := &Schema{
     Name:     "company",
-    Platform: "mysql", // or sqlite, postgresql
+    Platform: "mysql80", // or mysql57, sqlite, postgresql
     Tables: []Table{
         {
             Name:       "employee",
@@ -20,6 +20,7 @@ dbSchema := &Schema{
                 {Name: "valid", Type: SMALLINT, Default: "1"},
                 {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 1"},
             },
+            Check: []string{"age < 50", "length(name) < 100"}
         },
         {
             Name:       "department",

@@ -58,33 +58,7 @@ func (platform *MySql80Platform) GetColumnCheckDeclaration(expression string) st
 }
 
 func (platform *MySql80Platform) GetColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
-
-	if col.Unsigned {
-		columnString += " " + platform.GetUnsignedDeclaration()
-	}
-
-	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
-	}
-
-	if col.AutoIncrement {
-		columnString += " " + platform.GetAutoIncrementDeclaration()
-	}
-
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
-	}
-
-	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
-	}
-
-	return columnString
+	return _getColumnDeclarationSQL(platform, col)
 }
 
 func (platform *MySql80Platform) GetColumnsDeclarationSQL(cols []Column) string {

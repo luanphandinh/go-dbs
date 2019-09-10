@@ -21,10 +21,6 @@ func (platform *PostgresPlatform) GetDBConnectionString(server string, port int,
 	)
 }
 
-func (platform *PostgresPlatform) GetSchemaDeclarationSQL(schema string) string {
-	return schema
-}
-
 func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
@@ -56,12 +52,12 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 		columnString += " " + platform.GetNotNullDeclaration()
 	}
 
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
 	if col.Default != "" {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
 	}
 
 	if col.Check != "" {

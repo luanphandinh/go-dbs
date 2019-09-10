@@ -96,6 +96,36 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema)
 }
 
+func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
+	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
+
+	if col.Unsigned {
+		columnString += " " + platform.GetUnsignedDeclaration()
+	}
+
+	if col.NotNull {
+		columnString += " " + platform.GetNotNullDeclaration()
+	}
+
+	if col.Default != "" {
+		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+	}
+
+	if col.AutoIncrement {
+		columnString += " " + platform.GetAutoIncrementDeclaration()
+	}
+
+	if col.Unique {
+		columnString += " " + platform.GetUniqueDeclaration()
+	}
+
+	if col.Check != "" {
+		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+	}
+
+	return columnString
+}
+
 func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString string) {
 	for index, col := range cols {
 		if index == 0 {
