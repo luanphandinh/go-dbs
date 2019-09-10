@@ -87,8 +87,9 @@ func TestSchemaInstall(t *testing.T) {
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, position) VALUES (1, 'Luan Phan Corps', 1)", department))
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
+	assertNotHasError(t, err)
 
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
 	assertNotHasError(t, err)
 
 	var valid, age, position int
@@ -105,4 +106,26 @@ func TestSchemaInstall(t *testing.T) {
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
+}
+
+func TestAutoIncrement(t *testing.T) {
+	dbSchema := getSchema(platform)
+	dbPlatform := GetPlatform(platform)
+
+	db, err := setupDB(t, dbPlatform, dbSchema)
+
+	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
+	department := dbPlatform.GetTableName(dbSchema.Name, "department")
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	assertNotHasError(t, err)
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	assertNotHasError(t, err)
+
+	var valid, age, id int
+	var name string
+	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s", employee)).Scan(&id, &valid, &name, &age)
+	assertIntEquals(t, 1, id)
+	assertNotHasError(t, err)
 }
