@@ -25,7 +25,7 @@ type Platform interface {
 	GetSchemaDropDeclarationSQL(schema string) string
 
 	// table SQL declarations
-	GetTableName(schema string, table string) string
+	GetSchemaAccessName(schema string, name string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetTableCheckDeclaration(expressions []string) string
 	GetTableCreateSQL(schema string, table *Table) string
@@ -96,7 +96,7 @@ func _getSchemaCreateDeclarationSQL(schema string) string {
 }
 
 func _getSchemaDropDeclarationSQL(schema string) string {
-	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema)
+	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE", schema)
 }
 
 func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
@@ -149,7 +149,7 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
-		platform.GetTableName(schema, table.Name),
+		platform.GetSchemaAccessName(schema, table.Name),
 		platform.GetColumnsDeclarationSQL(table.Columns),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 		check,
@@ -157,7 +157,7 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 }
 
 func _getTableDropSQL(platform Platform, schema string, table string) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetSchemaAccessName(schema, table))
 }
 
 func _getSequenceCreateSQL(schema string, sequence string) string {

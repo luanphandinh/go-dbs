@@ -76,8 +76,8 @@ func (platform *MySql57Platform) GetSchemaDropDeclarationSQL(schema string) stri
 	return ""
 }
 
-func (platform *MySql57Platform) GetTableName(schema string, table string) string {
-	return table
+func (platform *MySql57Platform) GetSchemaAccessName(schema string, name string) string {
+	return name
 }
 
 func (platform *MySql57Platform) GetTableCheckDeclaration(expressions []string) string {

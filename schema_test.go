@@ -67,8 +67,8 @@ func TestSchemaInstall(t *testing.T) {
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
-	department := dbPlatform.GetTableName(dbSchema.Name, "department")
+	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
 
 	// Check constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
@@ -114,8 +114,8 @@ func TestAutoIncrement(t *testing.T) {
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
-	department := dbPlatform.GetTableName(dbSchema.Name, "department")
+	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

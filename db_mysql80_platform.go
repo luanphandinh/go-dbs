@@ -73,8 +73,8 @@ func (platform *MySql80Platform) GetSchemaDropDeclarationSQL(schema string) stri
 	return ""
 }
 
-func (platform *MySql80Platform) GetTableName(schema string, table string) string {
-	return table
+func (platform *MySql80Platform) GetSchemaAccessName(schema string, name string) string {
+	return name
 }
 
 func (platform *MySql80Platform) GetTableCheckDeclaration(expressions []string) string {
