@@ -178,5 +178,5 @@ func _getSequenceDropSQL(sequence string) string {
 }
 
 func _chainCommands(commands ...string) string {
-	return concatString(commands, ";")
+	return concatString(commands, ";\n")
 }

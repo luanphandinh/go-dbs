@@ -106,6 +106,7 @@ func (platform *PostgresPlatform) GetTableCheckDeclaration(expressions []string)
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	commands := make([]string, 0)
 	commands = append(commands, _getTableCreateSQL(platform, schema, table))
+	// Auto increment
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
 			seqName := platform.GetSchemaAccessName(schema, fmt.Sprintf("%s_%s_seq", table.Name, col.Name))
@@ -117,6 +118,21 @@ func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table)
 					platform.GetSchemaAccessName(schema, table.Name),
 					col.Name,
 					seqName,
+				),
+			)
+		}
+	}
+
+	// Comments
+	for _, col := range table.Columns {
+		if col.Comment != "" {
+			commands = append(
+				commands,
+				fmt.Sprintf(
+					"COMMENT ON COLUMN %s.%s IS '%s'",
+					platform.GetSchemaAccessName(schema, table.Name),
+					col.Name,
+					col.Comment,
 				),
 			)
 		}
