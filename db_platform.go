@@ -7,6 +7,7 @@ import (
 type Platform interface {
 	GetDriverName() string
 	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
+	ChainCommands(commands ...string) string
 
 	// Column attributes declarations
 	GetTypeDeclaration(col *Column) string
@@ -16,6 +17,7 @@ type Platform interface {
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
+	GetColumnCommentDeclaration(expression string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetColumnCheckDeclaration(expression string) string
 
@@ -66,7 +68,7 @@ func _getNotNullDeclaration() string {
 }
 
 func _getPrimaryDeclaration(key []string) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ","))
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ", "))
 }
 
 func _getUnsignedDeclaration() string {
@@ -75,6 +77,10 @@ func _getUnsignedDeclaration() string {
 
 func _getDefaultDeclaration(expression string) string {
 	return fmt.Sprintf("DEFAULT %s", expression)
+}
+
+func _getColumnCommentDeclaration(expression string) string {
+	return fmt.Sprintf("COMMENT '%s'", expression)
 }
 
 func _getColumnCheckDeclaration(expression string) string {
@@ -128,6 +134,10 @@ func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string)
 		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
 	}
 
+	if col.Comment != "" {
+		columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
+	}
+
 	return columnString
 }
 
@@ -147,9 +157,9 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	}
 
 	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
+		"CREATE TABLE IF NOT EXISTS %s (\n\t%s, %s%s\n)",
 		platform.GetSchemaAccessName(schema, table.Name),
-		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ","),
+		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ",\n\t"),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 		check,
 	)
@@ -167,3 +177,6 @@ func _getSequenceDropSQL(sequence string) string {
 	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
 }
 
+func _chainCommands(commands ...string) string {
+	return concatString(commands, ";\n")
+}

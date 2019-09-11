@@ -24,6 +24,10 @@ func (platform *MySql57Platform) GetDBConnectionString(server string, port int, 
 	)
 }
 
+func (platform *MySql57Platform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *MySql57Platform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
 		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
@@ -54,6 +58,10 @@ func (platform *MySql57Platform) GetUnsignedDeclaration() string {
 
 func (platform *MySql57Platform) GetDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
+}
+
+func (platform *MySql57Platform) GetColumnCommentDeclaration(expression string) string {
+	return _getColumnCommentDeclaration(expression)
 }
 
 func (platform *MySql57Platform) GetColumnCheckDeclaration(expression string) string {

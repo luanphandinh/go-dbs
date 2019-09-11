@@ -29,6 +29,10 @@ func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
 
+func (platform *MySql80Platform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *MySql80Platform) GetUniqueDeclaration() string {
 	return _getUniqueDeclaration()
 }
@@ -51,6 +55,10 @@ func (platform *MySql80Platform) GetUnsignedDeclaration() string {
 
 func (platform *MySql80Platform) GetDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
+}
+
+func (platform *MySql80Platform) GetColumnCommentDeclaration(expression string) string {
+	return _getColumnCommentDeclaration(expression)
 }
 
 func (platform *MySql80Platform) GetColumnCheckDeclaration(expression string) string {
