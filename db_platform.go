@@ -1,6 +1,8 @@
 package dbs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Platform interface {
 	GetDriverName() string
@@ -18,7 +20,7 @@ type Platform interface {
 	GetColumnCheckDeclaration(expression string) string
 
 	GetColumnDeclarationSQL(col *Column) string
-	GetColumnsDeclarationSQL(cols []Column) string
+	GetColumnsDeclarationSQL(cols []Column) []string
 
 	// schema SQL declarations
 	GetSchemaCreateDeclarationSQL(schema string) string
@@ -129,16 +131,13 @@ func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string)
 	return columnString
 }
 
-func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString string) {
+func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
+	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		if index == 0 {
-			colString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
-		} else {
-			colString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
-		}
+		declarations[index] = platform.GetColumnDeclarationSQL(&col)
 	}
 
-	return colString
+	return declarations
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
@@ -150,7 +149,7 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
 		platform.GetSchemaAccessName(schema, table.Name),
-		platform.GetColumnsDeclarationSQL(table.Columns),
+		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ","),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 		check,
 	)

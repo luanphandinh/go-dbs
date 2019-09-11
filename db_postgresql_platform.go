@@ -67,7 +67,7 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 

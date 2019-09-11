@@ -42,7 +42,6 @@ func getSchema(platform string) *Schema {
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true, Length: 2},
 					{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-					{Name: "sub_id", Type: BIGINT, NotNull: true, AutoIncrement: true},
 					{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 			},
@@ -124,15 +123,10 @@ func TestAutoIncrement(t *testing.T) {
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
 	assertNotHasError(t, err)
 
-	var valid, age, id, subId int
+	var valid, age, id int
 	var name string
 	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s", employee)).Scan(&id, &valid, &name, &age)
 	assertIntEquals(t, 1, id)
-	assertNotHasError(t, err)
-
-	err = db.QueryRow(fmt.Sprintf("select id, sub_id from %s", department)).Scan(&id, &subId)
-	assertIntEquals(t, 1, id)
-	assertIntEquals(t, 1, subId)
 	assertNotHasError(t, err)
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))

@@ -64,7 +64,7 @@ func (platform *MySql57Platform) GetColumnDeclarationSQL(col *Column) string {
 	return _getColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 

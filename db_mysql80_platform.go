@@ -61,7 +61,7 @@ func (platform *MySql80Platform) GetColumnDeclarationSQL(col *Column) string {
 	return _getColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql80Platform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *MySql80Platform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 

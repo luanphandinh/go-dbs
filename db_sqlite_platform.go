@@ -56,7 +56,7 @@ func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string 
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
