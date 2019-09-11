@@ -16,6 +16,7 @@ type Platform interface {
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
+	GetColumnCommentDeclaration(expression string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetColumnCheckDeclaration(expression string) string
 
@@ -77,6 +78,10 @@ func _getDefaultDeclaration(expression string) string {
 	return fmt.Sprintf("DEFAULT %s", expression)
 }
 
+func _getColumnCommentDeclaration(expression string) string {
+	return fmt.Sprintf("COMMENT '%s'", expression)
+}
+
 func _getColumnCheckDeclaration(expression string) string {
 	return fmt.Sprintf("CHECK (%s)", expression)
 }
@@ -126,6 +131,10 @@ func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string)
 
 	if col.Check != "" {
 		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+	}
+
+	if col.Comment != "" {
+		columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
 	}
 
 	return columnString

@@ -71,6 +71,10 @@ func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) []stri
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
+func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string) string {
+	return ""
+}
+
 func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }

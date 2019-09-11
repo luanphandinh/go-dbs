@@ -53,6 +53,10 @@ func (platform *MySql80Platform) GetDefaultDeclaration(expression string) string
 	return _getDefaultDeclaration(expression)
 }
 
+func (platform *MySql80Platform) GetColumnCommentDeclaration(expression string) string {
+	return _getColumnCommentDeclaration(expression)
+}
+
 func (platform *MySql80Platform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }

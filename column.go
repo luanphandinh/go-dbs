@@ -10,4 +10,5 @@ type Column struct {
 	Length        int    `json:"length"`
 	Default       string `json:"default"`
 	Check         string `json:"check"`
+	Comment       string `json:"comment"`
 }

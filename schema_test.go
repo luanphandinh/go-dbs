@@ -30,7 +30,7 @@ func getSchema(platform string) *Schema {
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true},
 					{Name: "department_id", Type: INT},
-					{Name: "valid", Type: SMALLINT, Default: "1"},
+					{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
 				},
 				Check: []string{"age < 50", "length(name) < 10"},

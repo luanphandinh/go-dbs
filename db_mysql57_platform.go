@@ -56,6 +56,10 @@ func (platform *MySql57Platform) GetDefaultDeclaration(expression string) string
 	return _getDefaultDeclaration(expression)
 }
 
+func (platform *MySql57Platform) GetColumnCommentDeclaration(expression string) string {
+	return _getColumnCommentDeclaration(expression)
+}
+
 func (platform *MySql57Platform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
