@@ -68,7 +68,7 @@ func _getNotNullDeclaration() string {
 }
 
 func _getPrimaryDeclaration(key []string) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ","))
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ", "))
 }
 
 func _getUnsignedDeclaration() string {
@@ -157,9 +157,9 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	}
 
 	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
+		"CREATE TABLE IF NOT EXISTS %s (\n\t%s, %s%s\n)",
 		platform.GetSchemaAccessName(schema, table.Name),
-		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ","),
+		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ",\n\t"),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 		check,
 	)
