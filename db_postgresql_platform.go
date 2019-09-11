@@ -21,6 +21,10 @@ func (platform *PostgresPlatform) GetDBConnectionString(server string, port int,
 	)
 }
 
+func (platform *PostgresPlatform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
@@ -100,21 +104,25 @@ func (platform *PostgresPlatform) GetTableCheckDeclaration(expressions []string)
 }
 
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	sequences := ""
+	commands := make([]string, 0)
+	commands = append(commands, _getTableCreateSQL(platform, schema, table))
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
 			seqName := platform.GetSchemaAccessName(schema, fmt.Sprintf("%s_%s_seq", table.Name, col.Name))
-			sequences += fmt.Sprintf(
-				"; %s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s')",
-				platform.GetSequenceCreateSQL(seqName),
-				platform.GetSchemaAccessName(schema, table.Name),
-				col.Name,
-				seqName,
+			commands = append(
+				commands,
+				fmt.Sprintf(
+					"%s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s')",
+					platform.GetSequenceCreateSQL(seqName),
+					platform.GetSchemaAccessName(schema, table.Name),
+					col.Name,
+					seqName,
+				),
 			)
 		}
 	}
 
-	return _getTableCreateSQL(platform, schema, table) + sequences + ";"
+	return platform.ChainCommands(commands...)
 }
 
 func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (tableString string) {

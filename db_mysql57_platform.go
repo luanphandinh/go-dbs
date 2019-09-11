@@ -24,6 +24,10 @@ func (platform *MySql57Platform) GetDBConnectionString(server string, port int, 
 	)
 }
 
+func (platform *MySql57Platform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *MySql57Platform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
 		return fmt.Sprintf("%s(%d)", col.Type, col.Length)

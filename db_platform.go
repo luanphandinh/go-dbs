@@ -7,6 +7,7 @@ import (
 type Platform interface {
 	GetDriverName() string
 	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
+	ChainCommands(commands ...string) string
 
 	// Column attributes declarations
 	GetTypeDeclaration(col *Column) string
@@ -176,3 +177,6 @@ func _getSequenceDropSQL(sequence string) string {
 	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
 }
 
+func _chainCommands(commands ...string) string {
+	return concatString(commands, ";")
+}

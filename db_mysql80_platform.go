@@ -29,6 +29,10 @@ func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
 
+func (platform *MySql80Platform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *MySql80Platform) GetUniqueDeclaration() string {
 	return _getUniqueDeclaration()
 }

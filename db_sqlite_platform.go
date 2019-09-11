@@ -15,6 +15,10 @@ func (platform *SqlitePlatform) GetDBConnectionString(server string, port int, u
 	return dbName
 }
 
+func (platform *SqlitePlatform) ChainCommands(commands ...string) string {
+	return _chainCommands(commands...)
+}
+
 func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {
 	return ""
 }
@@ -86,10 +90,10 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	if col.Default != "" {
 		columnString += " " + platform.GetDefaultDeclaration(col.Default)
 	}
-
-	if col.Comment != "" {
-		columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
-	}
+	//
+	// if col.Comment != "" {
+	// 	columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
+	// }
 
 	return columnString
 }
