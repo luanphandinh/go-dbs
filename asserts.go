@@ -33,6 +33,13 @@ func assertIntEquals(t *testing.T, expected int, actual int) {
 	}
 }
 
+func assertInt64Equals(t *testing.T, expected int64, actual int64) {
+	if expected != actual {
+		compareLog(expected, actual)
+		t.Fail()
+	}
+}
+
 func assertHasError(t *testing.T, err error) {
 	if err == nil {
 		fmt.Println("no error found.")

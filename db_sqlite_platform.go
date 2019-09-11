@@ -110,10 +110,10 @@ func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (ta
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) GetSequenceCreateSQL(schema string, sequence string) string {
+func (platform *SqlitePlatform) GetSequenceCreateSQL(sequence string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) GetSequenceDropSQL(schema string, sequence string) string {
+func (platform *SqlitePlatform) GetSequenceDropSQL(sequence string) string {
 	return ""
 }

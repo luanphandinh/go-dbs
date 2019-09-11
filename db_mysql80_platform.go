@@ -89,10 +89,10 @@ func (platform *MySql80Platform) GetTableDropSQL(schema string, table string) (t
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *MySql80Platform) GetSequenceCreateSQL(schema string, sequence string) string {
+func (platform *MySql80Platform) GetSequenceCreateSQL(sequence string) string {
 	return ""
 }
 
-func (platform *MySql80Platform) GetSequenceDropSQL(schema string, sequence string) string {
+func (platform *MySql80Platform) GetSequenceDropSQL(sequence string) string {
 	return ""
 }

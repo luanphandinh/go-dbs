@@ -92,10 +92,10 @@ func (platform *MySql57Platform) GetTableDropSQL(schema string, table string) (t
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *MySql57Platform) GetSequenceCreateSQL(schema string, sequence string) string {
+func (platform *MySql57Platform) GetSequenceCreateSQL(sequence string) string {
 	return ""
 }
 
-func (platform *MySql57Platform) GetSequenceDropSQL(schema string, sequence string) string {
+func (platform *MySql57Platform) GetSequenceDropSQL(sequence string) string {
 	return ""
 }

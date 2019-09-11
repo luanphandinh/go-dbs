@@ -99,28 +99,28 @@ func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table)
 	sequences := ""
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
-			seqName := fmt.Sprintf("%s_%s_seq", table.Name, col.Name)
+			seqName := platform.GetSchemaAccessName(schema, fmt.Sprintf("%s_%s_seq", table.Name, col.Name))
 			sequences += fmt.Sprintf(
-				"; %s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s');",
-				platform.GetSequenceCreateSQL(schema, seqName),
+				"; %s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s')",
+				platform.GetSequenceCreateSQL(seqName),
 				platform.GetSchemaAccessName(schema, table.Name),
 				col.Name,
-				platform.GetSchemaAccessName(schema, seqName),
+				seqName,
 			)
 		}
 	}
 
-	return _getTableCreateSQL(platform, schema, table) + sequences
+	return _getTableCreateSQL(platform, schema, table) + sequences + ";"
 }
 
 func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *PostgresPlatform) GetSequenceCreateSQL(schema string, sequence string) string {
-	return _getSequenceCreateSQL(schema, sequence)
+func (platform *PostgresPlatform) GetSequenceCreateSQL(sequence string) string {
+	return _getSequenceCreateSQL(sequence)
 }
 
-func (platform *PostgresPlatform) GetSequenceDropSQL(schema string, sequence string) string {
-	return _getSequenceDropSQL(schema, sequence)
+func (platform *PostgresPlatform) GetSequenceDropSQL(sequence string) string {
+	return _getSequenceDropSQL(sequence)
 }

@@ -31,8 +31,8 @@ type Platform interface {
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 
-	GetSequenceCreateSQL(schema string, sequence string) string
-	GetSequenceDropSQL(schema string, sequence string) string
+	GetSequenceCreateSQL(sequence string) string
+	GetSequenceDropSQL(sequence string) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -160,11 +160,11 @@ func _getTableDropSQL(platform Platform, schema string, table string) string {
 	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetSchemaAccessName(schema, table))
 }
 
-func _getSequenceCreateSQL(schema string, sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE IF NOT EXISTS %s.%s", schema, sequence)
+func _getSequenceCreateSQL(sequence string) string {
+	return fmt.Sprintf("CREATE SEQUENCE IF NOT EXISTS %s", sequence)
 }
 
-func _getSequenceDropSQL(schema string, sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s.%s", schema, sequence)
+func _getSequenceDropSQL(sequence string) string {
+	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
 }
 
