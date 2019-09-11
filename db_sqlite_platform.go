@@ -56,7 +56,7 @@ func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string 
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
@@ -94,8 +94,8 @@ func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema string) strin
 	return ""
 }
 
-func (platform *SqlitePlatform) GetTableName(schema string, table string) string {
-	return table
+func (platform *SqlitePlatform) GetSchemaAccessName(schema string, name string) string {
+	return name
 }
 
 func (platform *SqlitePlatform) GetTableCheckDeclaration(expressions []string) string {
@@ -108,4 +108,12 @@ func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (
 
 func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
+}
+
+func (platform *SqlitePlatform) GetSequenceCreateSQL(sequence string) string {
+	return ""
+}
+
+func (platform *SqlitePlatform) GetSequenceDropSQL(sequence string) string {
+	return ""
 }

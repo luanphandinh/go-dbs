@@ -67,7 +67,7 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
@@ -87,8 +87,8 @@ func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) strin
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetTableName(schema string, table string) string {
-	return fmt.Sprintf("%s.%s", schema, table)
+func (platform *PostgresPlatform) GetSchemaAccessName(schema string, name string) string {
+	return fmt.Sprintf("%s.%s", schema, name)
 }
 
 func (platform *PostgresPlatform) GetTableCheckDeclaration(expressions []string) string {
@@ -96,11 +96,31 @@ func (platform *PostgresPlatform) GetTableCheckDeclaration(expressions []string)
 }
 
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+	sequences := ""
+	for _, col := range table.Columns {
+		if col.AutoIncrement {
+			seqName := platform.GetSchemaAccessName(schema, fmt.Sprintf("%s_%s_seq", table.Name, col.Name))
+			sequences += fmt.Sprintf(
+				"; %s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s')",
+				platform.GetSequenceCreateSQL(seqName),
+				platform.GetSchemaAccessName(schema, table.Name),
+				col.Name,
+				seqName,
+			)
+		}
+	}
+
+	return _getTableCreateSQL(platform, schema, table) + sequences + ";"
 }
 
 func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 
+func (platform *PostgresPlatform) GetSequenceCreateSQL(sequence string) string {
+	return _getSequenceCreateSQL(sequence)
+}
 
+func (platform *PostgresPlatform) GetSequenceDropSQL(sequence string) string {
+	return _getSequenceDropSQL(sequence)
+}

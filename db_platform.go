@@ -1,6 +1,8 @@
 package dbs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Platform interface {
 	GetDriverName() string
@@ -18,18 +20,21 @@ type Platform interface {
 	GetColumnCheckDeclaration(expression string) string
 
 	GetColumnDeclarationSQL(col *Column) string
-	GetColumnsDeclarationSQL(cols []Column) string
+	GetColumnsDeclarationSQL(cols []Column) []string
 
 	// schema SQL declarations
 	GetSchemaCreateDeclarationSQL(schema string) string
 	GetSchemaDropDeclarationSQL(schema string) string
 
 	// table SQL declarations
-	GetTableName(schema string, table string) string
+	GetSchemaAccessName(schema string, name string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetTableCheckDeclaration(expressions []string) string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
+
+	GetSequenceCreateSQL(sequence string) string
+	GetSequenceDropSQL(sequence string) string
 }
 
 func GetPlatform(platform string) Platform {
@@ -93,7 +98,7 @@ func _getSchemaCreateDeclarationSQL(schema string) string {
 }
 
 func _getSchemaDropDeclarationSQL(schema string) string {
-	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema)
+	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE", schema)
 }
 
 func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
@@ -126,16 +131,13 @@ func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string)
 	return columnString
 }
 
-func _getColumnsDeclarationSQL(platform Platform, cols []Column) (colString string) {
+func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
+	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		if index == 0 {
-			colString += fmt.Sprintf("%s", platform.GetColumnDeclarationSQL(&col))
-		} else {
-			colString += fmt.Sprintf(", %s", platform.GetColumnDeclarationSQL(&col))
-		}
+		declarations[index] = platform.GetColumnDeclarationSQL(&col)
 	}
 
-	return colString
+	return declarations
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
@@ -146,13 +148,22 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 
 	return fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (%s, %s%s)",
-		platform.GetTableName(schema, table.Name),
-		platform.GetColumnsDeclarationSQL(table.Columns),
+		platform.GetSchemaAccessName(schema, table.Name),
+		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ","),
 		platform.GetPrimaryDeclaration(table.PrimaryKey),
 		check,
 	)
 }
 
 func _getTableDropSQL(platform Platform, schema string, table string) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetTableName(schema, table))
+	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetSchemaAccessName(schema, table))
 }
+
+func _getSequenceCreateSQL(sequence string) string {
+	return fmt.Sprintf("CREATE SEQUENCE IF NOT EXISTS %s", sequence)
+}
+
+func _getSequenceDropSQL(sequence string) string {
+	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
+}
+

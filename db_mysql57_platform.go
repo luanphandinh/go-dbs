@@ -64,7 +64,7 @@ func (platform *MySql57Platform) GetColumnDeclarationSQL(col *Column) string {
 	return _getColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) string {
+func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }
 
@@ -76,8 +76,8 @@ func (platform *MySql57Platform) GetSchemaDropDeclarationSQL(schema string) stri
 	return ""
 }
 
-func (platform *MySql57Platform) GetTableName(schema string, table string) string {
-	return table
+func (platform *MySql57Platform) GetSchemaAccessName(schema string, name string) string {
+	return name
 }
 
 func (platform *MySql57Platform) GetTableCheckDeclaration(expressions []string) string {
@@ -92,3 +92,10 @@ func (platform *MySql57Platform) GetTableDropSQL(schema string, table string) (t
 	return _getTableDropSQL(platform, schema, table)
 }
 
+func (platform *MySql57Platform) GetSequenceCreateSQL(sequence string) string {
+	return ""
+}
+
+func (platform *MySql57Platform) GetSequenceDropSQL(sequence string) string {
+	return ""
+}

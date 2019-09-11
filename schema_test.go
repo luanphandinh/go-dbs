@@ -18,8 +18,8 @@ var (
 	password   = os.Getenv("PASSWORD")
 )
 
-func TestSchemaInstall(t *testing.T) {
-	dbSchema := &Schema{
+func getSchema(platform string) *Schema {
+	return &Schema{
 		Name:     "company",
 		Platform: platform,
 		Tables: []Table{
@@ -47,8 +47,9 @@ func TestSchemaInstall(t *testing.T) {
 			},
 		},
 	}
-	dbPlatform := GetPlatform(platform)
-	assertNotNil(t, dbPlatform)
+}
+
+func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
 		dbPlatform.GetDriverName(),
 		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
@@ -57,8 +58,17 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, dbSchema.Drop(db))
 	assertNotHasError(t, dbSchema.Install(db))
 
-	employee := dbPlatform.GetTableName(dbSchema.Name, "employee")
-	department := dbPlatform.GetTableName(dbSchema.Name, "department")
+	return db, err
+}
+
+func TestSchemaInstall(t *testing.T) {
+	dbSchema := getSchema(platform)
+	dbPlatform := GetPlatform(platform)
+
+	db, err := setupDB(t, dbPlatform, dbSchema)
+
+	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
 
 	// Check constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
@@ -77,8 +87,9 @@ func TestSchemaInstall(t *testing.T) {
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, position) VALUES (1, 'Luan Phan Corps', 1)", department))
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
+	assertNotHasError(t, err)
 
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (id, name, age) VALUES (1, 'Luan Phan', 22)", employee))
 	assertNotHasError(t, err)
 
 	var valid, age, position int
@@ -95,4 +106,32 @@ func TestSchemaInstall(t *testing.T) {
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
+}
+
+func TestAutoIncrement(t *testing.T) {
+	dbSchema := getSchema(platform)
+	dbPlatform := GetPlatform(platform)
+
+	db, err := setupDB(t, dbPlatform, dbSchema)
+
+	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	assertNotHasError(t, err)
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	assertNotHasError(t, err)
+
+	var valid, age, id int
+	var name string
+	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s", employee)).Scan(&id, &valid, &name, &age)
+	assertIntEquals(t, 1, id)
+	assertNotHasError(t, err)
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	assertNotHasError(t, err)
+	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s where id = 2", employee)).Scan(&id, &valid, &name, &age)
+	assertIntEquals(t, 2, id)
+	assertNotHasError(t, err)
 }
