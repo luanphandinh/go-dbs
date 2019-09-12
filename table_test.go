@@ -75,8 +75,8 @@ COMMENT 'The user table'`,
 	CHECK (age > 50)
 );
 COMMENT ON TABLE public.user IS 'The user table';
-CREATE SEQUENCE IF NOT EXISTS public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq');
-COMMENT ON COLUMN public.user.age IS 'age should less than 1000'`,
+COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
+CREATE SEQUENCE IF NOT EXISTS public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		postgresPlatform.GetTableCreateSQL("public", &table),
 	)
 

@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+const SCHEMA = "SCHEMA"
+
 type Schema struct {
 	Name     string  `json:"name"`
 	Platform string  `json:"platform"`

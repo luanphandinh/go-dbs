@@ -64,6 +64,10 @@ func (platform *SqlitePlatform) GetColumnCommentDeclaration(expression string) s
 	return fmt.Sprintf("-- %s", expression)
 }
 
+func (platform *SqlitePlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	return make([]string, 0)
+}
+
 func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) []string {
 	return _getColumnsDeclarationSQL(platform, cols)
 }

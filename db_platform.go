@@ -17,7 +17,8 @@ type Platform interface {
 	GetAutoIncrementDeclaration() string
 	GetUnsignedDeclaration() string
 	GetDefaultDeclaration(expression string) string
-	GetColumnCommentDeclaration(expression string) string
+	GetColumnCommentDeclaration(expression string) string // For inline comment
+	GetColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetColumnCheckDeclaration(expression string) string
 
@@ -35,7 +36,6 @@ type Platform interface {
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 	GetTableCommentDeclarationSQL(name string, expression string) string
-	// GetTableCommentsSQL(schema string, table *Table) []string
 
 	GetSequenceCreateSQL(sequence string) string
 	GetSequenceDropSQL(sequence string) string
@@ -152,15 +152,15 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	tableName := platform.GetSchemaAccessName(schema, table.Name)
-	tableCreate := make([]string, 0)
-	tableCreate = append(tableCreate, platform.GetColumnsDeclarationSQL(table.Columns)...)
-	tableCreate = append(tableCreate, platform.GetPrimaryDeclaration(table.PrimaryKey))
-	tableCreate = append(tableCreate, platform.GetTableChecksDeclaration(table.Check)...)
+	tableCreation := make([]string, 0)
+	tableCreation = append(tableCreation, platform.GetColumnsDeclarationSQL(table.Columns)...)
+	tableCreation = append(tableCreation, platform.GetPrimaryDeclaration(table.PrimaryKey))
+	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Check)...)
 
 	tableDeclaration :=  fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (\n\t%s\n)",
 		tableName,
-		concatString(tableCreate, ",\n\t"),
+		concatString(tableCreation, ",\n\t"),
 	)
 
 	commands := make([]string, 0)
@@ -168,6 +168,7 @@ func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	if table.Comment != "" {
 		commands = append(commands, platform.GetTableCommentDeclarationSQL(tableName, table.Comment))
 	}
+	commands = append(commands, platform.GetColumnsCommentDeclaration(schema, table)...)
 
 	return platform.ChainCommands(commands...)
 }

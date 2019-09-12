@@ -79,6 +79,25 @@ func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string)
 	return ""
 }
 
+func (platform *PostgresPlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	comments := make([]string, 0)
+	for _, col := range table.Columns {
+		if col.Comment != "" {
+			comments = append(
+				comments,
+				fmt.Sprintf(
+					"COMMENT ON COLUMN %s.%s IS '%s'",
+					platform.GetSchemaAccessName(schema, table.Name),
+					col.Name,
+					col.Comment,
+				),
+			)
+		}
+	}
+
+	return comments
+}
+
 func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
@@ -122,21 +141,6 @@ func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table)
 					platform.GetSchemaAccessName(schema, table.Name),
 					col.Name,
 					seqName,
-				),
-			)
-		}
-	}
-
-	// Comments
-	for _, col := range table.Columns {
-		if col.Comment != "" {
-			commands = append(
-				commands,
-				fmt.Sprintf(
-					"COMMENT ON COLUMN %s.%s IS '%s'",
-					platform.GetSchemaAccessName(schema, table.Name),
-					col.Name,
-					col.Comment,
 				),
 			)
 		}

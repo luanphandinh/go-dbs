@@ -1,5 +1,7 @@
 package dbs
 
+const TABLE = "TABLE"
+
 type Table struct {
 	Name       string   `json:"name"`
 	PrimaryKey []string `json:"primary_key"`
