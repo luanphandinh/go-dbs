@@ -68,15 +68,15 @@ func (platform *SqlitePlatform) GetColumnsCommentDeclaration(schema string, tabl
 	return make([]string, 0)
 }
 
-func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *SqlitePlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
 func (platform *SqlitePlatform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
+func (platform *SqlitePlatform) BuildColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.NotNull {

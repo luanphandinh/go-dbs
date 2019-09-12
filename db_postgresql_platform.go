@@ -49,7 +49,7 @@ func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
-func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
+func (platform *PostgresPlatform) BuildColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.NotNull {
@@ -71,8 +71,8 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
 func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string) string {

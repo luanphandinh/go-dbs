@@ -22,8 +22,8 @@ type Platform interface {
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetColumnCheckDeclaration(expression string) string
 
-	GetColumnDeclarationSQL(col *Column) string
-	GetColumnsDeclarationSQL(cols []Column) []string
+	BuildColumnDeclarationSQL(col *Column) string
+	BuildColumnsDeclarationSQL(cols []Column) []string
 
 	// schema SQL declarations
 	GetSchemaCreateDeclarationSQL(schema string) string
@@ -107,7 +107,7 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE", schema)
 }
 
-func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
+func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.Unsigned {
@@ -141,10 +141,10 @@ func _getColumnDeclarationSQL(platform Platform, col *Column) (colString string)
 	return columnString
 }
 
-func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
+func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		declarations[index] = platform.GetColumnDeclarationSQL(&col)
+		declarations[index] = platform.BuildColumnDeclarationSQL(&col)
 	}
 
 	return declarations
@@ -153,7 +153,7 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
 	tableName := platform.GetSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
-	tableCreation = append(tableCreation, platform.GetColumnsDeclarationSQL(table.Columns)...)
+	tableCreation = append(tableCreation, platform.BuildColumnsDeclarationSQL(table.Columns)...)
 	tableCreation = append(tableCreation, platform.GetPrimaryDeclaration(table.PrimaryKey))
 	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Check)...)
 

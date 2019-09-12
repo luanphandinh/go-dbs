@@ -72,12 +72,12 @@ func (platform *MySql57Platform) GetColumnCheckDeclaration(expression string) st
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *MySql57Platform) GetColumnDeclarationSQL(col *Column) string {
-	return _getColumnDeclarationSQL(platform, col)
+func (platform *MySql57Platform) BuildColumnDeclarationSQL(col *Column) string {
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *MySql57Platform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
 func (platform *MySql57Platform) GetSchemaCreateDeclarationSQL(schema string) string {
