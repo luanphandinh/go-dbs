@@ -85,8 +85,8 @@ func (platform *MySql80Platform) GetSchemaAccessName(schema string, name string)
 	return name
 }
 
-func (platform *MySql80Platform) GetTableCheckDeclaration(expressions []string) string {
-	return _getTableCheckDeclaration(expressions)
+func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string) []string {
+	return _getTableChecksDeclaration(expressions)
 }
 
 func (platform *MySql80Platform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

@@ -4,6 +4,10 @@ import "fmt"
 
 func concatString(values []string, glue string) (s string) {
 	for index, value := range values {
+		if value == "" {
+			continue
+		}
+
 		if index == 0 {
 			s += fmt.Sprintf("%s", value)
 		} else {

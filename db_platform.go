@@ -31,7 +31,7 @@ type Platform interface {
 	// table SQL declarations
 	GetSchemaAccessName(schema string, name string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
-	GetTableCheckDeclaration(expressions []string) string
+	GetTableChecksDeclaration(expressions []string) []string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 
@@ -87,16 +87,14 @@ func _getColumnCheckDeclaration(expression string) string {
 	return fmt.Sprintf("CHECK (%s)", expression)
 }
 
-func _getTableCheckDeclaration(expressions []string) (evaluatedExpression string) {
-	for index, expression := range expressions {
-		if index == 0 {
-			evaluatedExpression += fmt.Sprintf("CHECK (%s)", expression)
-		} else {
-			evaluatedExpression += fmt.Sprintf(", CHECK (%s)", expression)
-		}
+func _getTableChecksDeclaration(expressions []string) []string {
+	evaluated := make([]string, 0)
+
+	for _, expression := range expressions {
+		evaluated = append(evaluated, fmt.Sprintf("CHECK (%s)", expression))
 	}
 
-	return evaluatedExpression
+	return evaluated
 }
 
 func _getSchemaCreateDeclarationSQL(schema string) string {
@@ -151,17 +149,15 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
-	check := ""
-	if len(table.Check) > 0 {
-		check = fmt.Sprintf(", %s", platform.GetTableCheckDeclaration(table.Check))
-	}
+	commands := make([]string, 0)
+	commands = append(commands, platform.GetColumnsDeclarationSQL(table.Columns)...)
+	commands = append(commands, platform.GetPrimaryDeclaration(table.PrimaryKey))
+	commands = append(commands, platform.GetTableChecksDeclaration(table.Check)...)
 
 	return fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (\n\t%s, %s%s\n)",
+		"CREATE TABLE IF NOT EXISTS %s (\n\t%s\n)",
 		platform.GetSchemaAccessName(schema, table.Name),
-		concatString(platform.GetColumnsDeclarationSQL(table.Columns), ",\n\t"),
-		platform.GetPrimaryDeclaration(table.PrimaryKey),
-		check,
+		concatString(commands, ",\n\t"),
 	)
 }
 
