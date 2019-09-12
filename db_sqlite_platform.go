@@ -110,8 +110,8 @@ func (platform *SqlitePlatform) GetSchemaAccessName(schema string, name string) 
 	return name
 }
 
-func (platform *SqlitePlatform) GetTableCheckDeclaration(expressions []string) string {
-	return _getTableCheckDeclaration(expressions)
+func (platform *SqlitePlatform) GetTableChecksDeclaration(expressions []string) []string {
+	return _getTableChecksDeclaration(expressions)
 }
 
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
