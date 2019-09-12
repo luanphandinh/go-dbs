@@ -80,6 +80,10 @@ func (platform *MySql57Platform) BuildColumnsDeclarationSQL(cols []Column) []str
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
+func (platform *MySql57Platform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *MySql57Platform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
@@ -90,6 +94,10 @@ func (platform *MySql57Platform) GetSchemaDropDeclarationSQL(schema string) stri
 
 func (platform *MySql57Platform) GetSchemaAccessName(schema string, name string) string {
 	return name
+}
+
+func (platform *MySql57Platform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
 }
 
 func (platform *MySql57Platform) GetTableChecksDeclaration(expressions []string) []string {

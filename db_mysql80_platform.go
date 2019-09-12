@@ -77,6 +77,10 @@ func (platform *MySql80Platform) BuildColumnsDeclarationSQL(cols []Column) []str
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
+func (platform *MySql80Platform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *MySql80Platform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
@@ -87,6 +91,10 @@ func (platform *MySql80Platform) GetSchemaDropDeclarationSQL(schema string) stri
 
 func (platform *MySql80Platform) GetSchemaAccessName(schema string, name string) string {
 	return name
+}
+
+func (platform *MySql80Platform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
 }
 
 func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string) []string {

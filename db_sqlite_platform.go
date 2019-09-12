@@ -102,6 +102,10 @@ func (platform *SqlitePlatform) BuildColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
+func (platform *SqlitePlatform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
@@ -112,6 +116,10 @@ func (platform *SqlitePlatform) GetSchemaDropDeclarationSQL(schema string) strin
 
 func (platform *SqlitePlatform) GetSchemaAccessName(schema string, name string) string {
 	return name
+}
+
+func (platform *SqlitePlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
 }
 
 func (platform *SqlitePlatform) GetTableChecksDeclaration(expressions []string) []string {

@@ -22,6 +22,7 @@ func getSchema(platform string) *Schema {
 	return &Schema{
 		Name:     "company",
 		Platform: platform,
+		Comment:  "The Company Schema",
 		Tables: []Table{
 			{
 				Name:       "employee",

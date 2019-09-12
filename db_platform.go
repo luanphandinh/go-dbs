@@ -26,11 +26,13 @@ type Platform interface {
 	BuildColumnsDeclarationSQL(cols []Column) []string
 
 	// schema SQL declarations
+	BuildSchemaCreateSQL(schema *Schema) string
 	GetSchemaCreateDeclarationSQL(schema string) string
 	GetSchemaDropDeclarationSQL(schema string) string
 
 	// table SQL declarations
 	GetSchemaAccessName(schema string, name string) string
+	GetSchemaCommentDeclaration(schema string, expression string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetTableChecksDeclaration(expressions []string) []string
 	BuildTableCreateSQL(schema string, table *Table) string
@@ -97,10 +99,6 @@ func _getTableChecksDeclaration(expressions []string) []string {
 	}
 
 	return evaluated
-}
-
-func _getSchemaCreateDeclarationSQL(schema string) string {
-	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
 
 func _getSchemaDropDeclarationSQL(schema string) string {

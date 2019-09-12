@@ -102,8 +102,18 @@ func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) s
 	return _getColumnCheckDeclaration(expression)
 }
 
+func (platform *PostgresPlatform) BuildSchemaCreateSQL(schema *Schema) string {
+	commands := make([]string, 0)
+	commands = append(commands, platform.GetSchemaCreateDeclarationSQL(schema.Name))
+	if schema.Comment != "" {
+		commands = append(commands, platform.GetSchemaCommentDeclaration(schema.Name, schema.Comment))
+	}
+
+	return platform.ChainCommands(commands...)
+}
+
 func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
-	return _getSchemaCreateDeclarationSQL(schema)
+	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
 
 func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
@@ -116,6 +126,10 @@ func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) strin
 
 func (platform *PostgresPlatform) GetSchemaAccessName(schema string, name string) string {
 	return fmt.Sprintf("%s.%s", schema, name)
+}
+
+func (platform *PostgresPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return fmt.Sprintf("COMMENT ON SCHEMA %s IS '%s'", schema, expression)
 }
 
 func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string) []string {
