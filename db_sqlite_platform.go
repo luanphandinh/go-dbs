@@ -114,6 +114,10 @@ func (platform *SqlitePlatform) GetTableChecksDeclaration(expressions []string) 
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *SqlitePlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _getTableCreateSQL(platform, schema, table)
 }

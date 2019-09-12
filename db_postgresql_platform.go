@@ -103,6 +103,10 @@ func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return fmt.Sprintf("COMMENT ON TABLE %s IS '%s'", name, expression)
+}
+
 func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
 	commands := make([]string, 0)
 	commands = append(commands, _getTableCreateSQL(platform, schema, table))

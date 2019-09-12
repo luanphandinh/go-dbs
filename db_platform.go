@@ -34,6 +34,8 @@ type Platform interface {
 	GetTableChecksDeclaration(expressions []string) []string
 	GetTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
+	GetTableCommentDeclarationSQL(name string, expression string) string
+	// GetTableCommentsSQL(schema string, table *Table) []string
 
 	GetSequenceCreateSQL(sequence string) string
 	GetSequenceDropSQL(sequence string) string
@@ -149,16 +151,25 @@ func _getColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 }
 
 func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
-	commands := make([]string, 0)
-	commands = append(commands, platform.GetColumnsDeclarationSQL(table.Columns)...)
-	commands = append(commands, platform.GetPrimaryDeclaration(table.PrimaryKey))
-	commands = append(commands, platform.GetTableChecksDeclaration(table.Check)...)
+	tableName := platform.GetSchemaAccessName(schema, table.Name)
+	tableCreate := make([]string, 0)
+	tableCreate = append(tableCreate, platform.GetColumnsDeclarationSQL(table.Columns)...)
+	tableCreate = append(tableCreate, platform.GetPrimaryDeclaration(table.PrimaryKey))
+	tableCreate = append(tableCreate, platform.GetTableChecksDeclaration(table.Check)...)
 
-	return fmt.Sprintf(
+	tableDeclaration :=  fmt.Sprintf(
 		"CREATE TABLE IF NOT EXISTS %s (\n\t%s\n)",
-		platform.GetSchemaAccessName(schema, table.Name),
-		concatString(commands, ",\n\t"),
+		tableName,
+		concatString(tableCreate, ",\n\t"),
 	)
+
+	commands := make([]string, 0)
+	commands = append(commands, tableDeclaration)
+	if table.Comment != "" {
+		commands = append(commands, platform.GetTableCommentDeclarationSQL(tableName, table.Comment))
+	}
+
+	return platform.ChainCommands(commands...)
 }
 
 func _getTableDropSQL(platform Platform, schema string, table string) string {

@@ -5,4 +5,5 @@ type Table struct {
 	PrimaryKey []string `json:"primary_key"`
 	Columns    []Column `json:"columns"`
 	Check      []string `json:"check"`
+	Comment    string   `json:"comment"`
 }

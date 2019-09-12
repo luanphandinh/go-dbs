@@ -30,7 +30,7 @@ func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 }
 
 func (platform *MySql80Platform) ChainCommands(commands ...string) string {
-	return _chainCommands(commands...)
+	return concatString(commands, "\n")
 }
 
 func (platform *MySql80Platform) GetUniqueDeclaration() string {
@@ -87,6 +87,10 @@ func (platform *MySql80Platform) GetSchemaAccessName(schema string, name string)
 
 func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
+}
+
+func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return fmt.Sprintf("COMMENT '%s'", expression)
 }
 
 func (platform *MySql80Platform) GetTableCreateSQL(schema string, table *Table) (tableString string) {

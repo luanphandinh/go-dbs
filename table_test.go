@@ -38,6 +38,7 @@ func TestToTableDeclaration(t *testing.T) {
 			age,
 		},
 		Check: []string{"age > 50"},
+		Comment: "The user table",
 	}
 	assertStringEquals(
 		t,
@@ -47,7 +48,8 @@ func TestToTableDeclaration(t *testing.T) {
 	age INT(4) DEFAULT 10 CHECK (age < 1000) COMMENT 'age should less than 1000',
 	PRIMARY KEY (id),
 	CHECK (age > 50)
-)`,
+)
+COMMENT 'The user table'`,
 		mysqlPlatform.GetTableCreateSQL("", &table),
 	)
 
@@ -72,6 +74,7 @@ func TestToTableDeclaration(t *testing.T) {
 	PRIMARY KEY (id),
 	CHECK (age > 50)
 );
+COMMENT ON TABLE public.user IS 'The user table';
 CREATE SEQUENCE IF NOT EXISTS public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq');
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000'`,
 		postgresPlatform.GetTableCreateSQL("public", &table),
