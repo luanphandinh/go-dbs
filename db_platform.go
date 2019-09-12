@@ -60,6 +60,10 @@ func GetPlatform(platform string) Platform {
 		return &PostgresPlatform{}
 	}
 
+	if platform == MSSQL {
+		return &MsSqlPlatform{}
+	}
+
 	return nil
 }
 
@@ -156,7 +160,7 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Check)...)
 
 	tableDeclaration :=  fmt.Sprintf(
-		"CREATE TABLE IF NOT EXISTS %s (\n\t%s\n)",
+		"CREATE TABLE %s (\n\t%s\n)",
 		tableName,
 		concatString(tableCreation, ",\n\t"),
 	)
