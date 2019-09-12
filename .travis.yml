@@ -56,5 +56,20 @@ matrix:
       before_install:
         - go get -v github.com/mattn/go-sqlite3
 
+    - name: "Test MsSQL"
+      go: 1.12.x
+      services:
+        - docker
+      env:
+        - PLATFORM=sqlserver
+        - SERVER_NAME=127.0.0.1
+        - DB_NAME=master
+        - DB_USER=sa
+        - DB_PASSWORD=TheStrong!Passw0rd
+      before_script:
+        - sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=TheStrong!Passw0rd' -p 1433:1433 -d microsoft/mssql-server-linux:2017-latest
+      before_install:
+        - go get -v github.com/denisenkom/go-mssqldb
+
 script:
   - go test ./...

@@ -15,8 +15,8 @@ var (
 	platform   = os.Getenv("PLATFORM")
 	serverName = os.Getenv("SERVER_NAME")
 	dbName     = os.Getenv("DB_NAME")
-	user       = os.Getenv("USER")
-	password   = os.Getenv("PASSWORD")
+	user       = os.Getenv("DB_USER")
+	password   = os.Getenv("DB_PASSWORD")
 )
 
 func getSchema(platform string) *Schema {

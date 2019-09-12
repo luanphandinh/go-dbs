@@ -13,7 +13,7 @@ func (platform *MsSqlPlatform) GetDriverName() string {
 
 func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	return fmt.Sprintf(
-		"server=%s;user id=%s;password=%s;port=1433;database=%s;",
+		"server=%s;user id=%s;password=%s;database=%s;",
 		server,
 		user,
 		password,
