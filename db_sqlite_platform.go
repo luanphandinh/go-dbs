@@ -64,15 +64,19 @@ func (platform *SqlitePlatform) GetColumnCommentDeclaration(expression string) s
 	return fmt.Sprintf("-- %s", expression)
 }
 
-func (platform *SqlitePlatform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *SqlitePlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	return make([]string, 0)
+}
+
+func (platform *SqlitePlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
 func (platform *SqlitePlatform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
+func (platform *SqlitePlatform) BuildColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.NotNull {
@@ -98,6 +102,10 @@ func (platform *SqlitePlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
+func (platform *SqlitePlatform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
@@ -110,12 +118,20 @@ func (platform *SqlitePlatform) GetSchemaAccessName(schema string, name string) 
 	return name
 }
 
+func (platform *SqlitePlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
+}
+
 func (platform *SqlitePlatform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+func (platform *SqlitePlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return ""
+}
+
+func (platform *SqlitePlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {

@@ -25,7 +25,7 @@ func (platform *MySql57Platform) GetDBConnectionString(server string, port int, 
 }
 
 func (platform *MySql57Platform) ChainCommands(commands ...string) string {
-	return _chainCommands(commands...)
+	return concatString(commands, "\n")
 }
 
 func (platform *MySql57Platform) GetTypeDeclaration(col *Column) string {
@@ -64,16 +64,24 @@ func (platform *MySql57Platform) GetColumnCommentDeclaration(expression string) 
 	return _getColumnCommentDeclaration(expression)
 }
 
+func (platform *MySql57Platform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	return make([]string, 0)
+}
+
 func (platform *MySql57Platform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *MySql57Platform) GetColumnDeclarationSQL(col *Column) string {
-	return _getColumnDeclarationSQL(platform, col)
+func (platform *MySql57Platform) BuildColumnDeclarationSQL(col *Column) string {
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql57Platform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *MySql57Platform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
+}
+
+func (platform *MySql57Platform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
 }
 
 func (platform *MySql57Platform) GetSchemaCreateDeclarationSQL(schema string) string {
@@ -88,12 +96,20 @@ func (platform *MySql57Platform) GetSchemaAccessName(schema string, name string)
 	return name
 }
 
+func (platform *MySql57Platform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
+}
+
 func (platform *MySql57Platform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *MySql57Platform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+func (platform *MySql57Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return fmt.Sprintf("COMMENT '%s'", expression)
+}
+
+func (platform *MySql57Platform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *MySql57Platform) GetTableDropSQL(schema string, table string) (tableString string) {

@@ -30,7 +30,7 @@ func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 }
 
 func (platform *MySql80Platform) ChainCommands(commands ...string) string {
-	return _chainCommands(commands...)
+	return concatString(commands, "\n")
 }
 
 func (platform *MySql80Platform) GetUniqueDeclaration() string {
@@ -61,16 +61,24 @@ func (platform *MySql80Platform) GetColumnCommentDeclaration(expression string) 
 	return _getColumnCommentDeclaration(expression)
 }
 
+func (platform *MySql80Platform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	return make([]string, 0)
+}
+
 func (platform *MySql80Platform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *MySql80Platform) GetColumnDeclarationSQL(col *Column) string {
-	return _getColumnDeclarationSQL(platform, col)
+func (platform *MySql80Platform) BuildColumnDeclarationSQL(col *Column) string {
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql80Platform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *MySql80Platform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
+}
+
+func (platform *MySql80Platform) BuildSchemaCreateSQL(schema *Schema) string {
+	return ""
 }
 
 func (platform *MySql80Platform) GetSchemaCreateDeclarationSQL(schema string) string {
@@ -85,12 +93,20 @@ func (platform *MySql80Platform) GetSchemaAccessName(schema string, name string)
 	return name
 }
 
+func (platform *MySql80Platform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
+}
+
 func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *MySql80Platform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return fmt.Sprintf("COMMENT '%s'", expression)
+}
+
+func (platform *MySql80Platform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *MySql80Platform) GetTableDropSQL(schema string, table string) (tableString string) {

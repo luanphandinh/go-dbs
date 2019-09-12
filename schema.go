@@ -5,10 +5,13 @@ import (
 	"fmt"
 )
 
+const SCHEMA = "SCHEMA"
+
 type Schema struct {
 	Name     string  `json:"name"`
 	Platform string  `json:"platform"`
 	Tables   []Table `json:"tables"`
+	Comment  string  `json:"comment"`
 }
 
 func (schema *Schema) Install(db *sql.DB) error {
@@ -23,7 +26,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 	}
 
 	// create schema
-	if schemaCreation := platform.GetSchemaCreateDeclarationSQL(schema.Name); schemaCreation != "" {
+	if schemaCreation := platform.BuildSchemaCreateSQL(schema); schemaCreation != "" {
 		if _, err := tx.Exec(schemaCreation); err != nil {
 			tx.Rollback()
 			return err
@@ -32,7 +35,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 	// create tables
 	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.GetTableCreateSQL(schema.Name, &table)); err != nil {
+		if _, err := tx.Exec(platform.BuildTableCreateSQL(schema.Name, &table)); err != nil {
 			tx.Rollback()
 			return err
 		}

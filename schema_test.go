@@ -22,6 +22,7 @@ func getSchema(platform string) *Schema {
 	return &Schema{
 		Name:     "company",
 		Platform: platform,
+		Comment:  "The Company Schema",
 		Tables: []Table{
 			{
 				Name:       "employee",
@@ -44,6 +45,7 @@ func getSchema(platform string) *Schema {
 					{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
 					{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
+				Comment: "Departments of company",
 			},
 		},
 	}

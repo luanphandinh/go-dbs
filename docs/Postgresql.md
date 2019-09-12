@@ -1,5 +1,5 @@
 https://www.postgresql.org/docs/9.1/sql-createtable.html
-
+https://www.postgresql.org/docs/10/sql-comment.html
 ### Table
 ```markdown
 CREATE [ [ GLOBAL | LOCAL ] { TEMPORARY | TEMP } | UNLOGGED ] TABLE [ IF NOT EXISTS ] table_name

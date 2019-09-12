@@ -49,7 +49,7 @@ func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
 	return _getUnsignedDeclaration()
 }
 
-func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
+func (platform *PostgresPlatform) BuildColumnDeclarationSQL(col *Column) string {
 	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
 
 	if col.NotNull {
@@ -71,20 +71,49 @@ func (platform *PostgresPlatform) GetColumnDeclarationSQL(col *Column) string {
 	return columnString
 }
 
-func (platform *PostgresPlatform) GetColumnsDeclarationSQL(cols []Column) []string {
-	return _getColumnsDeclarationSQL(platform, cols)
+func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
 func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string) string {
 	return ""
 }
 
+func (platform *PostgresPlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+	comments := make([]string, 0)
+	for _, col := range table.Columns {
+		if col.Comment != "" {
+			comments = append(
+				comments,
+				fmt.Sprintf(
+					"COMMENT ON COLUMN %s.%s IS '%s'",
+					platform.GetSchemaAccessName(schema, table.Name),
+					col.Name,
+					col.Comment,
+				),
+			)
+		}
+	}
+
+	return comments
+}
+
 func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
+func (platform *PostgresPlatform) BuildSchemaCreateSQL(schema *Schema) string {
+	commands := make([]string, 0)
+	commands = append(commands, platform.GetSchemaCreateDeclarationSQL(schema.Name))
+	if schema.Comment != "" {
+		commands = append(commands, platform.GetSchemaCommentDeclaration(schema.Name, schema.Comment))
+	}
+
+	return platform.ChainCommands(commands...)
+}
+
 func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
-	return _getSchemaCreateDeclarationSQL(schema)
+	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
 }
 
 func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
@@ -99,13 +128,21 @@ func (platform *PostgresPlatform) GetSchemaAccessName(schema string, name string
 	return fmt.Sprintf("%s.%s", schema, name)
 }
 
+func (platform *PostgresPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+	return fmt.Sprintf("COMMENT ON SCHEMA %s IS '%s'", schema, expression)
+}
+
 func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+	return fmt.Sprintf("COMMENT ON TABLE %s IS '%s'", name, expression)
+}
+
+func (platform *PostgresPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
 	commands := make([]string, 0)
-	commands = append(commands, _getTableCreateSQL(platform, schema, table))
+	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
@@ -118,21 +155,6 @@ func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table)
 					platform.GetSchemaAccessName(schema, table.Name),
 					col.Name,
 					seqName,
-				),
-			)
-		}
-	}
-
-	// Comments
-	for _, col := range table.Columns {
-		if col.Comment != "" {
-			commands = append(
-				commands,
-				fmt.Sprintf(
-					"COMMENT ON COLUMN %s.%s IS '%s'",
-					platform.GetSchemaAccessName(schema, table.Name),
-					col.Name,
-					col.Comment,
 				),
 			)
 		}
