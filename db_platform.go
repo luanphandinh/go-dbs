@@ -33,7 +33,7 @@ type Platform interface {
 	GetSchemaAccessName(schema string, name string) string
 	// Check constraint is parsed but will be ignored in mysql5.7
 	GetTableChecksDeclaration(expressions []string) []string
-	GetTableCreateSQL(schema string, table *Table) string
+	BuildTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 	GetTableCommentDeclarationSQL(name string, expression string) string
 
@@ -150,7 +150,7 @@ func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 	return declarations
 }
 
-func _getTableCreateSQL(platform Platform, schema string, table *Table) string {
+func _buildTableCreateSQL(platform Platform, schema string, table *Table) string {
 	tableName := platform.GetSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.BuildColumnsDeclarationSQL(table.Columns)...)

@@ -126,9 +126,9 @@ func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, exp
 	return fmt.Sprintf("COMMENT ON TABLE %s IS '%s'", name, expression)
 }
 
-func (platform *PostgresPlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *PostgresPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
 	commands := make([]string, 0)
-	commands = append(commands, _getTableCreateSQL(platform, schema, table))
+	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
 	for _, col := range table.Columns {
 		if col.AutoIncrement {

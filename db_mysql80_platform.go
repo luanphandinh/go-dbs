@@ -97,8 +97,8 @@ func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expr
 	return fmt.Sprintf("COMMENT '%s'", expression)
 }
 
-func (platform *MySql80Platform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+func (platform *MySql80Platform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *MySql80Platform) GetTableDropSQL(schema string, table string) (tableString string) {

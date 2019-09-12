@@ -122,8 +122,8 @@ func (platform *SqlitePlatform) GetTableCommentDeclarationSQL(name string, expre
 	return ""
 }
 
-func (platform *SqlitePlatform) GetTableCreateSQL(schema string, table *Table) (tableString string) {
-	return _getTableCreateSQL(platform, schema, table)
+func (platform *SqlitePlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *SqlitePlatform) GetTableDropSQL(schema string, table string) (tableString string) {
