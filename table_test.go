@@ -6,6 +6,7 @@ func TestToTableDeclaration(t *testing.T) {
 	mysqlPlatform := GetPlatform(MYSQL57)
 	sqlitePlatform := GetPlatform(SQLITE3)
 	postgresPlatform := GetPlatform(POSTGRES)
+	msSqlPlatform := GetPlatform(MSSQL)
 
 	id := Column{
 		Name:          "id",
@@ -42,7 +43,7 @@ func TestToTableDeclaration(t *testing.T) {
 	}
 	assertStringEquals(
 		t,
-`CREATE TABLE IF NOT EXISTS user (
+`CREATE TABLE user (
 	id INT NOT NULL AUTO_INCREMENT,
 	name TEXT NOT NULL,
 	age INT(4) DEFAULT 10 CHECK (age < 1000) COMMENT 'age should less than 1000',
@@ -55,7 +56,7 @@ COMMENT 'The user table'`,
 
 	assertStringEquals(
 		t,
-`CREATE TABLE IF NOT EXISTS user (
+`CREATE TABLE user (
 	id INTEGER NOT NULL,
 	name TEXT NOT NULL,
 	age INTEGER(4) CHECK (age < 1000) DEFAULT 10,
@@ -67,7 +68,7 @@ COMMENT 'The user table'`,
 
 	assertStringEquals(
 		t,
-`CREATE TABLE IF NOT EXISTS public.user (
+`CREATE TABLE public.user (
 	id INT NOT NULL,
 	name TEXT NOT NULL,
 	age INT DEFAULT 10 CHECK (age < 1000),
@@ -78,6 +79,18 @@ COMMENT ON TABLE public.user IS 'The user table';
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
 CREATE SEQUENCE IF NOT EXISTS public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		postgresPlatform.BuildTableCreateSQL("public", &table),
+	)
+
+	assertStringEquals(
+		t,
+		`CREATE TABLE public.user (
+	id INT NOT NULL IDENTITY(1,1),
+	name TEXT NOT NULL,
+	age INT DEFAULT 10 CHECK (age < 1000),
+	PRIMARY KEY (id),
+	CHECK (age > 50)
+)`,
+		msSqlPlatform.BuildTableCreateSQL("public", &table),
 	)
 
 	table.PrimaryKey = []string{"id", "name"}
