@@ -46,29 +46,11 @@ func (platform *PostgresPlatform) GetAutoIncrementDeclaration() string {
 }
 
 func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
-	return _getUnsignedDeclaration()
+	return ""
 }
 
 func (platform *PostgresPlatform) BuildColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
-
-	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
-	}
-
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
-	}
-
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
-	}
-
-	return columnString
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
 func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []Column) []string {

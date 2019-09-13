@@ -110,37 +110,38 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 }
 
 func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
+	declaration := make([]string, 0)
+	declaration = append(declaration, fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col)))
 
 	if col.Unsigned {
-		columnString += " " + platform.GetUnsignedDeclaration()
+		declaration = append(declaration, platform.GetUnsignedDeclaration())
 	}
 
 	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
+		declaration = append(declaration, platform.GetNotNullDeclaration())
 	}
 
 	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+		declaration = append(declaration, platform.GetDefaultDeclaration(col.Default))
 	}
 
 	if col.AutoIncrement {
-		columnString += " " + platform.GetAutoIncrementDeclaration()
+		declaration = append(declaration, platform.GetAutoIncrementDeclaration())
 	}
 
 	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
+		declaration = append(declaration, platform.GetUniqueDeclaration())
 	}
 
 	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+		declaration = append(declaration, platform.GetColumnCheckDeclaration(col.Check))
 	}
 
 	if col.Comment != "" {
-		columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
+		declaration = append(declaration, platform.GetColumnCommentDeclaration(col.Comment))
 	}
 
-	return columnString
+	return concatString(declaration, " ")
 }
 
 func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {

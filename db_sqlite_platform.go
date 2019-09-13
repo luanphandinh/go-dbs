@@ -49,11 +49,11 @@ func (platform *SqlitePlatform) GetPrimaryDeclaration(key []string) string {
 }
 
 func (platform *SqlitePlatform) GetAutoIncrementDeclaration() string {
-	return "AUTOINCREMENT"
+	return ""
 }
 
 func (platform *SqlitePlatform) GetUnsignedDeclaration() string {
-	return _getUnsignedDeclaration()
+	return ""
 }
 
 func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string {
@@ -61,7 +61,7 @@ func (platform *SqlitePlatform) GetDefaultDeclaration(expression string) string 
 }
 
 func (platform *SqlitePlatform) GetColumnCommentDeclaration(expression string) string {
-	return fmt.Sprintf("-- %s", expression)
+	return ""
 }
 
 func (platform *SqlitePlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
@@ -77,29 +77,7 @@ func (platform *SqlitePlatform) GetColumnCheckDeclaration(expression string) str
 }
 
 func (platform *SqlitePlatform) BuildColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
-
-	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
-	}
-
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
-	}
-
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
-	}
-	//
-	// if col.Comment != "" {
-	// 	columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
-	// }
-
-	return columnString
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
 func (platform *SqlitePlatform) BuildSchemaCreateSQL(schema *Schema) string {

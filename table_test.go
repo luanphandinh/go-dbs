@@ -59,7 +59,7 @@ COMMENT 'The user table'`,
 `CREATE TABLE user (
 	id INTEGER NOT NULL,
 	name TEXT NOT NULL,
-	age INTEGER(4) CHECK (age < 1000) DEFAULT 10,
+	age INTEGER(4) DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
 	CHECK (age > 50)
 )`,
@@ -83,7 +83,7 @@ CREATE SEQUENCE IF NOT EXISTS public.user_id_seq; ALTER TABLE public.user ALTER 
 
 	assertStringEquals(
 		t,
-		`CREATE TABLE public.user (
+`CREATE TABLE public.user (
 	id INT NOT NULL IDENTITY(1,1),
 	name TEXT NOT NULL,
 	age INT DEFAULT 10 CHECK (age < 1000),
