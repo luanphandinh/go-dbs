@@ -30,7 +30,7 @@ func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 }
 
 func (platform *MySql80Platform) ChainCommands(commands ...string) string {
-	return concatString(commands, "\n")
+	return concatStrings(commands, "\n")
 }
 
 func (platform *MySql80Platform) GetUniqueDeclaration() string {

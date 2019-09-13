@@ -2,7 +2,7 @@ package dbs
 
 import "fmt"
 
-func concatString(values []string, glue string) (s string) {
+func concatStrings(values []string, glue string) (s string) {
 	for index, value := range values {
 		if value == "" {
 			continue

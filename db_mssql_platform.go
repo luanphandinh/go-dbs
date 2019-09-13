@@ -22,7 +22,7 @@ func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, us
 }
 
 func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
-	return concatString(commands, ";\nGO\n")
+	return concatStrings(commands, ";\nGO\n")
 }
 
 func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {

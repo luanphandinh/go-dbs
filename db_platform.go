@@ -76,7 +76,7 @@ func _getNotNullDeclaration() string {
 }
 
 func _getPrimaryDeclaration(key []string) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ", "))
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatStrings(key, ", "))
 }
 
 func _getUnsignedDeclaration() string {
@@ -141,7 +141,7 @@ func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString strin
 		declaration = append(declaration, platform.GetColumnCommentDeclaration(col.Comment))
 	}
 
-	return concatString(declaration, " ")
+	return concatStrings(declaration, " ")
 }
 
 func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
@@ -163,7 +163,7 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	tableDeclaration :=  fmt.Sprintf(
 		"CREATE TABLE %s (\n\t%s\n)",
 		tableName,
-		concatString(tableCreation, ",\n\t"),
+		concatStrings(tableCreation, ",\n\t"),
 	)
 
 	commands := make([]string, 0)
@@ -189,5 +189,5 @@ func _getSequenceDropSQL(sequence string) string {
 }
 
 func _chainCommands(commands ...string) string {
-	return concatString(commands, ";\n")
+	return concatStrings(commands, ";\n")
 }
