@@ -1,8 +1,6 @@
 package dbs
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Platform interface {
 	GetDriverName() string
@@ -181,11 +179,11 @@ func _getTableDropSQL(platform Platform, schema string, table string) string {
 }
 
 func _getSequenceCreateSQL(sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE IF NOT EXISTS %s", sequence)
+	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
 }
 
 func _getSequenceDropSQL(sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
+	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
 }
 
 func _chainCommands(commands ...string) string {
