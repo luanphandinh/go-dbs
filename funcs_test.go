@@ -2,10 +2,11 @@ package dbs
 
 import "testing"
 
-func TestConcatString(t *testing.T) {
-	assertStringEquals(t, "a,b", concatString([]string{"a", "b"},","))
-	assertStringEquals(t, "a, b", concatString([]string{"a", "b"},", "))
-	assertStringEquals(t, "", concatString([]string{},", "))
-	assertStringEquals(t, "", concatString([]string{"", ""},", "))
-	assertStringEquals(t, "a", concatString([]string{"a", "", ""},", "))
+func TestConcatStrings(t *testing.T) {
+	assertStringEquals(t, "a,b", concatStrings([]string{"a", "b"},","))
+	assertStringEquals(t, "a, b", concatStrings([]string{"a", "b"},", "))
+	assertStringEquals(t, "", concatStrings([]string{},", "))
+	assertStringEquals(t, "", concatStrings([]string{"", ""},", "))
+	assertStringEquals(t, "a", concatStrings([]string{"a", "", ""},", "))
+	assertStringEquals(t, "a, b", concatStrings([]string{"a", "", "", "b"},", "))
 }

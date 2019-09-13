@@ -1,8 +1,6 @@
 package dbs
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Platform interface {
 	GetDriverName() string
@@ -76,7 +74,7 @@ func _getNotNullDeclaration() string {
 }
 
 func _getPrimaryDeclaration(key []string) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatString(key, ", "))
+	return fmt.Sprintf("PRIMARY KEY (%s)", concatStrings(key, ", "))
 }
 
 func _getUnsignedDeclaration() string {
@@ -110,37 +108,38 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 }
 
 func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
+	declaration := make([]string, 0)
+	declaration = append(declaration, fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col)))
 
 	if col.Unsigned {
-		columnString += " " + platform.GetUnsignedDeclaration()
+		declaration = append(declaration, platform.GetUnsignedDeclaration())
 	}
 
 	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
+		declaration = append(declaration, platform.GetNotNullDeclaration())
 	}
 
 	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
+		declaration = append(declaration, platform.GetDefaultDeclaration(col.Default))
 	}
 
 	if col.AutoIncrement {
-		columnString += " " + platform.GetAutoIncrementDeclaration()
+		declaration = append(declaration, platform.GetAutoIncrementDeclaration())
 	}
 
 	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
+		declaration = append(declaration, platform.GetUniqueDeclaration())
 	}
 
 	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
+		declaration = append(declaration, platform.GetColumnCheckDeclaration(col.Check))
 	}
 
 	if col.Comment != "" {
-		columnString += " " + platform.GetColumnCommentDeclaration(col.Comment)
+		declaration = append(declaration, platform.GetColumnCommentDeclaration(col.Comment))
 	}
 
-	return columnString
+	return concatStrings(declaration, " ")
 }
 
 func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
@@ -162,7 +161,7 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	tableDeclaration :=  fmt.Sprintf(
 		"CREATE TABLE %s (\n\t%s\n)",
 		tableName,
-		concatString(tableCreation, ",\n\t"),
+		concatStrings(tableCreation, ",\n\t"),
 	)
 
 	commands := make([]string, 0)
@@ -180,13 +179,13 @@ func _getTableDropSQL(platform Platform, schema string, table string) string {
 }
 
 func _getSequenceCreateSQL(sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE IF NOT EXISTS %s", sequence)
+	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
 }
 
 func _getSequenceDropSQL(sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE IF EXISTS %s", sequence)
+	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
 }
 
 func _chainCommands(commands ...string) string {
-	return concatString(commands, ";\n")
+	return concatStrings(commands, ";\n")
 }

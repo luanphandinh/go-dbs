@@ -42,11 +42,11 @@ func TestColumnDeclaration(t *testing.T) {
 
 	age.Check = "age < 150"
 	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10 CHECK (age < 150)", mysqlPlatform.BuildColumnDeclarationSQL(&age))
-	assertStringEquals(t, "age INTEGER(2) CHECK (age < 150) DEFAULT 10", sqlitePlatform.BuildColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER(2) DEFAULT 10 CHECK (age < 150)", sqlitePlatform.BuildColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INT DEFAULT 10 CHECK (age < 150)", postgresPlatfrom.BuildColumnDeclarationSQL(&age))
 
 	age.Comment = "age should be less than 150"
 	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10 CHECK (age < 150) COMMENT 'age should be less than 150'", mysqlPlatform.BuildColumnDeclarationSQL(&age))
-	assertStringEquals(t, "age INTEGER(2) CHECK (age < 150) DEFAULT 10", sqlitePlatform.BuildColumnDeclarationSQL(&age))
+	assertStringEquals(t, "age INTEGER(2) DEFAULT 10 CHECK (age < 150)", sqlitePlatform.BuildColumnDeclarationSQL(&age))
 	assertStringEquals(t, "age INT DEFAULT 10 CHECK (age < 150)", postgresPlatfrom.BuildColumnDeclarationSQL(&age))
 }

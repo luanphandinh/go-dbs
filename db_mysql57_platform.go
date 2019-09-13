@@ -25,7 +25,7 @@ func (platform *MySql57Platform) GetDBConnectionString(server string, port int, 
 }
 
 func (platform *MySql57Platform) ChainCommands(commands ...string) string {
-	return concatString(commands, "\n")
+	return concatStrings(commands, "\n")
 }
 
 func (platform *MySql57Platform) GetTypeDeclaration(col *Column) string {

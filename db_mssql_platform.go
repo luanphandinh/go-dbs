@@ -22,7 +22,7 @@ func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, us
 }
 
 func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
-	return concatString(commands, ";\nGO\n")
+	return concatStrings(commands, ";\nGO\n")
 }
 
 func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {
@@ -46,33 +46,11 @@ func (platform *MsSqlPlatform) GetAutoIncrementDeclaration() string {
 }
 
 func (platform *MsSqlPlatform) GetUnsignedDeclaration() string {
-	return _getUnsignedDeclaration()
+	return ""
 }
 
 func (platform *MsSqlPlatform) BuildColumnDeclarationSQL(col *Column) string {
-	columnString := fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col))
-
-	if col.NotNull {
-		columnString += " " + platform.GetNotNullDeclaration()
-	}
-
-	if col.Default != "" {
-		columnString += " " + platform.GetDefaultDeclaration(col.Default)
-	}
-
-	if col.Unique {
-		columnString += " " + platform.GetUniqueDeclaration()
-	}
-
-	if col.Check != "" {
-		columnString += " " + platform.GetColumnCheckDeclaration(col.Check)
-	}
-
-	if col.AutoIncrement {
-		columnString += " " + platform.GetAutoIncrementDeclaration()
-	}
-
-	return columnString
+	return _buildColumnDeclarationSQL(platform, col)
 }
 
 func (platform *MsSqlPlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
@@ -92,13 +70,7 @@ func (platform *MsSqlPlatform) GetColumnCheckDeclaration(expression string) stri
 }
 
 func (platform *MsSqlPlatform) BuildSchemaCreateSQL(schema *Schema) string {
-	commands := make([]string, 0)
-	commands = append(commands, platform.GetSchemaCreateDeclarationSQL(schema.Name))
-	if schema.Comment != "" {
-		commands = append(commands, platform.GetSchemaCommentDeclaration(schema.Name, schema.Comment))
-	}
-
-	return platform.ChainCommands(commands...)
+	return platform.GetSchemaCreateDeclarationSQL(schema.Name)
 }
 
 func (platform *MsSqlPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
@@ -130,10 +102,7 @@ func (platform *MsSqlPlatform) GetTableCommentDeclarationSQL(name string, expres
 }
 
 func (platform *MsSqlPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
-	commands := make([]string, 0)
-	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
-
-	return platform.ChainCommands(commands...)
+	return _buildTableCreateSQL(platform, schema, table)
 }
 
 func (platform *MsSqlPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
