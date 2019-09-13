@@ -38,7 +38,7 @@ func TestToTableDeclaration(t *testing.T) {
 			name,
 			age,
 		},
-		Check: []string{"age > 50"},
+		Checks:  []string{"age > 50"},
 		Comment: "The user table",
 	}
 	assertStringEquals(

@@ -35,7 +35,7 @@ func getSchema(platform string) *Schema {
 					{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
 				},
-				Check: []string{"age < 50"},
+				Checks: []string{"age < 50"},
 			},
 			{
 				Name:       "department",
@@ -73,7 +73,7 @@ func TestSchemaInstall(t *testing.T) {
 	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
 	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
 
-	// Check constraint is parsed but will be ignored in mysql5.7
+	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
 	if platform != MYSQL57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 5)", employee))

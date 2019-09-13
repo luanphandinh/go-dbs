@@ -20,7 +20,7 @@ dbSchema := &Schema{
                 {Name: "valid", Type: SMALLINT, Default: "1"},
                 {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 1"},
             },
-            Check: []string{"age < 50"}
+            Checks: []string{"age < 50"}
         },
         {
             Name:       "department",

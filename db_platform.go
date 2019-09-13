@@ -17,7 +17,7 @@ type Platform interface {
 	GetDefaultDeclaration(expression string) string
 	GetColumnCommentDeclaration(expression string) string // For inline comment
 	GetColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
-	// Check constraint is parsed but will be ignored in mysql5.7
+	// Checks constraint is parsed but will be ignored in mysql5.7
 	GetColumnCheckDeclaration(expression string) string
 
 	BuildColumnDeclarationSQL(col *Column) string
@@ -31,7 +31,7 @@ type Platform interface {
 	// table SQL declarations
 	GetSchemaAccessName(schema string, name string) string
 	GetSchemaCommentDeclaration(schema string, expression string) string
-	// Check constraint is parsed but will be ignored in mysql5.7
+	// Checks constraint is parsed but will be ignored in mysql5.7
 	GetTableChecksDeclaration(expressions []string) []string
 	BuildTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
@@ -156,7 +156,7 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.BuildColumnsDeclarationSQL(table.Columns)...)
 	tableCreation = append(tableCreation, platform.GetPrimaryDeclaration(table.PrimaryKey))
-	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Check)...)
+	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Checks)...)
 
 	tableDeclaration :=  fmt.Sprintf(
 		"CREATE TABLE %s (\n\t%s\n)",
