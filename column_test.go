@@ -54,7 +54,7 @@ func TestColumnDeclaration(t *testing.T) {
 	assertStringEquals(t, "age INT DEFAULT 10", postgresPlatform.BuildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INT DEFAULT 10", mssqlPlatform.BuildColumnDeclarationSQL(age))
 
-	age.WithCheck("age < 150")
+	age.AddCheck("age < 150")
 	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10 CHECK (age < 150)", mysqlPlatform.BuildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INT(2) UNSIGNED DEFAULT 10 CHECK (age < 150)", mysql57Platform.BuildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INTEGER(2) DEFAULT 10 CHECK (age < 150)", sqlitePlatform.BuildColumnDeclarationSQL(age))

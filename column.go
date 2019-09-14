@@ -69,7 +69,7 @@ func (col *Column) WithDefault(val string) *Column {
 	return col
 }
 
-func (col *Column) WithCheck(check string) *Column {
+func (col *Column) AddCheck(check string) *Column {
 	col.Check = check
 
 	return col
