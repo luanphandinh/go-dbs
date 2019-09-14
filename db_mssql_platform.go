@@ -110,9 +110,9 @@ func (platform *MsSqlPlatform) GetTableDropSQL(schema string, table string) (tab
 }
 
 func (platform *MsSqlPlatform) GetSequenceCreateSQL(sequence string) string {
-	return _getSequenceCreateSQL(sequence)
+	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
 }
 
 func (platform *MsSqlPlatform) GetSequenceDropSQL(sequence string) string {
-	return _getSequenceDropSQL(sequence)
+	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
 }

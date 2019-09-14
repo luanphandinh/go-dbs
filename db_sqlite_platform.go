@@ -16,7 +16,7 @@ func (platform *SqlitePlatform) GetDBConnectionString(server string, port int, u
 }
 
 func (platform *SqlitePlatform) ChainCommands(commands ...string) string {
-	return _chainCommands(commands...)
+	return concatStrings(commands, ";\n")
 }
 
 func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {

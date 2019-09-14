@@ -77,16 +77,8 @@ func _getPrimaryDeclaration(key []string) string {
 	return fmt.Sprintf("PRIMARY KEY (%s)", concatStrings(key, ", "))
 }
 
-func _getUnsignedDeclaration() string {
-	return "UNSIGNED"
-}
-
 func _getDefaultDeclaration(expression string) string {
 	return fmt.Sprintf("DEFAULT %s", expression)
-}
-
-func _getColumnCommentDeclaration(expression string) string {
-	return fmt.Sprintf("COMMENT '%s'", expression)
 }
 
 func _getColumnCheckDeclaration(expression string) string {
@@ -176,16 +168,4 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 
 func _getTableDropSQL(platform Platform, schema string, table string) string {
 	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetSchemaAccessName(schema, table))
-}
-
-func _getSequenceCreateSQL(sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
-}
-
-func _getSequenceDropSQL(sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
-}
-
-func _chainCommands(commands ...string) string {
-	return concatStrings(commands, ";\n")
 }
