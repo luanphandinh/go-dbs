@@ -97,6 +97,10 @@ func (platform *MsSqlPlatform) GetTableChecksDeclaration(expressions []string) [
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *MsSqlPlatform) GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string {
+	return make([]string, 0)
+}
+
 func (platform *MsSqlPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
 	return ""
 }

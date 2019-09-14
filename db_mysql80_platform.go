@@ -101,6 +101,10 @@ func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *MySql80Platform) GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string {
+	return make([]string, 0)
+}
+
 func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
 	return fmt.Sprintf("COMMENT '%s'", expression)
 }

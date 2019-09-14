@@ -36,6 +36,7 @@ type Platform interface {
 	BuildTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 	GetTableCommentDeclarationSQL(name string, expression string) string
+	GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string
 
 	GetSequenceCreateSQL(sequence string) string
 	GetSequenceDropSQL(sequence string) string
