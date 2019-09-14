@@ -3,7 +3,8 @@ package dbs
 import "testing"
 
 func TestToTableDeclaration(t *testing.T) {
-	mysqlPlatform := GetPlatform(MYSQL57)
+	mysqlPlatform := GetPlatform(MYSQL80)
+	mysql57Platform := GetPlatform(MYSQL57)
 	sqlitePlatform := GetPlatform(SQLITE3)
 	postgresPlatform := GetPlatform(POSTGRES)
 	msSqlPlatform := GetPlatform(MSSQL)
@@ -69,6 +70,21 @@ COMMENT 'The user table'`,
 	assertStringEquals(
 		t,
 `CREATE TABLE user (
+	id INT NOT NULL AUTO_INCREMENT,
+	sub_id INT NOT NULL,
+	name TEXT NOT NULL,
+	age INT(4) DEFAULT 10 CHECK (age < 1000) COMMENT 'age should less than 1000',
+	PRIMARY KEY (id),
+	FOREIGN KEY (sub_id) REFERENCES other_table(id),
+	CHECK (age > 50)
+)
+COMMENT 'The user table'`,
+		mysql57Platform.BuildTableCreateSQL("", &table),
+	)
+
+	assertStringEquals(
+		t,
+`CREATE TABLE user (
 	id INTEGER NOT NULL,
 	sub_id INTEGER NOT NULL,
 	name TEXT NOT NULL,
@@ -113,6 +129,8 @@ CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT
 
 	table.PrimaryKey = []string{"id", "name"}
 	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.GetPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.GetPrimaryDeclaration(table.PrimaryKey))
 	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.GetPrimaryDeclaration(table.PrimaryKey))
 	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.GetPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", msSqlPlatform.GetPrimaryDeclaration(table.PrimaryKey))
 }
