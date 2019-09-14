@@ -22,7 +22,7 @@ func (platform *PostgresPlatform) GetDBConnectionString(server string, port int,
 }
 
 func (platform *PostgresPlatform) ChainCommands(commands ...string) string {
-	return _chainCommands(commands...)
+	return concatStrings(commands, ";\n")
 }
 
 func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
@@ -118,6 +118,10 @@ func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *PostgresPlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
 func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
 	return fmt.Sprintf("COMMENT ON TABLE %s IS '%s'", name, expression)
 }
@@ -150,9 +154,9 @@ func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (
 }
 
 func (platform *PostgresPlatform) GetSequenceCreateSQL(sequence string) string {
-	return _getSequenceCreateSQL(sequence)
+	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
 }
 
 func (platform *PostgresPlatform) GetSequenceDropSQL(sequence string) string {
-	return _getSequenceDropSQL(sequence)
+	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
 }

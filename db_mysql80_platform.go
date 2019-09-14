@@ -50,7 +50,7 @@ func (platform *MySql80Platform) GetAutoIncrementDeclaration() string {
 }
 
 func (platform *MySql80Platform) GetUnsignedDeclaration() string {
-	return _getUnsignedDeclaration()
+	return "UNSIGNED"
 }
 
 func (platform *MySql80Platform) GetDefaultDeclaration(expression string) string {
@@ -58,7 +58,7 @@ func (platform *MySql80Platform) GetDefaultDeclaration(expression string) string
 }
 
 func (platform *MySql80Platform) GetColumnCommentDeclaration(expression string) string {
-	return _getColumnCommentDeclaration(expression)
+	return fmt.Sprintf("COMMENT '%s'", expression)
 }
 
 func (platform *MySql80Platform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
@@ -99,6 +99,10 @@ func (platform *MySql80Platform) GetSchemaCommentDeclaration(schema string, expr
 
 func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
+}
+
+func (platform *MySql80Platform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
 func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {

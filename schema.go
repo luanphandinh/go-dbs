@@ -56,15 +56,13 @@ func (schema *Schema) Drop(db *sql.DB) error {
 		return err
 	}
 
-	// drop tables
-	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.GetTableDropSQL(schema.Name, table.Name)); err != nil {
+	for i := len(schema.Tables) - 1; i >= 0; i-- {
+		if _, err := tx.Exec(platform.GetTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	// drop schema
 	if schemaDrop := platform.GetSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
 		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()

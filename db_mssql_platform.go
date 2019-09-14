@@ -97,6 +97,10 @@ func (platform *MsSqlPlatform) GetTableChecksDeclaration(expressions []string) [
 	return _getTableChecksDeclaration(expressions)
 }
 
+func (platform *MsSqlPlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
 func (platform *MsSqlPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
 	return ""
 }
@@ -110,9 +114,9 @@ func (platform *MsSqlPlatform) GetTableDropSQL(schema string, table string) (tab
 }
 
 func (platform *MsSqlPlatform) GetSequenceCreateSQL(sequence string) string {
-	return _getSequenceCreateSQL(sequence)
+	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
 }
 
 func (platform *MsSqlPlatform) GetSequenceDropSQL(sequence string) string {
-	return _getSequenceDropSQL(sequence)
+	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
 }

@@ -11,25 +11,29 @@ dbSchema := &Schema{
     Platform: "mysql80", // or mysql57, sqlite, postgresql, sqlserver
     Tables: []Table{
         {
-            Name:       "employee",
-            PrimaryKey: []string{"id"},
-            Columns: []Column{
-                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-                {Name: "name", Type: TEXT, NotNull: true},
-                {Name: "department_id", Type: INT},
-                {Name: "valid", Type: SMALLINT, Default: "1"},
-                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 1"},
-            },
-            Check: []string{"age < 50"}
-        },
-        {
             Name:       "department",
             PrimaryKey: []string{"id"},
             Columns: []Column{
                 {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
                 {Name: "name", Type: TEXT, NotNull: true, Length: 2},
                 {Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-                {Name: "rank", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
+                {Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
+            },
+            Comment: "Departments of company",
+        },
+        {
+            Name:       "employee",
+            PrimaryKey: []string{"id"},
+            Columns: []Column{
+                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
+                {Name: "name", Type: TEXT, NotNull: true},
+                {Name: "department_id", Type: INT, Unsigned: true},
+                {Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
+                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
+            },
+            Checks: []string{"age < 50"},
+            ForeignKeys: []ForeignKey{
+                {Referer: "department_id", Reference: "department(id)"},
             },
         },
     },
