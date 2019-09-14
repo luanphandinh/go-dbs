@@ -53,7 +53,7 @@ func (platform *PostgresPlatform) BuildColumnDeclarationSQL(col *Column) string 
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 

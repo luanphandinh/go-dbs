@@ -73,7 +73,7 @@ func (platform *MySql80Platform) BuildColumnDeclarationSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql80Platform) BuildColumnsDeclarationSQL(cols []Column) []string {
+func (platform *MySql80Platform) BuildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
