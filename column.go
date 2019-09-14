@@ -14,3 +14,63 @@ type Column struct {
 	Check         string `json:"check"`
 	Comment       string `json:"comment"`
 }
+
+func (col *Column) WithName(name string) *Column {
+	col.Name = name
+
+	return col
+}
+
+func (col *Column) WithComment(comment string) *Column {
+	col.Comment = comment
+
+	return col
+}
+
+func (col *Column) WithType(dbType string) *Column {
+	col.Type = dbType
+
+	return col
+}
+
+func (col *Column) IsNotNull() *Column {
+	col.NotNull = true
+
+	return col
+}
+
+func (col *Column) IsAutoIncrement() *Column {
+	col.AutoIncrement = true
+
+	return col
+}
+
+func (col *Column) IsUnsigned() *Column {
+	col.Unsigned = true
+
+	return col
+}
+
+func (col *Column) IsUnique() *Column {
+	col.Unique = true
+
+	return col
+}
+
+func (col *Column) WithLength(length int) *Column {
+	col.Length = length
+
+	return col
+}
+
+func (col *Column) WithDefault(val string) *Column {
+	col.Default = val
+
+	return col
+}
+
+func (col *Column) WithCheck(check string) *Column {
+	col.Check = check
+
+	return col
+}
