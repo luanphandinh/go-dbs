@@ -42,7 +42,7 @@ func getSchema(platform string) *Schema {
 				Columns: []Column{
 					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
 					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "department_id", Type: INT, NotNull: true, Unsigned: true},
+					{Name: "department_id", Type: INT, Unsigned: true},
 					{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
 					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
 				},
@@ -76,13 +76,15 @@ func TestSchemaInstall(t *testing.T) {
 	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
 	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
 
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
 	if platform != MYSQL57 {
-		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 5)", employee))
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 5, 1)", employee))
 		assertHasError(t, err)
 
-		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 51)", employee))
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 51, 1)", employee))
 		assertHasError(t, err)
 
 		// Some check is different across platforms eg: length(name) and LEN(name) in mssql
@@ -91,10 +93,10 @@ func TestSchemaInstall(t *testing.T) {
 
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES (NULL, 22)", employee))
 		assertHasError(t, err)
-	}
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
-	assertNotHasError(t, err)
+		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+		assertNotHasError(t, err)
+	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
 	assertNotHasError(t, err)
