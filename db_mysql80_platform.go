@@ -101,8 +101,8 @@ func (platform *MySql80Platform) GetTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *MySql80Platform) GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string {
-	return make([]string, 0)
+func (platform *MySql80Platform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
 func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {

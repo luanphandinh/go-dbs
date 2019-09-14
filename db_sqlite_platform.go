@@ -104,8 +104,8 @@ func (platform *SqlitePlatform) GetTableChecksDeclaration(expressions []string) 
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *SqlitePlatform) GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string {
-	return make([]string, 0)
+func (platform *SqlitePlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
 func (platform *SqlitePlatform) GetTableCommentDeclarationSQL(name string, expression string) string {

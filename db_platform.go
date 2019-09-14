@@ -36,7 +36,7 @@ type Platform interface {
 	BuildTableCreateSQL(schema string, table *Table) string
 	GetTableDropSQL(schema string, table string) string
 	GetTableCommentDeclarationSQL(name string, expression string) string
-	GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string
+	GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string
 
 	GetSequenceCreateSQL(sequence string) string
 	GetSequenceDropSQL(sequence string) string
@@ -144,11 +144,28 @@ func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
 	return declarations
 }
 
+func _getTableReferencesDeclarationSQL(platform Platform, schema string, foreignKeys []ForeignKey) []string {
+	keys := make([]string, 0)
+	for _, key := range foreignKeys {
+		keys = append(
+			keys,
+			fmt.Sprintf(
+				"FOREIGN KEY (%s) REFERENCES %s",
+				key.Referer,
+				platform.GetSchemaAccessName(schema, key.Reference),
+			),
+		)
+	}
+
+	return keys
+}
+
 func _buildTableCreateSQL(platform Platform, schema string, table *Table) string {
 	tableName := platform.GetSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.BuildColumnsDeclarationSQL(table.Columns)...)
 	tableCreation = append(tableCreation, platform.GetPrimaryDeclaration(table.PrimaryKey))
+	tableCreation = append(tableCreation, platform.GetTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
 	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Checks)...)
 
 	tableDeclaration :=  fmt.Sprintf(

@@ -26,18 +26,6 @@ func getSchema(platform string) *Schema {
 		Comment:  "The Company Schema",
 		Tables: []Table{
 			{
-				Name:       "employee",
-				PrimaryKey: []string{"id"},
-				Columns: []Column{
-					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-					{Name: "name", Type: TEXT, NotNull: true},
-					{Name: "department_id", Type: INT},
-					{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
-				},
-				Checks: []string{"age < 50"},
-			},
-			{
 				Name:       "department",
 				PrimaryKey: []string{"id"},
 				Columns: []Column{
@@ -47,6 +35,21 @@ func getSchema(platform string) *Schema {
 					{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
 				},
 				Comment: "Departments of company",
+			},
+			{
+				Name:       "employee",
+				PrimaryKey: []string{"id"},
+				Columns: []Column{
+					{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
+					{Name: "name", Type: TEXT, NotNull: true},
+					{Name: "department_id", Type: INT, NotNull: true, Unsigned: true},
+					{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
+					{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
+				},
+				Checks: []string{"age < 50"},
+				ForeignKeys: []ForeignKey{
+					{Referer: "department_id", Reference: "department(id)"},
+				},
 			},
 		},
 	}
@@ -93,7 +96,7 @@ func TestSchemaInstall(t *testing.T) {
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
 	assertNotHasError(t, err)
 
 	var valid, age, position int
@@ -124,7 +127,7 @@ func TestAutoIncrement(t *testing.T) {
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
 	assertNotHasError(t, err)
 
 	var valid, age, id int
@@ -133,7 +136,7 @@ func TestAutoIncrement(t *testing.T) {
 	assertIntEquals(t, 1, id)
 	assertNotHasError(t, err)
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
 	assertNotHasError(t, err)
 	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s where id = 2", employee)).Scan(&id, &valid, &name, &age)
 	assertIntEquals(t, 2, id)

@@ -15,6 +15,12 @@ func TestToTableDeclaration(t *testing.T) {
 		AutoIncrement: true,
 	}
 
+	subId := Column{
+		Name:    "sub_id",
+		Type:    INT,
+		NotNull: true,
+	}
+
 	name := Column{
 		Name:    "name",
 		Type:    TEXT,
@@ -22,32 +28,38 @@ func TestToTableDeclaration(t *testing.T) {
 	}
 
 	age := Column{
-		Name: "age",
-		Type: INT,
-		Length: 4,
+		Name:    "age",
+		Type:    INT,
+		Length:  4,
 		Default: "10",
-		Check: "age < 1000",
+		Check:   "age < 1000",
 		Comment: "age should less than 1000",
 	}
 
 	table := Table{
-		Name: "user",
+		Name:       "user",
 		PrimaryKey: []string{"id"},
 		Columns: []Column{
 			id,
+			subId,
 			name,
 			age,
 		},
 		Checks:  []string{"age > 50"},
 		Comment: "The user table",
+		ForeignKeys: []ForeignKey{
+			{Referer: "sub_id", Reference: "other_table(id)"},
+		},
 	}
 	assertStringEquals(
 		t,
 `CREATE TABLE user (
 	id INT NOT NULL AUTO_INCREMENT,
+	sub_id INT NOT NULL,
 	name TEXT NOT NULL,
 	age INT(4) DEFAULT 10 CHECK (age < 1000) COMMENT 'age should less than 1000',
 	PRIMARY KEY (id),
+	FOREIGN KEY (sub_id) REFERENCES other_table(id),
 	CHECK (age > 50)
 )
 COMMENT 'The user table'`,
@@ -58,9 +70,11 @@ COMMENT 'The user table'`,
 		t,
 `CREATE TABLE user (
 	id INTEGER NOT NULL,
+	sub_id INTEGER NOT NULL,
 	name TEXT NOT NULL,
 	age INTEGER(4) DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
+	FOREIGN KEY (sub_id) REFERENCES other_table(id),
 	CHECK (age > 50)
 )`,
 		sqlitePlatform.BuildTableCreateSQL("", &table),
@@ -70,9 +84,11 @@ COMMENT 'The user table'`,
 		t,
 `CREATE TABLE public.user (
 	id INT NOT NULL,
+	sub_id INT NOT NULL,
 	name TEXT NOT NULL,
 	age INT DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
+	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 );
 COMMENT ON TABLE public.user IS 'The user table';
@@ -85,9 +101,11 @@ CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT
 		t,
 `CREATE TABLE public.user (
 	id INT NOT NULL IDENTITY(1,1),
+	sub_id INT NOT NULL,
 	name TEXT NOT NULL,
 	age INT DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
+	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 )`,
 		msSqlPlatform.BuildTableCreateSQL("public", &table),

@@ -118,8 +118,8 @@ func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *PostgresPlatform) GetTableReferencesDeclarationSQL(foreignKeys []ForeignKey) []string {
-	return make([]string, 0)
+func (platform *PostgresPlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
 func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
