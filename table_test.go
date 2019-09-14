@@ -2,13 +2,7 @@ package dbs
 
 import "testing"
 
-func TestToTableDeclaration(t *testing.T) {
-	mysqlPlatform := GetPlatform(MYSQL80)
-	mysql57Platform := GetPlatform(MYSQL57)
-	sqlitePlatform := GetPlatform(SQLITE3)
-	postgresPlatform := GetPlatform(POSTGRES)
-	msSqlPlatform := GetPlatform(MSSQL)
-
+func prepareTestTable() *Table {
 	id := Column{
 		Name:          "id",
 		Type:          INT,
@@ -37,21 +31,42 @@ func TestToTableDeclaration(t *testing.T) {
 		Comment: "age should less than 1000",
 	}
 
-	table := Table{
-		Name:       "user",
-		PrimaryKey: []string{"id"},
-		Columns: []Column{
-			id,
-			subId,
-			name,
-			age,
-		},
-		Checks:  []string{"age > 50"},
-		Comment: "The user table",
-		ForeignKeys: []ForeignKey{
-			{Referer: "sub_id", Reference: "other_table(id)"},
-		},
-	}
+	// Plain object
+	// table := &Table{
+	// 	Name:       "user",
+	// 	PrimaryKey: []string{"id"},
+	// 	Columns: []Column{
+	// 		id,
+	// 		subId,
+	// 		name,
+	// 		age,
+	// 	},
+	// 	Checks:  []string{"age > 50"},
+	// 	Comment: "The user table",
+	// 	ForeignKeys: []ForeignKey{
+	// 		{Referer: "sub_id", Reference: "other_table(id)"},
+	// 	},
+	// }
+	table := new(Table)
+	table.WithName("user").WithComment("The user table")
+	table.AddPrimaryKey([]string{"id"})
+	table.AddColumn(id)
+	table.AddColumns([]Column{subId, name, age})
+	table.AddForeignKey("sub_id", "other_table(id)")
+	table.AddCheck("age > 50")
+
+	return table
+}
+
+func TestToTableDeclaration(t *testing.T) {
+	mysqlPlatform := GetPlatform(MYSQL80)
+	mysql57Platform := GetPlatform(MYSQL57)
+	sqlitePlatform := GetPlatform(SQLITE3)
+	postgresPlatform := GetPlatform(POSTGRES)
+	msSqlPlatform := GetPlatform(MSSQL)
+
+	table := prepareTestTable()
+
 	assertStringEquals(
 		t,
 `CREATE TABLE user (
@@ -64,7 +79,7 @@ func TestToTableDeclaration(t *testing.T) {
 	CHECK (age > 50)
 )
 COMMENT 'The user table'`,
-		mysqlPlatform.BuildTableCreateSQL("", &table),
+		mysqlPlatform.BuildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -79,7 +94,7 @@ COMMENT 'The user table'`,
 	CHECK (age > 50)
 )
 COMMENT 'The user table'`,
-		mysql57Platform.BuildTableCreateSQL("", &table),
+		mysql57Platform.BuildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -93,7 +108,7 @@ COMMENT 'The user table'`,
 	FOREIGN KEY (sub_id) REFERENCES other_table(id),
 	CHECK (age > 50)
 )`,
-		sqlitePlatform.BuildTableCreateSQL("", &table),
+		sqlitePlatform.BuildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -110,7 +125,7 @@ COMMENT 'The user table'`,
 COMMENT ON TABLE public.user IS 'The user table';
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
 CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
-		postgresPlatform.BuildTableCreateSQL("public", &table),
+		postgresPlatform.BuildTableCreateSQL("public", table),
 	)
 
 	assertStringEquals(
@@ -124,7 +139,7 @@ CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT
 	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 )`,
-		msSqlPlatform.BuildTableCreateSQL("public", &table),
+		msSqlPlatform.BuildTableCreateSQL("public", table),
 	)
 
 	table.PrimaryKey = []string{"id", "name"}
