@@ -76,7 +76,7 @@ func (platform *MySql57Platform) BuildColumnDeclarationSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MySql57Platform) BuildColumnsDeclarationSQL(cols []Column) []string {
+func (platform *MySql57Platform) BuildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 

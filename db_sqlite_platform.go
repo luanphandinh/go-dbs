@@ -68,7 +68,7 @@ func (platform *SqlitePlatform) GetColumnsCommentDeclaration(schema string, tabl
 	return make([]string, 0)
 }
 
-func (platform *SqlitePlatform) BuildColumnsDeclarationSQL(cols []Column) []string {
+func (platform *SqlitePlatform) BuildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 

@@ -10,7 +10,7 @@ const SCHEMA = "SCHEMA"
 type Schema struct {
 	Name     string  `json:"name"`
 	Platform string  `json:"platform"`
-	Tables   []Table `json:"tables"`
+	Tables   []*Table `json:"tables"`
 	Comment  string  `json:"comment"`
 }
 
@@ -32,13 +32,13 @@ func (schema *Schema) WithComment(comment string) *Schema {
 	return schema
 }
 
-func (schema *Schema) AddTable(table Table) *Schema {
+func (schema *Schema) AddTable(table *Table) *Schema {
 	schema.Tables = append(schema.Tables, table)
 
 	return schema
 }
 
-func (schema *Schema) AddTables(tables []Table) *Schema {
+func (schema *Schema) AddTables(tables []*Table) *Schema {
 	schema.Tables = append(schema.Tables, tables...)
 
 	return schema
@@ -65,7 +65,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 	// create tables
 	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.BuildTableCreateSQL(schema.Name, &table)); err != nil {
+		if _, err := tx.Exec(platform.BuildTableCreateSQL(schema.Name, table)); err != nil {
 			tx.Rollback()
 			return err
 		}

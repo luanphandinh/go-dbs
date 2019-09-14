@@ -3,26 +3,26 @@ package dbs
 import "testing"
 
 func prepareTestTable() *Table {
-	id := Column{
+	id := &Column{
 		Name:          "id",
 		Type:          INT,
 		NotNull:       true,
 		AutoIncrement: true,
 	}
 
-	subId := Column{
+	subId := &Column{
 		Name:    "sub_id",
 		Type:    INT,
 		NotNull: true,
 	}
 
-	name := Column{
+	name := &Column{
 		Name:    "name",
 		Type:    TEXT,
 		NotNull: true,
 	}
 
-	age := Column{
+	age := &Column{
 		Name:    "age",
 		Type:    INT,
 		Length:  4,
@@ -51,7 +51,7 @@ func prepareTestTable() *Table {
 	table.WithName("user").WithComment("The user table")
 	table.AddPrimaryKey([]string{"id"})
 	table.AddColumn(id)
-	table.AddColumns([]Column{subId, name, age})
+	table.AddColumns([]*Column{subId, name, age})
 	table.AddForeignKey("sub_id", "other_table(id)")
 	table.AddCheck("age > 50")
 

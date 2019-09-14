@@ -21,7 +21,7 @@ type Platform interface {
 	GetColumnCheckDeclaration(expression string) string
 
 	BuildColumnDeclarationSQL(col *Column) string
-	BuildColumnsDeclarationSQL(cols []Column) []string
+	BuildColumnsDeclarationSQL(cols []*Column) []string
 
 	// schema SQL declarations
 	BuildSchemaCreateSQL(schema *Schema) string
@@ -135,10 +135,10 @@ func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString strin
 	return concatStrings(declaration, " ")
 }
 
-func _buildColumnsDeclarationSQL(platform Platform, cols []Column) []string {
+func _buildColumnsDeclarationSQL(platform Platform, cols []*Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		declarations[index] = platform.BuildColumnDeclarationSQL(&col)
+		declarations[index] = platform.BuildColumnDeclarationSQL(col)
 	}
 
 	return declarations

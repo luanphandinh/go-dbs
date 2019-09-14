@@ -10,7 +10,7 @@ type ForeignKey struct {
 type Table struct {
 	Name        string       `json:"name"`
 	PrimaryKey  []string     `json:"primary_key"`
-	Columns     []Column     `json:"columns"`
+	Columns     []*Column     `json:"columns"`
 	Checks      []string     `json:"checks"`
 	Comment     string       `json:"comment"`
 	ForeignKeys []ForeignKey `json:"foreign_keys"`
@@ -34,13 +34,13 @@ func (table *Table) AddPrimaryKey(key []string) *Table {
 	return table
 }
 
-func (table *Table) AddColumn(col Column) *Table {
+func (table *Table) AddColumn(col *Column) *Table {
 	table.Columns = append(table.Columns, col)
 
 	return table
 }
 
-func (table *Table) AddColumns(cols []Column) *Table {
+func (table *Table) AddColumns(cols []*Column) *Table {
 	table.Columns = append(table.Columns, cols...)
 
 	return table
