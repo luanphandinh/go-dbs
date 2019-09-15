@@ -1,14 +1,22 @@
 # go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
-Manage databse(mysql, postgresql, sqlite3, mssql) schema.
+Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver,) schema.
 ```
 
 # Usage
 Normal declaration:
+
+Supported platforms:
+    `sqlite3`,
+    `mysql:5.7`,
+    `mysql:8.0`,
+    `postgres`,
+    `sqlserver`,
+
 ```go
 dbSchema := &Schema{
     Name:     "company",
-    Platform: "mysql:8.0", // or mysql:5.7, sqlite, postgresql, sqlserver
+    Platform: "mysql:8.0", // or mysql:5.7, sqlite, postgres, sqlserver
     Tables: []*Table{
         {
             Name:       "department",
@@ -86,7 +94,7 @@ dbSchema.Install(db)
 ```
 
 * Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.
-* Schema name will be used by `postgresql` and `mssql`.
+* Schema name will be used by `postgres` and `sqlserver`.
 
 # ISSUES
 Data:
