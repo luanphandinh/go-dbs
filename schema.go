@@ -7,10 +7,11 @@ import (
 
 // Schema defined the db schema structure
 type Schema struct {
-	Name     string   `json:"name"`
-	Platform string   `json:"platform"`
-	Tables   []*Table `json:"tables"`
-	Comment  string   `json:"comment"`
+	Name    string   `json:"name"`
+	Tables  []*Table `json:"tables"`
+	Comment string   `json:"comment"`
+
+	platform dbPlatform
 }
 
 // WithName set the schema name
@@ -28,7 +29,7 @@ func (schema *Schema) WithName(name string) *Schema {
 // 		postgres
 // 		sqlserver
 func (schema *Schema) OnPlatform(platform string) *Schema {
-	schema.Platform = platform
+	schema.platform = _getPlatform(platform)
 
 	return schema
 }
@@ -55,10 +56,14 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 	return schema
 }
 
+// HasTable return true if table is already in schema
+func (schema *Schema) HasTable(table string) bool {
+	return false
+}
+
 // Install the schema
 func (schema *Schema) Install(db *sql.DB) error {
-	platform := getPlatform(schema.Platform)
-	if platform == nil {
+	if schema.platform == nil {
 		return fmt.Errorf("invalid platform")
 	}
 
@@ -67,7 +72,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 		return err
 	}
 
-	if schemaCreation := platform.buildSchemaCreateSQL(schema); schemaCreation != "" {
+	if schemaCreation := schema.platform.buildSchemaCreateSQL(schema); schemaCreation != "" {
 		if _, err := tx.Exec(schemaCreation); err != nil {
 			tx.Rollback()
 			return err
@@ -75,7 +80,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 	}
 
 	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.buildTableCreateSQL(schema.Name, table)); err != nil {
+		if _, err := tx.Exec(schema.platform.buildTableCreateSQL(schema.Name, table)); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -87,8 +92,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 
 // Drop the schema
 func (schema *Schema) Drop(db *sql.DB) error {
-	platform := getPlatform(schema.Platform)
-	if platform == nil {
+	if schema.platform == nil {
 		return fmt.Errorf("invalid platform")
 	}
 
@@ -98,13 +102,13 @@ func (schema *Schema) Drop(db *sql.DB) error {
 	}
 
 	for i := len(schema.Tables) - 1; i >= 0; i-- {
-		if _, err := tx.Exec(platform.getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
+		if _, err := tx.Exec(schema.platform.getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	if schemaDrop := platform.getSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
+	if schemaDrop := schema.platform.getSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
 		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()
 			return err

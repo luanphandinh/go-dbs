@@ -91,10 +91,10 @@ func getSchema(platform string) *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbPlatform dbPlatform, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
-		dbPlatform.getDriverName(),
-		dbPlatform.getDBConnectionString(serverName, 3306, user, password, dbName),
+		dbSchema.platform.getDriverName(),
+		dbSchema.platform.getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
 	assertNotHasError(t, err)
 	assertNotHasError(t, dbSchema.Drop(db))
@@ -105,13 +105,11 @@ func setupDB(t *testing.T, dbPlatform dbPlatform, dbSchema *Schema) (*sql.DB, er
 
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := getPlatform(platform)
+	db, err := setupDB(t, dbSchema)
 
-	db, err := setupDB(t, dbPlatform, dbSchema)
-
-	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
-	storage := dbPlatform.getSchemaAccessName(dbSchema.Name, "storage")
+	employee := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "department")
+	storage := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "storage")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
@@ -161,12 +159,10 @@ func TestSchemaInstall(t *testing.T) {
 
 func TestAutoIncrement(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := getPlatform(platform)
+	db, err := setupDB(t, dbSchema)
 
-	db, err := setupDB(t, dbPlatform, dbSchema)
-
-	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
+	employee := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "department")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

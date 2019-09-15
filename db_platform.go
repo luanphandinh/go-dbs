@@ -40,25 +40,25 @@ type dbPlatform interface {
 	getSequenceDropSQL(sequence string) string
 }
 
-func getPlatform(platform string) dbPlatform {
+func _getPlatform(platform string) dbPlatform {
 	if platform == mysql57 {
-		return &dbMySQL57Platform{}
+		return new(dbMySQL57Platform)
 	}
 
 	if platform == mysql80 {
-		return &dbMySQL80Platform{}
+		return new(dbMySQL80Platform)
 	}
 
 	if platform == sqlite3 {
-		return &dbSqlitePlatform{}
+		return new(dbSqlitePlatform)
 	}
 
 	if platform == postgres {
-		return &dbPostgresPlatform{}
+		return new(dbPostgresPlatform)
 	}
 
 	if platform == mssql {
-		return &dbMsSQLPlatform{}
+		return new(dbMsSQLPlatform)
 	}
 
 	return nil
