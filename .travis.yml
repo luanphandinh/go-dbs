@@ -2,7 +2,14 @@ language: go
 
 matrix:
   include:
-    - name: "Test MySql:5.7"
+    - name: "golint"
+      go: 1.12.x
+      before_install:
+        - go get -v golang.org/x/lint/golint
+      script:
+        - golint ./...
+
+    - name: "Test MySQL:5.7"
       go: 1.12.x
       services:
         - mysql
@@ -14,8 +21,10 @@ matrix:
       before_install:
         - go get -v github.com/go-sql-driver/mysql
         - mysql -e 'CREATE DATABASE workspace;'
+      script:
+        - go test ./...
 
-    - name: "Test MySql"
+    - name: "Test MySQL"
       go: 1.12.x
       services:
         - mysql
@@ -35,6 +44,8 @@ matrix:
       before_install:
         - go get -v github.com/go-sql-driver/mysql
         - mysql -e 'CREATE DATABASE workspace;'
+      script:
+        - go test ./...
 
     - name: "Test PostgresSQL"
       go: 1.12.x
@@ -48,6 +59,8 @@ matrix:
       before_install:
         - go get -v github.com/lib/pq
         - psql -c 'create database workspace;' -U postgres
+      script:
+        - go test ./...
 
     - name: "Test SQLite"
       go: 1.12.x
@@ -55,6 +68,8 @@ matrix:
         - PLATFORM=sqlite3
       before_install:
         - go get -v github.com/mattn/go-sqlite3
+      script:
+        - go test ./...
 
     - name: "Test MsSQL"
       go: 1.12.x
@@ -70,6 +85,5 @@ matrix:
         - sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=TheStrong!Passw0rd' -p 1433:1433 -d microsoft/mssql-server-linux:2017-latest
       before_install:
         - go get -v github.com/denisenkom/go-mssqldb
-
-script:
-  - go test ./...
+      script:
+        - go test ./...
