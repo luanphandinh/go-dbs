@@ -1,7 +1,5 @@
 package dbs
 
-import "fmt"
-
 func concatStrings(values []string, glue string) (s string) {
 	for index, value := range values {
 		if value == "" {
@@ -9,9 +7,9 @@ func concatStrings(values []string, glue string) (s string) {
 		}
 
 		if index == 0 {
-			s += fmt.Sprintf("%s", value)
+			s += value
 		} else {
-			s += fmt.Sprintf("%s%s", glue, value)
+			s += glue + value
 		}
 	}
 

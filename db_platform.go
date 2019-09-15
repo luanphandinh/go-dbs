@@ -1,7 +1,5 @@
 package dbs
 
-import "fmt"
-
 type Platform interface {
 	GetDriverName() string
 	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
@@ -75,34 +73,35 @@ func _getNotNullDeclaration() string {
 }
 
 func _getPrimaryDeclaration(key []string) string {
-	return fmt.Sprintf("PRIMARY KEY (%s)", concatStrings(key, ", "))
+	return "PRIMARY KEY (" + concatStrings(key, ", ") + ")"
 }
 
 func _getDefaultDeclaration(expression string) string {
-	return fmt.Sprintf("DEFAULT %s", expression)
+	return "DEFAULT " + expression
 }
 
 func _getColumnCheckDeclaration(expression string) string {
-	return fmt.Sprintf("CHECK (%s)", expression)
+	return "CHECK (" + expression + ")"
 }
 
 func _getTableChecksDeclaration(expressions []string) []string {
 	evaluated := make([]string, 0)
 
 	for _, expression := range expressions {
-		evaluated = append(evaluated, fmt.Sprintf("CHECK (%s)", expression))
+		evaluated = append(evaluated, "CHECK (" + expression + ")")
 	}
 
 	return evaluated
 }
 
 func _getSchemaDropDeclarationSQL(schema string) string {
-	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s CASCADE", schema)
+	return "DROP SCHEMA IF EXISTS " + schema + " CASCADE"
 }
 
 func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
 	declaration := make([]string, 0)
-	declaration = append(declaration, fmt.Sprintf("%s %s", col.Name, platform.GetTypeDeclaration(col)))
+	declaration = append(declaration, col.Name)
+	declaration = append(declaration, platform.GetTypeDeclaration(col))
 
 	if col.Unsigned {
 		declaration = append(declaration, platform.GetUnsignedDeclaration())
@@ -149,11 +148,7 @@ func _getTableReferencesDeclarationSQL(platform Platform, schema string, foreign
 	for _, key := range foreignKeys {
 		keys = append(
 			keys,
-			fmt.Sprintf(
-				"FOREIGN KEY (%s) REFERENCES %s",
-				key.Referer,
-				platform.GetSchemaAccessName(schema, key.Reference),
-			),
+			"FOREIGN KEY (" + key.Referer + ") REFERENCES " + platform.GetSchemaAccessName(schema, key.Reference),
 		)
 	}
 
@@ -168,11 +163,7 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	tableCreation = append(tableCreation, platform.GetTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
 	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Checks)...)
 
-	tableDeclaration :=  fmt.Sprintf(
-		"CREATE TABLE %s (\n\t%s\n)",
-		tableName,
-		concatStrings(tableCreation, ",\n\t"),
-	)
+	tableDeclaration := "CREATE TABLE " + tableName + " (\n\t" + concatStrings(tableCreation, ",\n\t") + "\n)"
 
 	commands := make([]string, 0)
 	commands = append(commands, tableDeclaration)
@@ -185,5 +176,5 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 }
 
 func _getTableDropSQL(platform Platform, schema string, table string) string {
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s", platform.GetSchemaAccessName(schema, table))
+	return "DROP TABLE IF EXISTS " + platform.GetSchemaAccessName(schema, table)
 }
