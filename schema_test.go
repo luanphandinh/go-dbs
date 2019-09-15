@@ -124,7 +124,7 @@ func TestSchemaInstall(t *testing.T) {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 51, 1)", employee))
 		assertHasError(t, err)
 
-		// Some check is different across platforms eg: length(name) and LEN(name) in mssql
+		// SQLITE have type affinity, so hard to apply the text range of NVARCHAR(20) onto it
 		if platform != SQLITE3 {
 			_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan Wrong Too Looooong', 22)", employee))
 			assertHasError(t, err)
