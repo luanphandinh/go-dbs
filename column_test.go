@@ -3,11 +3,11 @@ package dbs
 import "testing"
 
 func TestColumnDeclaration(t *testing.T) {
-	mysqlPlatform := GetPlatform(MYSQL80)
-	mysql57Platform := GetPlatform(MYSQL57)
-	sqlitePlatform := GetPlatform(SQLITE3)
-	postgresPlatform := GetPlatform(POSTGRES)
-	mssqlPlatform := GetPlatform(MSSQL)
+	mysqlPlatform := getPlatform(MYSQL80)
+	mysql57Platform := getPlatform(MYSQL57)
+	sqlitePlatform := getPlatform(SQLITE3)
+	postgresPlatform := getPlatform(POSTGRES)
+	mssqlPlatform := getPlatform(MSSQL)
 
 	// id := Column{
 	// 	Name:          "id",

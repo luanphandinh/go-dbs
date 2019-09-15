@@ -22,7 +22,7 @@ var (
 func getSchema(platform string) *Schema {
 	// return &Schema{
 	// 	Name:     "company",
-	// 	Platform: platform,
+	// 	dbPlatform: platform,
 	// 	Comment:  "The Company Schema",
 	// 	Tables: []*Table{
 	// 		{
@@ -91,7 +91,7 @@ func getSchema(platform string) *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbPlatform dbPlatform, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
 		dbPlatform.getDriverName(),
 		dbPlatform.getDBConnectionString(serverName, 3306, user, password, dbName),
@@ -105,7 +105,7 @@ func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, erro
 
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := GetPlatform(platform)
+	dbPlatform := getPlatform(platform)
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
@@ -161,7 +161,7 @@ func TestSchemaInstall(t *testing.T) {
 
 func TestAutoIncrement(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := GetPlatform(platform)
+	dbPlatform := getPlatform(platform)
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 

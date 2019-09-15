@@ -1,6 +1,6 @@
 package dbs
 
-type Platform interface {
+type dbPlatform interface {
 	getDriverName() string
 	getDBConnectionString(server string, port int, user string, password string, dbName string) string
 	chainCommands(commands ...string) string
@@ -40,25 +40,25 @@ type Platform interface {
 	getSequenceDropSQL(sequence string) string
 }
 
-func GetPlatform(platform string) Platform {
+func getPlatform(platform string) dbPlatform {
 	if platform == MYSQL57 {
-		return &MySQL57Platform{}
+		return &dbMySQL57Platform{}
 	}
 
 	if platform == MYSQL80 {
-		return &MySQL80Platform{}
+		return &dbMySQL80Platform{}
 	}
 
 	if platform == SQLITE3 {
-		return &SqlitePlatform{}
+		return &dbSqlitePlatform{}
 	}
 
 	if platform == POSTGRES {
-		return &PostgresPlatform{}
+		return &dbPostgresPlatform{}
 	}
 
 	if platform == MSSQL {
-		return &MsSQLPlatform{}
+		return &dbMsSQLPlatform{}
 	}
 
 	return nil
@@ -98,7 +98,7 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 	return "DROP SCHEMA IF EXISTS " + schema + " CASCADE"
 }
 
-func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
+func _buildColumnDeclarationSQL(platform dbPlatform, col *Column) (colString string) {
 	declaration := make([]string, 0)
 	declaration = append(declaration, col.Name)
 	declaration = append(declaration, platform.getTypeDeclaration(col))
@@ -134,7 +134,7 @@ func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString strin
 	return concatStrings(declaration, " ")
 }
 
-func _buildColumnsDeclarationSQL(platform Platform, cols []*Column) []string {
+func _buildColumnsDeclarationSQL(platform dbPlatform, cols []*Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
 		declarations[index] = platform.buildColumnDeclarationSQL(col)
@@ -143,7 +143,7 @@ func _buildColumnsDeclarationSQL(platform Platform, cols []*Column) []string {
 	return declarations
 }
 
-func _getTableReferencesDeclarationSQL(platform Platform, schema string, foreignKeys []ForeignKey) []string {
+func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, foreignKeys []ForeignKey) []string {
 	keys := make([]string, 0)
 	for _, key := range foreignKeys {
 		keys = append(
@@ -155,7 +155,7 @@ func _getTableReferencesDeclarationSQL(platform Platform, schema string, foreign
 	return keys
 }
 
-func _buildTableCreateSQL(platform Platform, schema string, table *Table) string {
+func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) string {
 	tableName := platform.getSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.buildColumnsDeclarationSQL(table.Columns)...)
@@ -177,6 +177,6 @@ func _buildTableCreateSQL(platform Platform, schema string, table *Table) string
 	return platform.chainCommands(commands...)
 }
 
-func _getTableDropSQL(platform Platform, schema string, table string) string {
+func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
 }

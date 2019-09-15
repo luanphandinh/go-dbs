@@ -4,21 +4,21 @@ import "strconv"
 
 const SQLITE3 string = "sqlite3"
 
-type SqlitePlatform struct{}
+type dbSqlitePlatform struct{}
 
-func (platform *SqlitePlatform) getDriverName() string {
+func (platform *dbSqlitePlatform) getDriverName() string {
 	return SQLITE3
 }
 
-func (platform *SqlitePlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
+func (platform *dbSqlitePlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	return dbName
 }
 
-func (platform *SqlitePlatform) chainCommands(commands ...string) string {
+func (platform *dbSqlitePlatform) chainCommands(commands ...string) string {
 	return concatStrings(commands, ";\n")
 }
 
-func (platform *SqlitePlatform) getTypeDeclaration(col *Column) string {
+func (platform *dbSqlitePlatform) getTypeDeclaration(col *Column) string {
 	dbType := col.Type
 
 	// @TODO: make some type reference that centralized all types together across platforms
@@ -33,94 +33,94 @@ func (platform *SqlitePlatform) getTypeDeclaration(col *Column) string {
 	return dbType
 }
 
-func (platform *SqlitePlatform) getUniqueDeclaration() string {
+func (platform *dbSqlitePlatform) getUniqueDeclaration() string {
 	return _getUniqueDeclaration()
 }
 
-func (platform *SqlitePlatform) getNotNullDeclaration() string {
+func (platform *dbSqlitePlatform) getNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *SqlitePlatform) getPrimaryDeclaration(key []string) string {
+func (platform *dbSqlitePlatform) getPrimaryDeclaration(key []string) string {
 	return _getPrimaryDeclaration(key)
 }
 
-func (platform *SqlitePlatform) getAutoIncrementDeclaration() string {
+func (platform *dbSqlitePlatform) getAutoIncrementDeclaration() string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getUnsignedDeclaration() string {
+func (platform *dbSqlitePlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getDefaultDeclaration(expression string) string {
+func (platform *dbSqlitePlatform) getDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) getColumnCommentDeclaration(expression string) string {
+func (platform *dbSqlitePlatform) getColumnCommentDeclaration(expression string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
+func (platform *dbSqlitePlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
 	return make([]string, 0)
 }
 
-func (platform *SqlitePlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
+func (platform *dbSqlitePlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
-func (platform *SqlitePlatform) getColumnCheckDeclaration(expression string) string {
+func (platform *dbSqlitePlatform) getColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *SqlitePlatform) buildColumnDeclarationSQL(col *Column) string {
+func (platform *dbSqlitePlatform) buildColumnDeclarationSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *SqlitePlatform) buildSchemaCreateSQL(schema *Schema) string {
+func (platform *dbSqlitePlatform) buildSchemaCreateSQL(schema *Schema) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getSchemaCreateDeclarationSQL(schema string) string {
+func (platform *dbSqlitePlatform) getSchemaCreateDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getSchemaDropDeclarationSQL(schema string) string {
+func (platform *dbSqlitePlatform) getSchemaDropDeclarationSQL(schema string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getSchemaAccessName(schema string, name string) string {
+func (platform *dbSqlitePlatform) getSchemaAccessName(schema string, name string) string {
 	return name
 }
 
-func (platform *SqlitePlatform) getSchemaCommentDeclaration(schema string, expression string) string {
+func (platform *dbSqlitePlatform) getSchemaCommentDeclaration(schema string, expression string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getTableChecksDeclaration(expressions []string) []string {
+func (platform *dbSqlitePlatform) getTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *SqlitePlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbSqlitePlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
-func (platform *SqlitePlatform) getTableCommentDeclarationSQL(name string, expression string) string {
+func (platform *dbSqlitePlatform) getTableCommentDeclarationSQL(name string, expression string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *dbSqlitePlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {
+func (platform *dbSqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *SqlitePlatform) getSequenceCreateSQL(sequence string) string {
+func (platform *dbSqlitePlatform) getSequenceCreateSQL(sequence string) string {
 	return ""
 }
 
-func (platform *SqlitePlatform) getSequenceDropSQL(sequence string) string {
+func (platform *dbSqlitePlatform) getSequenceDropSQL(sequence string) string {
 	return ""
 }

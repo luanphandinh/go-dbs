@@ -43,7 +43,7 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 }
 
 func (schema *Schema) Install(db *sql.DB) error {
-	platform := GetPlatform(schema.Platform)
+	platform := getPlatform(schema.Platform)
 	if platform == nil {
 		return fmt.Errorf("invalid platform")
 	}
@@ -72,7 +72,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 }
 
 func (schema *Schema) Drop(db *sql.DB) error {
-	platform := GetPlatform(schema.Platform)
+	platform := getPlatform(schema.Platform)
 	if platform == nil {
 		return fmt.Errorf("invalid platform")
 	}
