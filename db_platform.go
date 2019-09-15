@@ -40,7 +40,20 @@ type dbPlatform interface {
 	getSequenceDropSQL(sequence string) string
 }
 
+var _cachedPlatforms = make(map[string]dbPlatform)
+
 func _getPlatform(platform string) dbPlatform {
+	if cached := _cachedPlatforms[platform]; cached != nil {
+		return cached
+	}
+
+	cache := _makePlatform(platform)
+	_cachedPlatforms[platform] = cache
+
+	return cache
+}
+
+func _makePlatform(platform string) dbPlatform {
 	if platform == mysql57 {
 		return new(dbMySQL57Platform)
 	}
