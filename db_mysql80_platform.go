@@ -1,29 +1,22 @@
 package dbs
 
-import "fmt"
+import "strconv"
 
 const MYSQL80 string = "mysql:8.0"
 
-type MySql80Platform struct {
-}
+type MySql80Platform struct{}
 
 func (platform *MySql80Platform) GetDriverName() string {
 	return MYSQL
 }
 
 func (platform *MySql80Platform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
-	return fmt.Sprintf(
-		"%s:%s@tcp(%s)/%s",
-		user,
-		password,
-		server,
-		dbName,
-	)
+	return user + ":" + password + "@tcp(" + server + ")/" + dbName
 }
 
 func (platform *MySql80Platform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
-		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
+		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
 	}
 
 	return col.Type
@@ -58,7 +51,7 @@ func (platform *MySql80Platform) GetDefaultDeclaration(expression string) string
 }
 
 func (platform *MySql80Platform) GetColumnCommentDeclaration(expression string) string {
-	return fmt.Sprintf("COMMENT '%s'", expression)
+	return "COMMENT '" + expression + "'"
 }
 
 func (platform *MySql80Platform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
@@ -106,7 +99,7 @@ func (platform *MySql80Platform) GetTableReferencesDeclarationSQL(schema string,
 }
 
 func (platform *MySql80Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
-	return fmt.Sprintf("COMMENT '%s'", expression)
+	return "COMMENT '" + expression + "'"
 }
 
 func (platform *MySql80Platform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {

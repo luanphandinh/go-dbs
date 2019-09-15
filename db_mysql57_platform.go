@@ -1,27 +1,20 @@
 package dbs
 
-import "fmt"
+import "strconv"
 
 const (
 	MYSQL   string = "mysql"
 	MYSQL57 string = "mysql:5.7"
 )
 
-type MySql57Platform struct {
-}
+type MySql57Platform struct{}
 
 func (platform *MySql57Platform) GetDriverName() string {
 	return MYSQL
 }
 
 func (platform *MySql57Platform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
-	return fmt.Sprintf(
-		"%s:%s@tcp(%s)/%s",
-		user,
-		password,
-		server,
-		dbName,
-	)
+	return user + ":" + password + "@tcp(" + server + ")/" + dbName
 }
 
 func (platform *MySql57Platform) ChainCommands(commands ...string) string {
@@ -30,7 +23,7 @@ func (platform *MySql57Platform) ChainCommands(commands ...string) string {
 
 func (platform *MySql57Platform) GetTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
-		return fmt.Sprintf("%s(%d)", col.Type, col.Length)
+		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
 	}
 
 	return col.Type
@@ -61,7 +54,7 @@ func (platform *MySql57Platform) GetDefaultDeclaration(expression string) string
 }
 
 func (platform *MySql57Platform) GetColumnCommentDeclaration(expression string) string {
-	return fmt.Sprintf("COMMENT '%s'", expression)
+	return "COMMENT '" + expression + "'"
 }
 
 func (platform *MySql57Platform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
@@ -109,7 +102,7 @@ func (platform *MySql57Platform) GetTableReferencesDeclarationSQL(schema string,
 }
 
 func (platform *MySql57Platform) GetTableCommentDeclarationSQL(name string, expression string) string {
-	return fmt.Sprintf("COMMENT '%s'", expression)
+	return "COMMENT '" + expression + "'"
 }
 
 func (platform *MySql57Platform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
