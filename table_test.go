@@ -124,7 +124,8 @@ COMMENT 'The user table'`,
 );
 COMMENT ON TABLE public.user IS 'The user table';
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
-CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
+CREATE SEQUENCE public.user_id_seq;
+ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		postgresPlatform.BuildTableCreateSQL("public", table),
 	)
 

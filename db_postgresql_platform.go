@@ -1,24 +1,22 @@
 package dbs
 
-import "fmt"
-
 const POSTGRES string = "postgres"
 
-type PostgresPlatform struct {
-}
+type PostgresPlatform struct{}
 
 func (platform *PostgresPlatform) GetDriverName() string {
 	return POSTGRES
 }
 
 func (platform *PostgresPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
-	return fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s sslmode=disable",
-		server,
-		user,
-		password,
-		dbName,
-	)
+	info := make([]string, 0)
+	info = append(info, "host=" + server)
+	info = append(info, "user=" + user)
+	info = append(info, "password=" + password)
+	info = append(info, "dbname=" + dbName)
+	info = append(info, "sslmode=disable")
+
+	return concatStrings(info, " ")
 }
 
 func (platform *PostgresPlatform) ChainCommands(commands ...string) string {
@@ -63,17 +61,12 @@ func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string)
 
 func (platform *PostgresPlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
 	comments := make([]string, 0)
+	tableName := platform.GetSchemaAccessName(schema, table.Name)
 	for _, col := range table.Columns {
 		if col.Comment != "" {
-			comments = append(
-				comments,
-				fmt.Sprintf(
-					"COMMENT ON COLUMN %s.%s IS '%s'",
-					platform.GetSchemaAccessName(schema, table.Name),
-					col.Name,
-					col.Comment,
-				),
-			)
+			colName := tableName + "." + col.Name
+			comment := " IS '" + col.Comment + "'"
+			comments = append(comments, "COMMENT ON COLUMN " + colName + comment)
 		}
 	}
 
@@ -95,7 +88,7 @@ func (platform *PostgresPlatform) BuildSchemaCreateSQL(schema *Schema) string {
 }
 
 func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
-	return fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)
+	return "CREATE SCHEMA IF NOT EXISTS " + schema
 }
 
 func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
@@ -107,11 +100,11 @@ func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) strin
 }
 
 func (platform *PostgresPlatform) GetSchemaAccessName(schema string, name string) string {
-	return fmt.Sprintf("%s.%s", schema, name)
+	return schema + "." + name
 }
 
 func (platform *PostgresPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
-	return fmt.Sprintf("COMMENT ON SCHEMA %s IS '%s'", schema, expression)
+	return "COMMENT ON SCHEMA " + schema + " IS '" + expression + "'"
 }
 
 func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string) []string {
@@ -123,26 +116,21 @@ func (platform *PostgresPlatform) GetTableReferencesDeclarationSQL(schema string
 }
 
 func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
-	return fmt.Sprintf("COMMENT ON TABLE %s IS '%s'", name, expression)
+	return "COMMENT ON TABLE " + name + " IS '" + expression + "'"
 }
 
 func (platform *PostgresPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+	tableName := platform.GetSchemaAccessName(schema, table.Name)
+
 	commands := make([]string, 0)
 	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
-			seqName := platform.GetSchemaAccessName(schema, fmt.Sprintf("%s_%s_seq", table.Name, col.Name))
-			commands = append(
-				commands,
-				fmt.Sprintf(
-					"%s; ALTER TABLE %s ALTER %s SET DEFAULT NEXTVAL('%s')",
-					platform.GetSequenceCreateSQL(seqName),
-					platform.GetSchemaAccessName(schema, table.Name),
-					col.Name,
-					seqName,
-				),
-			)
+			seqName := platform.GetSchemaAccessName(schema, table.Name + "_" + col.Name + "_seq")
+			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.Name + " SET DEFAULT NEXTVAL('" + seqName + "')"
+			commands = append(commands, platform.GetSequenceCreateSQL(seqName))
+			commands = append(commands, alterTableCommand)
 		}
 	}
 
@@ -154,9 +142,9 @@ func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (
 }
 
 func (platform *PostgresPlatform) GetSequenceCreateSQL(sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
+	return "CREATE SEQUENCE " + sequence
 }
 
 func (platform *PostgresPlatform) GetSequenceDropSQL(sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
+	return "DROP SEQUENCE " + sequence
 }
