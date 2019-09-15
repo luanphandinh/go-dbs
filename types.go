@@ -8,7 +8,7 @@ const (
 	INT        string = "INT"
 	BIGINT     string = "BIGINT"
 	DECIMAL    string = "DECIMAL"
-	NUMERIC	   string = "NUMERIC"
+	NUMERIC    string = "NUMERIC"
 	FLOAT      string = "FLOAT"
 	DOUBLE     string = "DOUBLE"
 	BIT        string = "BIT"
