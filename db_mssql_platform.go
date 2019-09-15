@@ -4,13 +4,13 @@ import "strconv"
 
 const MSSQL string = "sqlserver"
 
-type MsSqlPlatform struct{}
+type MsSQLPlatform struct{}
 
-func (platform *MsSqlPlatform) GetDriverName() string {
+func (platform *MsSQLPlatform) getDriverName() string {
 	return MSSQL
 }
 
-func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
+func (platform *MsSQLPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	info := make([]string, 0)
 	info = append(info, "server=" + server)
 	info = append(info, "user id=" + user)
@@ -20,11 +20,11 @@ func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, us
 	return concatStrings(info, ";")
 }
 
-func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
+func (platform *MsSQLPlatform) chainCommands(commands ...string) string {
 	return concatStrings(commands, ";\nGO\n")
 }
 
-func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {
+func (platform *MsSQLPlatform) getTypeDeclaration(col *Column) string {
 	if col.Length > 0 {
 		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
 	}
@@ -32,94 +32,94 @@ func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {
 	return col.Type
 }
 
-func (platform *MsSqlPlatform) GetUniqueDeclaration() string {
+func (platform *MsSQLPlatform) getUniqueDeclaration() string {
 	return _getUniqueDeclaration()
 }
 
-func (platform *MsSqlPlatform) GetNotNullDeclaration() string {
+func (platform *MsSQLPlatform) getNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *MsSqlPlatform) GetPrimaryDeclaration(key []string) string {
+func (platform *MsSQLPlatform) getPrimaryDeclaration(key []string) string {
 	return _getPrimaryDeclaration(key)
 }
 
-func (platform *MsSqlPlatform) GetAutoIncrementDeclaration() string {
+func (platform *MsSQLPlatform) getAutoIncrementDeclaration() string {
 	return "IDENTITY(1,1)"
 }
 
-func (platform *MsSqlPlatform) GetUnsignedDeclaration() string {
+func (platform *MsSQLPlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *MsSqlPlatform) BuildColumnDeclarationSQL(col *Column) string {
+func (platform *MsSQLPlatform) buildColumnDeclarationSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *MsSqlPlatform) BuildColumnsDeclarationSQL(cols []*Column) []string {
+func (platform *MsSQLPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
-func (platform *MsSqlPlatform) GetColumnCommentDeclaration(expression string) string {
+func (platform *MsSQLPlatform) getColumnCommentDeclaration(expression string) string {
 	return ""
 }
 
-func (platform *MsSqlPlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+func (platform *MsSQLPlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
 	return make([]string, 0)
 }
 
-func (platform *MsSqlPlatform) GetColumnCheckDeclaration(expression string) string {
+func (platform *MsSQLPlatform) getColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *MsSqlPlatform) BuildSchemaCreateSQL(schema *Schema) string {
-	return platform.GetSchemaCreateDeclarationSQL(schema.Name)
+func (platform *MsSQLPlatform) buildSchemaCreateSQL(schema *Schema) string {
+	return platform.getSchemaCreateDeclarationSQL(schema.Name)
 }
 
-func (platform *MsSqlPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
+func (platform *MsSQLPlatform) getSchemaCreateDeclarationSQL(schema string) string {
 	return "CREATE SCHEMA " + schema
 }
 
-func (platform *MsSqlPlatform) GetSchemaDropDeclarationSQL(schema string) string {
+func (platform *MsSQLPlatform) getSchemaDropDeclarationSQL(schema string) string {
 	return "DROP SCHEMA IF EXISTS " + schema
 }
 
-func (platform *MsSqlPlatform) GetDefaultDeclaration(expression string) string {
+func (platform *MsSQLPlatform) getDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *MsSqlPlatform) GetSchemaAccessName(schema string, name string) string {
+func (platform *MsSQLPlatform) getSchemaAccessName(schema string, name string) string {
 	return schema + "." + name
 }
 
-func (platform *MsSqlPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+func (platform *MsSQLPlatform) getSchemaCommentDeclaration(schema string, expression string) string {
 	return ""
 }
 
-func (platform *MsSqlPlatform) GetTableChecksDeclaration(expressions []string) []string {
+func (platform *MsSQLPlatform) getTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *MsSqlPlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *MsSQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
-func (platform *MsSqlPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+func (platform *MsSQLPlatform) getTableCommentDeclarationSQL(name string, expression string) string {
 	return ""
 }
 
-func (platform *MsSqlPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *MsSQLPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
-func (platform *MsSqlPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
+func (platform *MsSQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *MsSqlPlatform) GetSequenceCreateSQL(sequence string) string {
+func (platform *MsSQLPlatform) getSequenceCreateSQL(sequence string) string {
 	return "CREATE SEQUENCE " + sequence
 }
 
-func (platform *MsSqlPlatform) GetSequenceDropSQL(sequence string) string {
+func (platform *MsSQLPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }

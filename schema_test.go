@@ -93,8 +93,8 @@ func getSchema(platform string) *Schema {
 
 func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
-		dbPlatform.GetDriverName(),
-		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
+		dbPlatform.getDriverName(),
+		dbPlatform.getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
 	assertNotHasError(t, err)
 	assertNotHasError(t, dbSchema.Drop(db))
@@ -109,9 +109,9 @@ func TestSchemaInstall(t *testing.T) {
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
-	storage := dbPlatform.GetSchemaAccessName(dbSchema.Name, "storage")
+	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
+	storage := dbPlatform.getSchemaAccessName(dbSchema.Name, "storage")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
@@ -165,8 +165,8 @@ func TestAutoIncrement(t *testing.T) {
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
+	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

@@ -1,7 +1,5 @@
 package dbs
 
-const COLUMN = "COLUMN"
-
 type Column struct {
 	Name          string `json:"name"`
 	Type          string `json:"type"`

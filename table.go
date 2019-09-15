@@ -1,7 +1,5 @@
 package dbs
 
-const TABLE = "TABLE"
-
 type ForeignKey struct {
 	Referer   string `json:"referer"`
 	Reference string `json:"reference"`

@@ -79,7 +79,7 @@ func TestToTableDeclaration(t *testing.T) {
 	CHECK (age > 50)
 )
 COMMENT 'The user table'`,
-		mysqlPlatform.BuildTableCreateSQL("", table),
+		mysqlPlatform.buildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -94,7 +94,7 @@ COMMENT 'The user table'`,
 	CHECK (age > 50)
 )
 COMMENT 'The user table'`,
-		mysql57Platform.BuildTableCreateSQL("", table),
+		mysql57Platform.buildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -108,7 +108,7 @@ COMMENT 'The user table'`,
 	FOREIGN KEY (sub_id) REFERENCES other_table(id),
 	CHECK (age > 50)
 )`,
-		sqlitePlatform.BuildTableCreateSQL("", table),
+		sqlitePlatform.buildTableCreateSQL("", table),
 	)
 
 	assertStringEquals(
@@ -126,7 +126,7 @@ COMMENT ON TABLE public.user IS 'The user table';
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
 CREATE SEQUENCE public.user_id_seq;
 ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
-		postgresPlatform.BuildTableCreateSQL("public", table),
+		postgresPlatform.buildTableCreateSQL("public", table),
 	)
 
 	assertStringEquals(
@@ -140,13 +140,13 @@ ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 )`,
-		msSqlPlatform.BuildTableCreateSQL("public", table),
+		msSqlPlatform.buildTableCreateSQL("public", table),
 	)
 
 	table.PrimaryKey = []string{"id", "name"}
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.GetPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.GetPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.GetPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.GetPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", msSqlPlatform.GetPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.getPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", msSqlPlatform.getPrimaryDeclaration(table.PrimaryKey))
 }
