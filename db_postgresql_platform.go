@@ -1,5 +1,7 @@
 package dbs
 
+import "strconv"
+
 const POSTGRES string = "postgres"
 
 type PostgresPlatform struct{}
@@ -24,7 +26,18 @@ func (platform *PostgresPlatform) ChainCommands(commands ...string) string {
 }
 
 func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
-	return col.Type
+	colType := col.Type
+
+	// @TODO: make some type reference that centralized all types together across platforms
+	if colType == NVARCHAR {
+		 colType = VARCHAR
+	}
+
+	if col.Length > 0 {
+		return colType + "(" + strconv.Itoa(col.Length) + ")"
+	}
+
+	return colType
 }
 
 func (platform *PostgresPlatform) GetUniqueDeclaration() string {

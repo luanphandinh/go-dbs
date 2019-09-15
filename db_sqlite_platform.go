@@ -24,6 +24,8 @@ func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {
 
 func (platform *SqlitePlatform) GetTypeDeclaration(col *Column) string {
 	dbType := col.Type
+
+	// @TODO: make some type reference that centralized all types together across platforms
 	if inStringArray(col.Type, integerTypes) {
 		dbType = "INTEGER"
 	}

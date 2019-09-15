@@ -1,5 +1,7 @@
 package dbs
 
+import "strconv"
+
 const MSSQL string = "sqlserver"
 
 type MsSqlPlatform struct{}
@@ -23,6 +25,10 @@ func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
 }
 
 func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {
+	if col.Length > 0 {
+		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
+	}
+
 	return col.Type
 }
 
