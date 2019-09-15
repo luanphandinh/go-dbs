@@ -1,24 +1,23 @@
 package dbs
 
-import "fmt"
+import "strconv"
 
 const MSSQL string = "sqlserver"
 
-type MsSqlPlatform struct {
-}
+type MsSqlPlatform struct{}
 
 func (platform *MsSqlPlatform) GetDriverName() string {
 	return MSSQL
 }
 
 func (platform *MsSqlPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
-	return fmt.Sprintf(
-		"server=%s;user id=%s;password=%s;database=%s;",
-		server,
-		user,
-		password,
-		dbName,
-	)
+	info := make([]string, 0)
+	info = append(info, "server=" + server)
+	info = append(info, "user id=" + user)
+	info = append(info, "password=" + password)
+	info = append(info, "database=" + dbName)
+
+	return concatStrings(info, ";")
 }
 
 func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
@@ -26,6 +25,10 @@ func (platform *MsSqlPlatform) ChainCommands(commands ...string) string {
 }
 
 func (platform *MsSqlPlatform) GetTypeDeclaration(col *Column) string {
+	if col.Length > 0 {
+		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
+	}
+
 	return col.Type
 }
 
@@ -74,11 +77,11 @@ func (platform *MsSqlPlatform) BuildSchemaCreateSQL(schema *Schema) string {
 }
 
 func (platform *MsSqlPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
-	return fmt.Sprintf("CREATE SCHEMA %s", schema)
+	return "CREATE SCHEMA " + schema
 }
 
 func (platform *MsSqlPlatform) GetSchemaDropDeclarationSQL(schema string) string {
-	return fmt.Sprintf("DROP SCHEMA IF EXISTS %s", schema)
+	return "DROP SCHEMA IF EXISTS " + schema
 }
 
 func (platform *MsSqlPlatform) GetDefaultDeclaration(expression string) string {
@@ -86,7 +89,7 @@ func (platform *MsSqlPlatform) GetDefaultDeclaration(expression string) string {
 }
 
 func (platform *MsSqlPlatform) GetSchemaAccessName(schema string, name string) string {
-	return fmt.Sprintf("%s.%s", schema, name)
+	return schema + "." + name
 }
 
 func (platform *MsSqlPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
@@ -114,9 +117,9 @@ func (platform *MsSqlPlatform) GetTableDropSQL(schema string, table string) (tab
 }
 
 func (platform *MsSqlPlatform) GetSequenceCreateSQL(sequence string) string {
-	return fmt.Sprintf("CREATE SEQUENCE %s", sequence)
+	return "CREATE SEQUENCE " + sequence
 }
 
 func (platform *MsSqlPlatform) GetSequenceDropSQL(sequence string) string {
-	return fmt.Sprintf("DROP SEQUENCE %s", sequence)
+	return "DROP SEQUENCE " + sequence
 }

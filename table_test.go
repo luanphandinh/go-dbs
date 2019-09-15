@@ -117,14 +117,15 @@ COMMENT 'The user table'`,
 	id INT NOT NULL,
 	sub_id INT NOT NULL,
 	name TEXT NOT NULL,
-	age INT DEFAULT 10 CHECK (age < 1000),
+	age INT(4) DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
 	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 );
 COMMENT ON TABLE public.user IS 'The user table';
 COMMENT ON COLUMN public.user.age IS 'age should less than 1000';
-CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
+CREATE SEQUENCE public.user_id_seq;
+ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		postgresPlatform.BuildTableCreateSQL("public", table),
 	)
 
@@ -134,7 +135,7 @@ CREATE SEQUENCE public.user_id_seq; ALTER TABLE public.user ALTER id SET DEFAULT
 	id INT NOT NULL IDENTITY(1,1),
 	sub_id INT NOT NULL,
 	name TEXT NOT NULL,
-	age INT DEFAULT 10 CHECK (age < 1000),
+	age INT(4) DEFAULT 10 CHECK (age < 1000),
 	PRIMARY KEY (id),
 	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)

@@ -30,9 +30,9 @@ func getSchema(platform string) *Schema {
 	// 			PrimaryKey: []string{"id"},
 	// 			Columns: []*Column{
 	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: TEXT, NotNull: true, Length: 2},
+	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
 	// 				{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-	// 				{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true, Length: 1},
+	// 				{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
 	// 			},
 	// 			Comment: "Departments of company",
 	// 		},
@@ -41,14 +41,21 @@ func getSchema(platform string) *Schema {
 	// 			PrimaryKey: []string{"id"},
 	// 			Columns: []*Column{
 	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: TEXT, NotNull: true},
+	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
 	// 				{Name: "department_id", Type: INT, Unsigned: true},
 	// 				{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-	// 				{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Length: 2, Check: "age > 20"},
+	// 				{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
 	// 			},
 	// 			Checks: []string{"age < 50"},
 	// 			ForeignKeys: []ForeignKey{
 	// 				{Referer: "department_id", Reference: "department(id)"},
+	// 			},
+	// 		},
+	// 		{
+	// 			Name:       "storage",
+	// 			Columns: []*Column{
+	// 				{Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
+	// 				{Name: "description", Type: TEXT},
 	// 			},
 	// 		},
 	// 	},
@@ -57,24 +64,29 @@ func getSchema(platform string) *Schema {
 
 	department := new(Table).WithName("department").WithComment("Departments of company")
 	department.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-	department.AddColumn(new(Column).WithName("name").WithType(TEXT).WithLength(2).IsNotNull())
+	department.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
 	department.AddColumn(new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
-	department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).WithLength(1).IsNotNull().IsUnsigned().IsUnique())
+	department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique())
 	department.AddPrimaryKey([]string{"id"})
 
 	employee := new(Table).WithName("employee")
 	employee.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-	employee.AddColumn(new(Column).WithName("name").WithType(TEXT).IsNotNull())
+	employee.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
 	employee.AddColumn(new(Column).WithName("department_id").WithType(INT).IsUnsigned())
 	employee.AddColumn(new(Column).WithName("valid").WithType(SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
-	employee.AddColumn(new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().WithLength(2).AddCheck("age > 20"))
+	employee.AddColumn(new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
 
 	employee.AddPrimaryKey([]string{"id"})
 	employee.AddCheck("age < 50")
 	employee.AddForeignKey("department_id", "department(id)")
 
+	storage := new(Table).WithName("storage").WithComment("Storage for fun")
+	storage.AddColumn(new(Column).WithName("room").WithType(NVARCHAR).WithLength(50))
+	storage.AddColumn(new(Column).WithName("description").WithType(TEXT))
+
 	schema.AddTable(department)
 	schema.AddTable(employee)
+	schema.AddTable(storage)
 
 	return schema
 }
@@ -99,6 +111,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
 	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
+	storage := dbPlatform.GetSchemaAccessName(dbSchema.Name, "storage")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
@@ -112,8 +125,10 @@ func TestSchemaInstall(t *testing.T) {
 		assertHasError(t, err)
 
 		// Some check is different across platforms eg: length(name) and LEN(name) in mssql
-		// _, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan Wrong', 22)", employee))
-		// assertHasError(t, err)
+		if platform != SQLITE3 {
+			_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan Wrong Too Looooong', 22)", employee))
+			assertHasError(t, err)
+		}
 
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES (NULL, 22)", employee))
 		assertHasError(t, err)
@@ -123,6 +138,9 @@ func TestSchemaInstall(t *testing.T) {
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
+	assertNotHasError(t, err)
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (room, description) VALUES ('ROOMC1', 'BOOM')", storage))
 	assertNotHasError(t, err)
 
 	var valid, age, position int

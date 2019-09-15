@@ -14,6 +14,7 @@ const (
 	BIT        string = "BIT"
 	CHAR       string = "CHAR"
 	VARCHAR    string = "VARCHAR"
+	NVARCHAR   string = "NVARCHAR"
 	BINARY     string = "BINARY"
 	VARBINARY  string = "VARBINARY"
 	TINYBLOB   string = "TINYBLOB"
@@ -32,38 +33,6 @@ const (
 	TIMESTAMP  string = "TIMESTAMP"
 	YEAR       string = "YEAR"
 )
-
-var allTypes = []string{
-	TINYINT,
-	SMALLINT,
-	MEDIUMINT,
-	INT,
-	BIGINT,
-	DECIMAL,
-	NUMERIC,
-	FLOAT,
-	DOUBLE,
-	BIT,
-	CHAR,
-	VARCHAR,
-	BINARY,
-	VARBINARY,
-	TINYBLOB,
-	BLOB,
-	MEDIUMBLOB,
-	LONGBLOB,
-	TINYTEXT,
-	TEXT,
-	MEDIUMTEXT,
-	LONGTEXT,
-	ENUM,
-	SET,
-	DATE,
-	TIME,
-	DATETIME,
-	TIMESTAMP,
-	YEAR,
-}
 
 var integerTypes = []string{
 	TINYINT,

@@ -1,11 +1,10 @@
 package dbs
 
-import "fmt"
+import "strconv"
 
 const SQLITE3 string = "sqlite3"
 
-type SqlitePlatform struct {
-}
+type SqlitePlatform struct{}
 
 func (platform *SqlitePlatform) GetDriverName() string {
 	return SQLITE3
@@ -25,12 +24,14 @@ func (platform *SqlitePlatform) GetSchemaDeclarationSQL(schema string) string {
 
 func (platform *SqlitePlatform) GetTypeDeclaration(col *Column) string {
 	dbType := col.Type
+
+	// @TODO: make some type reference that centralized all types together across platforms
 	if inStringArray(col.Type, integerTypes) {
 		dbType = "INTEGER"
 	}
 
 	if col.Length > 0 {
-		return fmt.Sprintf("%s(%d)", dbType, col.Length)
+		return dbType + "(" + strconv.Itoa(col.Length) + ")"
 	}
 
 	return dbType
