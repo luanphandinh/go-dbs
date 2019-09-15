@@ -2,15 +2,15 @@ package dbs
 
 import "strconv"
 
-const POSTGRES string = "postgres"
+const postgres string = "postgres"
 
-type PostgresPlatform struct{}
+type dbPostgresPlatform struct{}
 
-func (platform *PostgresPlatform) GetDriverName() string {
-	return POSTGRES
+func (platform *dbPostgresPlatform) getDriverName() string {
+	return postgres
 }
 
-func (platform *PostgresPlatform) GetDBConnectionString(server string, port int, user string, password string, dbName string) string {
+func (platform *dbPostgresPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	info := make([]string, 0)
 	info = append(info, "host=" + server)
 	info = append(info, "user=" + user)
@@ -21,11 +21,11 @@ func (platform *PostgresPlatform) GetDBConnectionString(server string, port int,
 	return concatStrings(info, " ")
 }
 
-func (platform *PostgresPlatform) ChainCommands(commands ...string) string {
+func (platform *dbPostgresPlatform) chainCommands(commands ...string) string {
 	return concatStrings(commands, ";\n")
 }
 
-func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
+func (platform *dbPostgresPlatform) getTypeDeclaration(col *Column) string {
 	colType := col.Type
 
 	// @TODO: make some type reference that centralized all types together across platforms
@@ -40,41 +40,41 @@ func (platform *PostgresPlatform) GetTypeDeclaration(col *Column) string {
 	return colType
 }
 
-func (platform *PostgresPlatform) GetUniqueDeclaration() string {
+func (platform *dbPostgresPlatform) getUniqueDeclaration() string {
 	return _getUniqueDeclaration()
 }
 
-func (platform *PostgresPlatform) GetNotNullDeclaration() string {
+func (platform *dbPostgresPlatform) getNotNullDeclaration() string {
 	return _getNotNullDeclaration()
 }
 
-func (platform *PostgresPlatform) GetPrimaryDeclaration(key []string) string {
+func (platform *dbPostgresPlatform) getPrimaryDeclaration(key []string) string {
 	return _getPrimaryDeclaration(key)
 }
 
-func (platform *PostgresPlatform) GetAutoIncrementDeclaration() string {
+func (platform *dbPostgresPlatform) getAutoIncrementDeclaration() string {
 	return ""
 }
 
-func (platform *PostgresPlatform) GetUnsignedDeclaration() string {
+func (platform *dbPostgresPlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *PostgresPlatform) BuildColumnDeclarationSQL(col *Column) string {
+func (platform *dbPostgresPlatform) buildColumnDeclarationSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
-func (platform *PostgresPlatform) BuildColumnsDeclarationSQL(cols []*Column) []string {
+func (platform *dbPostgresPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
 	return _buildColumnsDeclarationSQL(platform, cols)
 }
 
-func (platform *PostgresPlatform) GetColumnCommentDeclaration(expression string) string {
+func (platform *dbPostgresPlatform) getColumnCommentDeclaration(expression string) string {
 	return ""
 }
 
-func (platform *PostgresPlatform) GetColumnsCommentDeclaration(schema string, table *Table) []string {
+func (platform *dbPostgresPlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
 	comments := make([]string, 0)
-	tableName := platform.GetSchemaAccessName(schema, table.Name)
+	tableName := platform.getSchemaAccessName(schema, table.Name)
 	for _, col := range table.Columns {
 		if col.Comment != "" {
 			colName := tableName + "." + col.Name
@@ -86,78 +86,78 @@ func (platform *PostgresPlatform) GetColumnsCommentDeclaration(schema string, ta
 	return comments
 }
 
-func (platform *PostgresPlatform) GetColumnCheckDeclaration(expression string) string {
+func (platform *dbPostgresPlatform) getColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) BuildSchemaCreateSQL(schema *Schema) string {
+func (platform *dbPostgresPlatform) buildSchemaCreateSQL(schema *Schema) string {
 	commands := make([]string, 0)
-	commands = append(commands, platform.GetSchemaCreateDeclarationSQL(schema.Name))
+	commands = append(commands, platform.getSchemaCreateDeclarationSQL(schema.Name))
 	if schema.Comment != "" {
-		commands = append(commands, platform.GetSchemaCommentDeclaration(schema.Name, schema.Comment))
+		commands = append(commands, platform.getSchemaCommentDeclaration(schema.Name, schema.Comment))
 	}
 
-	return platform.ChainCommands(commands...)
+	return platform.chainCommands(commands...)
 }
 
-func (platform *PostgresPlatform) GetSchemaCreateDeclarationSQL(schema string) string {
+func (platform *dbPostgresPlatform) getSchemaCreateDeclarationSQL(schema string) string {
 	return "CREATE SCHEMA IF NOT EXISTS " + schema
 }
 
-func (platform *PostgresPlatform) GetSchemaDropDeclarationSQL(schema string) string {
+func (platform *dbPostgresPlatform) getSchemaDropDeclarationSQL(schema string) string {
 	return _getSchemaDropDeclarationSQL(schema)
 }
 
-func (platform *PostgresPlatform) GetDefaultDeclaration(expression string) string {
+func (platform *dbPostgresPlatform) getDefaultDeclaration(expression string) string {
 	return _getDefaultDeclaration(expression)
 }
 
-func (platform *PostgresPlatform) GetSchemaAccessName(schema string, name string) string {
+func (platform *dbPostgresPlatform) getSchemaAccessName(schema string, name string) string {
 	return schema + "." + name
 }
 
-func (platform *PostgresPlatform) GetSchemaCommentDeclaration(schema string, expression string) string {
+func (platform *dbPostgresPlatform) getSchemaCommentDeclaration(schema string, expression string) string {
 	return "COMMENT ON SCHEMA " + schema + " IS '" + expression + "'"
 }
 
-func (platform *PostgresPlatform) GetTableChecksDeclaration(expressions []string) []string {
+func (platform *dbPostgresPlatform) getTableChecksDeclaration(expressions []string) []string {
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *PostgresPlatform) GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
-func (platform *PostgresPlatform) GetTableCommentDeclarationSQL(name string, expression string) string {
+func (platform *dbPostgresPlatform) getTableCommentDeclarationSQL(name string, expression string) string {
 	return "COMMENT ON TABLE " + name + " IS '" + expression + "'"
 }
 
-func (platform *PostgresPlatform) BuildTableCreateSQL(schema string, table *Table) (tableString string) {
-	tableName := platform.GetSchemaAccessName(schema, table.Name)
+func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
+	tableName := platform.getSchemaAccessName(schema, table.Name)
 
 	commands := make([]string, 0)
 	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
 	for _, col := range table.Columns {
 		if col.AutoIncrement {
-			seqName := platform.GetSchemaAccessName(schema, table.Name + "_" + col.Name + "_seq")
+			seqName := platform.getSchemaAccessName(schema, table.Name + "_" + col.Name + "_seq")
 			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.Name + " SET DEFAULT NEXTVAL('" + seqName + "')"
-			commands = append(commands, platform.GetSequenceCreateSQL(seqName))
+			commands = append(commands, platform.getSequenceCreateSQL(seqName))
 			commands = append(commands, alterTableCommand)
 		}
 	}
 
-	return platform.ChainCommands(commands...)
+	return platform.chainCommands(commands...)
 }
 
-func (platform *PostgresPlatform) GetTableDropSQL(schema string, table string) (tableString string) {
+func (platform *dbPostgresPlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
 
-func (platform *PostgresPlatform) GetSequenceCreateSQL(sequence string) string {
+func (platform *dbPostgresPlatform) getSequenceCreateSQL(sequence string) string {
 	return "CREATE SEQUENCE " + sequence
 }
 
-func (platform *PostgresPlatform) GetSequenceDropSQL(sequence string) string {
+func (platform *dbPostgresPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }

@@ -22,7 +22,7 @@ var (
 func getSchema(platform string) *Schema {
 	// return &Schema{
 	// 	Name:     "company",
-	// 	Platform: platform,
+	// 	dbPlatform: platform,
 	// 	Comment:  "The Company Schema",
 	// 	Tables: []*Table{
 	// 		{
@@ -91,10 +91,10 @@ func getSchema(platform string) *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbPlatform dbPlatform, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
-		dbPlatform.GetDriverName(),
-		dbPlatform.GetDBConnectionString(serverName, 3306, user, password, dbName),
+		dbPlatform.getDriverName(),
+		dbPlatform.getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
 	assertNotHasError(t, err)
 	assertNotHasError(t, dbSchema.Drop(db))
@@ -105,27 +105,27 @@ func setupDB(t *testing.T, dbPlatform Platform, dbSchema *Schema) (*sql.DB, erro
 
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := GetPlatform(platform)
+	dbPlatform := getPlatform(platform)
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
-	storage := dbPlatform.GetSchemaAccessName(dbSchema.Name, "storage")
+	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
+	storage := dbPlatform.getSchemaAccessName(dbSchema.Name, "storage")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
-	if platform != MYSQL57 {
+	if platform != mysql57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 5, 1)", employee))
 		assertHasError(t, err)
 
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 51, 1)", employee))
 		assertHasError(t, err)
 
-		// Some check is different across platforms eg: length(name) and LEN(name) in mssql
-		if platform != SQLITE3 {
+		// SQLITE have type affinity, so hard to apply the text range of NVARCHAR(20) onto it
+		if platform != sqlite3 {
 			_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan Wrong Too Looooong', 22)", employee))
 			assertHasError(t, err)
 		}
@@ -161,12 +161,12 @@ func TestSchemaInstall(t *testing.T) {
 
 func TestAutoIncrement(t *testing.T) {
 	dbSchema := getSchema(platform)
-	dbPlatform := GetPlatform(platform)
+	dbPlatform := getPlatform(platform)
 
 	db, err := setupDB(t, dbPlatform, dbSchema)
 
-	employee := dbPlatform.GetSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.GetSchemaAccessName(dbSchema.Name, "department")
+	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
+	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

@@ -1,64 +1,64 @@
 package dbs
 
-type Platform interface {
-	GetDriverName() string
-	GetDBConnectionString(server string, port int, user string, password string, dbName string) string
-	ChainCommands(commands ...string) string
+type dbPlatform interface {
+	getDriverName() string
+	getDBConnectionString(server string, port int, user string, password string, dbName string) string
+	chainCommands(commands ...string) string
 
 	// Column attributes declarations
-	GetTypeDeclaration(col *Column) string
-	GetUniqueDeclaration() string
-	GetNotNullDeclaration() string
-	GetPrimaryDeclaration(key []string) string
-	GetAutoIncrementDeclaration() string
-	GetUnsignedDeclaration() string
-	GetDefaultDeclaration(expression string) string
-	GetColumnCommentDeclaration(expression string) string // For inline comment
-	GetColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
+	getTypeDeclaration(col *Column) string
+	getUniqueDeclaration() string
+	getNotNullDeclaration() string
+	getPrimaryDeclaration(key []string) string
+	getAutoIncrementDeclaration() string
+	getUnsignedDeclaration() string
+	getDefaultDeclaration(expression string) string
+	getColumnCommentDeclaration(expression string) string // For inline comment
+	getColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
 	// Checks constraint is parsed but will be ignored in mysql5.7
-	GetColumnCheckDeclaration(expression string) string
+	getColumnCheckDeclaration(expression string) string
 
-	BuildColumnDeclarationSQL(col *Column) string
-	BuildColumnsDeclarationSQL(cols []*Column) []string
+	buildColumnDeclarationSQL(col *Column) string
+	buildColumnsDeclarationSQL(cols []*Column) []string
 
 	// schema SQL declarations
-	BuildSchemaCreateSQL(schema *Schema) string
-	GetSchemaCreateDeclarationSQL(schema string) string
-	GetSchemaDropDeclarationSQL(schema string) string
+	buildSchemaCreateSQL(schema *Schema) string
+	getSchemaCreateDeclarationSQL(schema string) string
+	getSchemaDropDeclarationSQL(schema string) string
 
 	// table SQL declarations
-	GetSchemaAccessName(schema string, name string) string
-	GetSchemaCommentDeclaration(schema string, expression string) string
+	getSchemaAccessName(schema string, name string) string
+	getSchemaCommentDeclaration(schema string, expression string) string
 	// Checks constraint is parsed but will be ignored in mysql5.7
-	GetTableChecksDeclaration(expressions []string) []string
-	BuildTableCreateSQL(schema string, table *Table) string
-	GetTableDropSQL(schema string, table string) string
-	GetTableCommentDeclarationSQL(name string, expression string) string
-	GetTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string
+	getTableChecksDeclaration(expressions []string) []string
+	buildTableCreateSQL(schema string, table *Table) string
+	getTableDropSQL(schema string, table string) string
+	getTableCommentDeclarationSQL(name string, expression string) string
+	getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string
 
-	GetSequenceCreateSQL(sequence string) string
-	GetSequenceDropSQL(sequence string) string
+	getSequenceCreateSQL(sequence string) string
+	getSequenceDropSQL(sequence string) string
 }
 
-func GetPlatform(platform string) Platform {
-	if platform == MYSQL57 {
-		return &MySql57Platform{}
+func getPlatform(platform string) dbPlatform {
+	if platform == mysql57 {
+		return &dbMySQL57Platform{}
 	}
 
-	if platform == MYSQL80 {
-		return &MySql80Platform{}
+	if platform == mysql80 {
+		return &dbMySQL80Platform{}
 	}
 
-	if platform == SQLITE3 {
-		return &SqlitePlatform{}
+	if platform == sqlite3 {
+		return &dbSqlitePlatform{}
 	}
 
-	if platform == POSTGRES {
-		return &PostgresPlatform{}
+	if platform == postgres {
+		return &dbPostgresPlatform{}
 	}
 
-	if platform == MSSQL {
-		return &MsSqlPlatform{}
+	if platform == mssql {
+		return &dbMsSQLPlatform{}
 	}
 
 	return nil
@@ -98,85 +98,85 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 	return "DROP SCHEMA IF EXISTS " + schema + " CASCADE"
 }
 
-func _buildColumnDeclarationSQL(platform Platform, col *Column) (colString string) {
+func _buildColumnDeclarationSQL(platform dbPlatform, col *Column) (colString string) {
 	declaration := make([]string, 0)
 	declaration = append(declaration, col.Name)
-	declaration = append(declaration, platform.GetTypeDeclaration(col))
+	declaration = append(declaration, platform.getTypeDeclaration(col))
 
 	if col.Unsigned {
-		declaration = append(declaration, platform.GetUnsignedDeclaration())
+		declaration = append(declaration, platform.getUnsignedDeclaration())
 	}
 
 	if col.NotNull {
-		declaration = append(declaration, platform.GetNotNullDeclaration())
+		declaration = append(declaration, platform.getNotNullDeclaration())
 	}
 
 	if col.Default != "" {
-		declaration = append(declaration, platform.GetDefaultDeclaration(col.Default))
+		declaration = append(declaration, platform.getDefaultDeclaration(col.Default))
 	}
 
 	if col.AutoIncrement {
-		declaration = append(declaration, platform.GetAutoIncrementDeclaration())
+		declaration = append(declaration, platform.getAutoIncrementDeclaration())
 	}
 
 	if col.Unique {
-		declaration = append(declaration, platform.GetUniqueDeclaration())
+		declaration = append(declaration, platform.getUniqueDeclaration())
 	}
 
 	if col.Check != "" {
-		declaration = append(declaration, platform.GetColumnCheckDeclaration(col.Check))
+		declaration = append(declaration, platform.getColumnCheckDeclaration(col.Check))
 	}
 
 	if col.Comment != "" {
-		declaration = append(declaration, platform.GetColumnCommentDeclaration(col.Comment))
+		declaration = append(declaration, platform.getColumnCommentDeclaration(col.Comment))
 	}
 
 	return concatStrings(declaration, " ")
 }
 
-func _buildColumnsDeclarationSQL(platform Platform, cols []*Column) []string {
+func _buildColumnsDeclarationSQL(platform dbPlatform, cols []*Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		declarations[index] = platform.BuildColumnDeclarationSQL(col)
+		declarations[index] = platform.buildColumnDeclarationSQL(col)
 	}
 
 	return declarations
 }
 
-func _getTableReferencesDeclarationSQL(platform Platform, schema string, foreignKeys []ForeignKey) []string {
+func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, foreignKeys []ForeignKey) []string {
 	keys := make([]string, 0)
 	for _, key := range foreignKeys {
 		keys = append(
 			keys,
-			"FOREIGN KEY (" + key.Referer + ") REFERENCES " + platform.GetSchemaAccessName(schema, key.Reference),
+			"FOREIGN KEY (" + key.Referer + ") REFERENCES " + platform.getSchemaAccessName(schema, key.Reference),
 		)
 	}
 
 	return keys
 }
 
-func _buildTableCreateSQL(platform Platform, schema string, table *Table) string {
-	tableName := platform.GetSchemaAccessName(schema, table.Name)
+func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) string {
+	tableName := platform.getSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
-	tableCreation = append(tableCreation, platform.BuildColumnsDeclarationSQL(table.Columns)...)
+	tableCreation = append(tableCreation, platform.buildColumnsDeclarationSQL(table.Columns)...)
 	if len(table.PrimaryKey) >0 {
-		tableCreation = append(tableCreation, platform.GetPrimaryDeclaration(table.PrimaryKey))
+		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.PrimaryKey))
 	}
-	tableCreation = append(tableCreation, platform.GetTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
-	tableCreation = append(tableCreation, platform.GetTableChecksDeclaration(table.Checks)...)
+	tableCreation = append(tableCreation, platform.getTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
+	tableCreation = append(tableCreation, platform.getTableChecksDeclaration(table.Checks)...)
 
 	tableDeclaration := "CREATE TABLE " + tableName + " (\n\t" + concatStrings(tableCreation, ",\n\t") + "\n)"
 
 	commands := make([]string, 0)
 	commands = append(commands, tableDeclaration)
 	if table.Comment != "" {
-		commands = append(commands, platform.GetTableCommentDeclarationSQL(tableName, table.Comment))
+		commands = append(commands, platform.getTableCommentDeclarationSQL(tableName, table.Comment))
 	}
-	commands = append(commands, platform.GetColumnsCommentDeclaration(schema, table)...)
+	commands = append(commands, platform.getColumnsCommentDeclaration(schema, table)...)
 
-	return platform.ChainCommands(commands...)
+	return platform.chainCommands(commands...)
 }
 
-func _getTableDropSQL(platform Platform, schema string, table string) string {
-	return "DROP TABLE IF EXISTS " + platform.GetSchemaAccessName(schema, table)
+func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
+	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
 }
