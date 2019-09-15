@@ -10,7 +10,7 @@ func prepareTestTable() *Table {
 		AutoIncrement: true,
 	}
 
-	subId := &Column{
+	subID := &Column{
 		Name:    "sub_id",
 		Type:    INT,
 		NotNull: true,
@@ -37,7 +37,7 @@ func prepareTestTable() *Table {
 	// 	PrimaryKey: []string{"id"},
 	// 	Columns: []Column{
 	// 		id,
-	// 		subId,
+	// 		subID,
 	// 		name,
 	// 		age,
 	// 	},
@@ -51,7 +51,7 @@ func prepareTestTable() *Table {
 	table.WithName("user").WithComment("The user table")
 	table.AddPrimaryKey([]string{"id"})
 	table.AddColumn(id)
-	table.AddColumns([]*Column{subId, name, age})
+	table.AddColumns([]*Column{subID, name, age})
 	table.AddForeignKey("sub_id", "other_table(id)")
 	table.AddCheck("age > 50")
 
@@ -59,11 +59,11 @@ func prepareTestTable() *Table {
 }
 
 func TestToTableDeclaration(t *testing.T) {
-	mysqlPlatform := getPlatform(MYSQL80)
-	mysql57Platform := getPlatform(MYSQL57)
-	sqlitePlatform := getPlatform(SQLITE3)
-	postgresPlatform := getPlatform(POSTGRES)
-	msSqlPlatform := getPlatform(MSSQL)
+	mysqlPlatform := getPlatform(mysql80)
+	mysql57Platform := getPlatform(mysql57)
+	sqlitePlatform := getPlatform(sqlite3)
+	postgresPlatform := getPlatform(postgres)
+	msSQLPlatform := getPlatform(mssql)
 
 	table := prepareTestTable()
 
@@ -140,7 +140,7 @@ ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 	FOREIGN KEY (sub_id) REFERENCES public.other_table(id),
 	CHECK (age > 50)
 )`,
-		msSqlPlatform.buildTableCreateSQL("public", table),
+		msSQLPlatform.buildTableCreateSQL("public", table),
 	)
 
 	table.PrimaryKey = []string{"id", "name"}
@@ -148,5 +148,5 @@ ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.PrimaryKey))
 	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.PrimaryKey))
 	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", msSqlPlatform.getPrimaryDeclaration(table.PrimaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", msSQLPlatform.getPrimaryDeclaration(table.PrimaryKey))
 }

@@ -2,12 +2,12 @@ package dbs
 
 import "strconv"
 
-const MSSQL string = "sqlserver"
+const mssql string = "sqlserver"
 
 type dbMsSQLPlatform struct{}
 
 func (platform *dbMsSQLPlatform) getDriverName() string {
-	return MSSQL
+	return mssql
 }
 
 func (platform *dbMsSQLPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Schema defined the db schema structure
 type Schema struct {
 	Name     string   `json:"name"`
 	Platform string   `json:"platform"`
@@ -12,36 +13,49 @@ type Schema struct {
 	Comment  string   `json:"comment"`
 }
 
+// WithName set the schema name
 func (schema *Schema) WithName(name string) *Schema {
 	schema.Name = name
 
 	return schema
 }
 
+// OnPlatform define the platform that schema will use to install
+// All supported platforms are:
+// 		sqlite3
+// 		mysql:5.7
+// 		mysql:8.0
+// 		postgres
+// 		sqlserver
 func (schema *Schema) OnPlatform(platform string) *Schema {
 	schema.Platform = platform
 
 	return schema
 }
 
+// WithComment Set comment for schema
+// This only works on postgresql
 func (schema *Schema) WithComment(comment string) *Schema {
 	schema.Comment = comment
 
 	return schema
 }
 
+// AddTable add defined table to schema
 func (schema *Schema) AddTable(table *Table) *Schema {
 	schema.Tables = append(schema.Tables, table)
 
 	return schema
 }
 
+// AddTables add a list of defined tables to schema
 func (schema *Schema) AddTables(tables []*Table) *Schema {
 	schema.Tables = append(schema.Tables, tables...)
 
 	return schema
 }
 
+// Install the schema
 func (schema *Schema) Install(db *sql.DB) error {
 	platform := getPlatform(schema.Platform)
 	if platform == nil {
@@ -71,6 +85,7 @@ func (schema *Schema) Install(db *sql.DB) error {
 	return err
 }
 
+// Drop the schema
 func (schema *Schema) Drop(db *sql.DB) error {
 	platform := getPlatform(schema.Platform)
 	if platform == nil {

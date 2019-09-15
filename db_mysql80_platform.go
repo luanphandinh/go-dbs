@@ -2,12 +2,12 @@ package dbs
 
 import "strconv"
 
-const MYSQL80 string = "mysql:8.0"
+const mysql80 string = "mysql:8.0"
 
 type dbMySQL80Platform struct{}
 
 func (platform *dbMySQL80Platform) getDriverName() string {
-	return MYSQL
+	return mysql
 }
 
 func (platform *dbMySQL80Platform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {

@@ -117,7 +117,7 @@ func TestSchemaInstall(t *testing.T) {
 	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
-	if platform != MYSQL57 {
+	if platform != mysql57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 5, 1)", employee))
 		assertHasError(t, err)
 
@@ -125,7 +125,7 @@ func TestSchemaInstall(t *testing.T) {
 		assertHasError(t, err)
 
 		// SQLITE have type affinity, so hard to apply the text range of NVARCHAR(20) onto it
-		if platform != SQLITE3 {
+		if platform != sqlite3 {
 			_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan Wrong Too Looooong', 22)", employee))
 			assertHasError(t, err)
 		}

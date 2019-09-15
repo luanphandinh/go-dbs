@@ -41,23 +41,23 @@ type dbPlatform interface {
 }
 
 func getPlatform(platform string) dbPlatform {
-	if platform == MYSQL57 {
+	if platform == mysql57 {
 		return &dbMySQL57Platform{}
 	}
 
-	if platform == MYSQL80 {
+	if platform == mysql80 {
 		return &dbMySQL80Platform{}
 	}
 
-	if platform == SQLITE3 {
+	if platform == sqlite3 {
 		return &dbSqlitePlatform{}
 	}
 
-	if platform == POSTGRES {
+	if platform == postgres {
 		return &dbPostgresPlatform{}
 	}
 
-	if platform == MSSQL {
+	if platform == mssql {
 		return &dbMsSQLPlatform{}
 	}
 

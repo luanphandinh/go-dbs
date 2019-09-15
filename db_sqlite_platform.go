@@ -2,12 +2,12 @@ package dbs
 
 import "strconv"
 
-const SQLITE3 string = "sqlite3"
+const sqlite3 string = "sqlite3"
 
 type dbSqlitePlatform struct{}
 
 func (platform *dbSqlitePlatform) getDriverName() string {
-	return SQLITE3
+	return sqlite3
 }
 
 func (platform *dbSqlitePlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {

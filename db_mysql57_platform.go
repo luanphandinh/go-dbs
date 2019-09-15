@@ -3,14 +3,14 @@ package dbs
 import "strconv"
 
 const (
-	MYSQL   string = "mysql"
-	MYSQL57 string = "mysql:5.7"
+	mysql   string = "mysql"
+	mysql57 string = "mysql:5.7"
 )
 
 type dbMySQL57Platform struct{}
 
 func (platform *dbMySQL57Platform) getDriverName() string {
-	return MYSQL
+	return mysql
 }
 
 func (platform *dbMySQL57Platform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {

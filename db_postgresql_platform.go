@@ -2,12 +2,12 @@ package dbs
 
 import "strconv"
 
-const POSTGRES string = "postgres"
+const postgres string = "postgres"
 
 type dbPostgresPlatform struct{}
 
 func (platform *dbPostgresPlatform) getDriverName() string {
-	return POSTGRES
+	return postgres
 }
 
 func (platform *dbPostgresPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
