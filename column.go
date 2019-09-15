@@ -45,7 +45,7 @@ func (col *Column) IsNotNull() *Column {
 // IsAutoIncrement mark column:
 // 		mysql: 		AUTO_INCREMENT
 // 		postgresql: GENERATE A SEQUENCE FOR THAT COLUMN
-//		msssql: 	IDENTITY(1,1)
+// 		msssql: 	IDENTITY(1,1)
 func (col *Column) IsAutoIncrement() *Column {
 	col.AutoIncrement = true
 

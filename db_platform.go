@@ -159,7 +159,7 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 	tableName := platform.getSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.buildColumnsDeclarationSQL(table.Columns)...)
-	if len(table.PrimaryKey) >0 {
+	if len(table.PrimaryKey) > 0 {
 		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.PrimaryKey))
 	}
 	tableCreation = append(tableCreation, platform.getTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
