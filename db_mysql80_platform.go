@@ -119,5 +119,5 @@ func (platform *dbMySQL80Platform) getSequenceDropSQL(sequence string) string {
 }
 
 func (platform *dbMySQL80Platform) checkSchemaHasTableSQL(schema string, table string) string {
-	return ""
+	return "SHOW TABLES LIKE '" + table + "'"
 }
