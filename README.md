@@ -1,6 +1,6 @@
 # go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
-Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver,) schema.
+Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver) schema.
 ```
 
 # Usage
@@ -86,8 +86,6 @@ Or using builders:
     schema.AddTable(department)
     schema.AddTable(employee)
     schema.AddTable(storage)
-
-    return schema.Install()
 ```
 
 #### 3. Install
