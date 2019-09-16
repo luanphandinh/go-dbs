@@ -39,7 +39,7 @@ type dbPlatform interface {
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
 
-	// checkSchemaExistSQL(schema string) string
+	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
 }
 

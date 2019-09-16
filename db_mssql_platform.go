@@ -124,6 +124,10 @@ func (platform *dbMsSQLPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }
 
+func (platform *dbMsSQLPlatform) checkSchemaExistSQL(schema string) string {
+	return "SELECT name FROM sys.schemas WHERE name = '" + schema + "'"
+}
+
 func (platform *dbMsSQLPlatform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + table + "' AND TABLE_SCHEMA = '" + schema + "'"
 }

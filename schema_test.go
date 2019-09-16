@@ -99,7 +99,15 @@ func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
 	)
 	dbSchema.SetDB(db)
 	assertNotHasError(t, err)
+
 	assertNotHasError(t, dbSchema.Drop())
+	if platform == postgres || platform == mssql {
+		assertFalse(t, dbSchema.IsExists())
+	}
+	assertFalse(t, dbSchema.HasTable("employee"))
+	assertFalse(t, dbSchema.HasTable("department"))
+	assertFalse(t, dbSchema.HasTable("storage"))
+
 	assertNotHasError(t, dbSchema.Install())
 
 	return db, err
@@ -113,6 +121,7 @@ func TestSchemaInstall(t *testing.T) {
 	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
 	storage := _platform().getSchemaAccessName(dbSchema.Name, "storage")
 
+	assertTrue(t, dbSchema.IsExists())
 	assertTrue(t, dbSchema.HasTable("employee"))
 	assertTrue(t, dbSchema.HasTable("department"))
 	assertTrue(t, dbSchema.HasTable("storage"))

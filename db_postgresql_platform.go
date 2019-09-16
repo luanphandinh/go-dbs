@@ -162,6 +162,10 @@ func (platform *dbPostgresPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }
 
+func (platform *dbPostgresPlatform) checkSchemaExistSQL(schema string) string {
+	return "SELECT schema_name FROM information_schema.schemata WHERE schema_name = '" + schema + "'"
+}
+
 func (platform *dbPostgresPlatform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SELECT '" + platform.getSchemaAccessName(schema, table) + "'::regclass"
 }

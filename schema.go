@@ -59,6 +59,23 @@ func (schema *Schema) HasTable(table string) bool {
 	}
 }
 
+// IsExists return true if schema exists
+func (schema *Schema) IsExists() bool {
+	db := schema.db
+
+	command := _platform().checkSchemaExistSQL(schema.Name);
+	if command == "" {
+		return true
+	}
+
+	var name string
+	if err := db.QueryRow(command).Scan(&name); err != nil {
+		return false
+	} else {
+		return name == schema.Name
+	}
+}
+
 // Install the schema
 func (schema *Schema) Install() error {
 	tx, err := schema.db.Begin()
