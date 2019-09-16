@@ -4,93 +4,97 @@ Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver,) schema.
 ```
 
 # Usage
-Normal declaration:
-
-Supported platforms:
-    `sqlite3`,
-    `mysql:5.7`,
-    `mysql:8.0`,
-    `postgres`,
-    `sqlserver`,
-
+#### 1. Set platform:
 ```go
-dbSchema := &Schema{
-    Name:     "company",
-    Platform: "mysql:8.0", // or mysql:5.7, sqlite, postgres, sqlserver
-    Tables: []*Table{
-        {
-            Name:       "department",
-            PrimaryKey: []string{"id"},
-            Columns: []*Column{
-                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-                {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-                {Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-                {Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+    // supported platforms: "sqlite3", "mysql:5.7", "mysql:8.0", "postgres", "sqlserver"
+
+    dbs.SetPlatform("sqlite3")
+
+```
+
+#### 2. Define schema
+Normal declaration:
+```go
+    dbSchema := &Schema{
+        Name:     "company",
+        Platform: "mysql:8.0", // or mysql:5.7, sqlite, postgres, sqlserver
+        Tables: []*Table{
+            {
+                Name:       "department",
+                PrimaryKey: []string{"id"},
+                Columns: []*Column{
+                    {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
+                    {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
+                    {Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
+                    {Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+                },
+                Comment: "Departments of company",
             },
-            Comment: "Departments of company",
+            {
+                Name:       "employee",
+                PrimaryKey: []string{"id"},
+                Columns: []*Column{
+                    {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
+                    {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
+                    {Name: "department_id", Type: INT, Unsigned: true},
+                    {Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
+                    {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
+                },
+                Checks: []string{"age < 50"},
+                ForeignKeys: []ForeignKey{
+                    {Referer: "department_id", Reference: "department(id)"},
+                },
+            },
+            {
+                Name:       "storage",
+                Columns: []*Column{
+                    {Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
+                    {Name: "description", Type: TEXT},
+                },
+            },
         },
-        {
-            Name:       "employee",
-            PrimaryKey: []string{"id"},
-            Columns: []*Column{
-                {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-                {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-                {Name: "department_id", Type: INT, Unsigned: true},
-                {Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-                {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
-            },
-            Checks: []string{"age < 50"},
-            ForeignKeys: []ForeignKey{
-                {Referer: "department_id", Reference: "department(id)"},
-            },
-        },
-        {
-            Name:       "storage",
-            Columns: []*Column{
-                {Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
-                {Name: "description", Type: TEXT},
-            },
-        },
-    },
-}
+    }
 ```
 
 Or using builders:
 ```go
-    schema := new(Schema).WithName("company").OnPlatform(platform).WithComment("The Company Schema")
+    dbs.SetPlatform("sql:5.7")
+    schema := new(dbs.Schema).WithName("company").WithComment("The Company Schema")
 
-    department := new(Table).WithName("department").WithComment("Departments of company")
-    department.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-    department.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
-    department.AddColumn(new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
-    department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique())
+    department := new(dbs.Table).WithName("department").WithComment("Departments of company")
+    department.AddColumn(new(dbs.Column).WithName("id").WithType(dbs.INT).IsNotNull().IsUnsigned().IsAutoIncrement())
+    department.AddColumn(new(dbs.Column).WithName("name").WithType(dbs.NVARCHAR).WithLength(20).IsNotNull())
+    department.AddColumn(new(dbs.Column).WithName("revenue").WithType(dbs.FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
+    department.AddColumn(new(dbs.Column).WithName("position").WithType(dbs.SMALLINT).IsNotNull().IsUnsigned().IsUnique())
     department.AddPrimaryKey([]string{"id"})
-    
-    employee := new(Table).WithName("employee")
-    employee.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-    employee.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
-    employee.AddColumn(new(Column).WithName("department_id").WithType(INT).IsUnsigned())
-    employee.AddColumn(new(Column).WithName("valid").WithType(SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
-    employee.AddColumn(new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
-    
+
+    employee := new(dbs.Table).WithName("employee")
+    employee.AddColumn(new(dbs.Column).WithName("id").WithType(dbs.INT).IsNotNull().IsUnsigned().IsAutoIncrement())
+    employee.AddColumn(new(dbs.Column).WithName("name").WithType(dbs.NVARCHAR).WithLength(20).IsNotNull())
+    employee.AddColumn(new(dbs.Column).WithName("department_id").WithType(dbs.INT).IsUnsigned())
+    employee.AddColumn(new(dbs.Column).WithName("valid").WithType(dbs.SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
+    employee.AddColumn(new(dbs.Column).WithName("age").WithType(dbs.SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
+
     employee.AddPrimaryKey([]string{"id"})
     employee.AddCheck("age < 50")
     employee.AddForeignKey("department_id", "department(id)")
-    
-    storage := new(Table).WithName("storage").WithComment("Storage for fun")
-    storage.AddColumn(new(Column).WithName("room").WithType(NVARCHAR).WithLength(50))
-    storage.AddColumn(new(Column).WithName("description").WithType(TEXT))
-    
+
+    storage := new(dbs.Table).WithName("storage").WithComment("Storage for fun")
+    storage.AddColumn(new(dbs.Column).WithName("room").WithType(dbs.NVARCHAR).WithLength(50))
+    storage.AddColumn(new(dbs.Column).WithName("description").WithType(dbs.TEXT))
+
     schema.AddTable(department)
     schema.AddTable(employee)
     schema.AddTable(storage)
-    
-    return schema
+
+    return schema.Install()
 ```
 
-With db is the connection(`*sql.DB`) to your database
+#### 3. Install
 ```go
-dbSchema.Install(db)
+    // With db is the connection(`*sql.DB`) to your database
+
+    dbSchema.SetDB(db).Install()
 ```
 
 * Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.

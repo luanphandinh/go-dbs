@@ -39,10 +39,27 @@ type dbPlatform interface {
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
 
+	// checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
 }
 
+var _dbPlatform dbPlatform
 var _cachedPlatforms = make(map[string]dbPlatform)
+
+// SetPlatform define the platform that entire dbs will use
+// Supported platforms:
+// 		sqlite3
+// 		mysql:5.7
+// 		mysql:8.0
+// 		postgres
+// 		sqlserver
+func SetPlatform(platform string) {
+	_dbPlatform = _getPlatform(platform)
+}
+
+func _platform() dbPlatform {
+	return _dbPlatform
+}
 
 func _getPlatform(platform string) dbPlatform {
 	if cached := _cachedPlatforms[platform]; cached != nil {
