@@ -161,3 +161,7 @@ func (platform *dbPostgresPlatform) getSequenceCreateSQL(sequence string) string
 func (platform *dbPostgresPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }
+
+func (platform *dbPostgresPlatform) checkSchemaHasTableSQL(schema string, table string) string {
+	return ""
+}

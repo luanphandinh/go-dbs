@@ -38,6 +38,8 @@ type dbPlatform interface {
 
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
+
+	checkSchemaHasTableSQL(schema string, table string) string
 }
 
 var _cachedPlatforms = make(map[string]dbPlatform)

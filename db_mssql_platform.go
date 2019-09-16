@@ -123,3 +123,7 @@ func (platform *dbMsSQLPlatform) getSequenceCreateSQL(sequence string) string {
 func (platform *dbMsSQLPlatform) getSequenceDropSQL(sequence string) string {
 	return "DROP SEQUENCE " + sequence
 }
+
+func (platform *dbMsSQLPlatform) checkSchemaHasTableSQL(schema string, table string) string {
+	return ""
+}
