@@ -170,6 +170,8 @@ func TestSchemaInstall(t *testing.T) {
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
+
+	assertNotHasError(t, dbSchema.Install())
 }
 
 func TestAutoIncrement(t *testing.T) {

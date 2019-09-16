@@ -78,20 +78,33 @@ func (schema *Schema) IsExists() bool {
 
 // Install the schema
 func (schema *Schema) Install() error {
+	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
+	if schema.IsExists() {
+		createSchemaSQL = ""
+	}
+
+	createTableSQLs := make([]string, 0)
+	for _, table := range schema.Tables {
+		if schema.HasTable(table.Name) {
+			continue
+		}
+		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
+	}
+
 	tx, err := schema.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	if schemaCreation := _platform().buildSchemaCreateSQL(schema); schemaCreation != "" {
-		if _, err := tx.Exec(schemaCreation); err != nil {
+	if createSchemaSQL != "" {
+		if _, err := tx.Exec(createSchemaSQL); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	for _, table := range schema.Tables {
-		if _, err := tx.Exec(_platform().buildTableCreateSQL(schema.Name, table)); err != nil {
+	for _, createTableSQL := range createTableSQLs {
+		if _, err := tx.Exec(createTableSQL); err != nil {
 			tx.Rollback()
 			return err
 		}
