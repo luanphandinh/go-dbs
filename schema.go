@@ -72,7 +72,7 @@ func (schema *Schema) HasTable(table string) bool {
 	if err := db.QueryRow(platform.checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
 		return false
 	} else {
-		return name == table
+		return name == platform.getSchemaAccessName(schema.Name, table)
 	}
 }
 

@@ -163,5 +163,5 @@ func (platform *dbPostgresPlatform) getSequenceDropSQL(sequence string) string {
 }
 
 func (platform *dbPostgresPlatform) checkSchemaHasTableSQL(schema string, table string) string {
-	return ""
+	return "SELECT '" + platform.getSchemaAccessName(schema, table) + "'::regclass"
 }
