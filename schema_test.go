@@ -96,9 +96,10 @@ func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
 		dbSchema.platform.getDriverName(),
 		dbSchema.platform.getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
+	dbSchema.SetDB(db)
 	assertNotHasError(t, err)
-	assertNotHasError(t, dbSchema.Drop(db))
-	assertNotHasError(t, dbSchema.Install(db))
+	assertNotHasError(t, dbSchema.Drop())
+	assertNotHasError(t, dbSchema.Install())
 
 	return db, err
 }

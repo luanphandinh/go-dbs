@@ -10,8 +10,8 @@ type Schema struct {
 	Tables  []*Table `json:"tables"`
 	Comment string   `json:"comment"`
 
-	platform   dbPlatform
-	connection *sql.DB
+	platform dbPlatform
+	db       *sql.DB
 }
 
 // WithName set the schema name
@@ -30,6 +30,13 @@ func (schema *Schema) WithName(name string) *Schema {
 // 		sqlserver
 func (schema *Schema) OnPlatform(platform string) *Schema {
 	schema.platform = _getPlatform(platform)
+
+	return schema
+}
+
+// SetDB set a db connection to schema
+func (schema *Schema) SetDB(db *sql.DB) *Schema {
+	schema.db = db
 
 	return schema
 }
@@ -58,14 +65,22 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 
 // HasTable return true if table exists
 func (schema *Schema) HasTable(table string) bool {
-	return false
+	db := schema.db
+	platform := schema.platform
+
+	var name string
+	if err := db.QueryRow(platform.checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
+		return false
+	} else {
+		return name == table
+	}
 }
 
 // Install the schema
-func (schema *Schema) Install(db *sql.DB) error {
+func (schema *Schema) Install() error {
 	platform := schema.platform
 
-	tx, err := db.Begin()
+	tx, err := schema.db.Begin()
 	if err != nil {
 		return err
 	}
@@ -89,10 +104,10 @@ func (schema *Schema) Install(db *sql.DB) error {
 }
 
 // Drop the schema
-func (schema *Schema) Drop(db *sql.DB) error {
+func (schema *Schema) Drop() error {
 	platform := schema.platform
 
-	tx, err := db.Begin()
+	tx, err := schema.db.Begin()
 	if err != nil {
 		return err
 	}

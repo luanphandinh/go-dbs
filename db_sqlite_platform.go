@@ -126,5 +126,5 @@ func (platform *dbSqlitePlatform) getSequenceDropSQL(sequence string) string {
 }
 
 func (platform *dbSqlitePlatform) checkSchemaHasTableSQL(schema string, table string) string {
-	return ""
+	return "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'"
 }
