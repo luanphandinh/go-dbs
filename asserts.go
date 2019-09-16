@@ -12,6 +12,21 @@ func assertNotNil(t *testing.T, actual interface{}) {
 	}
 }
 
+func assertTrue(t *testing.T, actual bool) {
+	if actual != true {
+		compareLog("true", actual)
+		t.Fail()
+	}
+}
+
+func assertFalse(t *testing.T, actual bool) {
+	if actual != false {
+		compareLog("false", actual)
+		t.Fail()
+	}
+}
+
+
 func assertStringEquals(t *testing.T, expected string, actual string) {
 	if expected != actual {
 		compareLog(expected, actual)

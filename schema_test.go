@@ -111,6 +111,10 @@ func TestSchemaInstall(t *testing.T) {
 	department := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "department")
 	storage := dbSchema.platform.getSchemaAccessName(dbSchema.Name, "storage")
 
+	assertTrue(t, dbSchema.HasTable("employee"))
+	assertTrue(t, dbSchema.HasTable("department"))
+	assertTrue(t, dbSchema.HasTable("storage"))
+
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
