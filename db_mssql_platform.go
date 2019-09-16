@@ -125,5 +125,5 @@ func (platform *dbMsSQLPlatform) getSequenceDropSQL(sequence string) string {
 }
 
 func (platform *dbMsSQLPlatform) checkSchemaHasTableSQL(schema string, table string) string {
-	return ""
+	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + table + "' AND TABLE_SCHEMA = '" + schema + "'"
 }
