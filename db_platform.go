@@ -38,27 +38,54 @@ type dbPlatform interface {
 
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
+
+	checkSchemaExistSQL(schema string) string
+	checkSchemaHasTableSQL(schema string, table string) string
 }
 
-func getPlatform(platform string) dbPlatform {
+var _dbPlatform dbPlatform
+var _cachedPlatforms = make(map[string]dbPlatform)
+
+// SetPlatform define the platform that entire dbs will use
+// Supported platforms: sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver
+func SetPlatform(platform string) {
+	_dbPlatform = _getPlatform(platform)
+}
+
+func _platform() dbPlatform {
+	return _dbPlatform
+}
+
+func _getPlatform(platform string) dbPlatform {
+	if cached := _cachedPlatforms[platform]; cached != nil {
+		return cached
+	}
+
+	cache := _makePlatform(platform)
+	_cachedPlatforms[platform] = cache
+
+	return cache
+}
+
+func _makePlatform(platform string) dbPlatform {
 	if platform == mysql57 {
-		return &dbMySQL57Platform{}
+		return new(dbMySQL57Platform)
 	}
 
 	if platform == mysql80 {
-		return &dbMySQL80Platform{}
+		return new(dbMySQL80Platform)
 	}
 
 	if platform == sqlite3 {
-		return &dbSqlitePlatform{}
+		return new(dbSqlitePlatform)
 	}
 
 	if platform == postgres {
-		return &dbPostgresPlatform{}
+		return new(dbPostgresPlatform)
 	}
 
 	if platform == mssql {
-		return &dbMsSQLPlatform{}
+		return new(dbMsSQLPlatform)
 	}
 
 	return nil
@@ -159,7 +186,7 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 	tableName := platform.getSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
 	tableCreation = append(tableCreation, platform.buildColumnsDeclarationSQL(table.Columns)...)
-	if len(table.PrimaryKey) >0 {
+	if len(table.PrimaryKey) > 0 {
 		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.PrimaryKey))
 	}
 	tableCreation = append(tableCreation, platform.getTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)

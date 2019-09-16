@@ -120,3 +120,11 @@ func (platform *dbMySQL57Platform) getSequenceCreateSQL(sequence string) string 
 func (platform *dbMySQL57Platform) getSequenceDropSQL(sequence string) string {
 	return ""
 }
+
+func (platform *dbMySQL57Platform) checkSchemaExistSQL(schema string) string {
+	return ""
+}
+
+func (platform *dbMySQL57Platform) checkSchemaHasTableSQL(schema string, table string) string {
+	return "SHOW TABLES LIKE '" + table + "'"
+}

@@ -19,7 +19,8 @@ var (
 	password   = os.Getenv("DB_PASSWORD")
 )
 
-func getSchema(platform string) *Schema {
+func getSchema() *Schema {
+	SetPlatform(platform)
 	// return &Schema{
 	// 	Name:     "company",
 	// 	dbPlatform: platform,
@@ -60,7 +61,7 @@ func getSchema(platform string) *Schema {
 	// 		},
 	// 	},
 	// }
-	schema := new(Schema).WithName("company").OnPlatform(platform).WithComment("The Company Schema")
+	schema := new(Schema).WithName("company").WithComment("The Company Schema")
 
 	department := new(Table).WithName("department").WithComment("Departments of company")
 	department.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
@@ -91,27 +92,39 @@ func getSchema(platform string) *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbPlatform dbPlatform, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
 	db, err := sql.Open(
-		dbPlatform.getDriverName(),
-		dbPlatform.getDBConnectionString(serverName, 3306, user, password, dbName),
+		_platform().getDriverName(),
+		_platform().getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
+	dbSchema.SetDB(db)
 	assertNotHasError(t, err)
-	assertNotHasError(t, dbSchema.Drop(db))
-	assertNotHasError(t, dbSchema.Install(db))
+
+	assertNotHasError(t, dbSchema.Drop())
+	if platform == postgres || platform == mssql {
+		assertFalse(t, dbSchema.IsExists())
+	}
+	assertFalse(t, dbSchema.HasTable("employee"))
+	assertFalse(t, dbSchema.HasTable("department"))
+	assertFalse(t, dbSchema.HasTable("storage"))
+
+	assertNotHasError(t, dbSchema.Install())
 
 	return db, err
 }
 
 func TestSchemaInstall(t *testing.T) {
-	dbSchema := getSchema(platform)
-	dbPlatform := getPlatform(platform)
+	dbSchema := getSchema()
+	db, err := setupDB(t, dbSchema)
 
-	db, err := setupDB(t, dbPlatform, dbSchema)
+	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
+	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
+	storage := _platform().getSchemaAccessName(dbSchema.Name, "storage")
 
-	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
-	storage := dbPlatform.getSchemaAccessName(dbSchema.Name, "storage")
+	assertTrue(t, dbSchema.IsExists())
+	assertTrue(t, dbSchema.HasTable("employee"))
+	assertTrue(t, dbSchema.HasTable("department"))
+	assertTrue(t, dbSchema.HasTable("storage"))
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
@@ -157,16 +170,16 @@ func TestSchemaInstall(t *testing.T) {
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
+
+	assertNotHasError(t, dbSchema.Install())
 }
 
 func TestAutoIncrement(t *testing.T) {
-	dbSchema := getSchema(platform)
-	dbPlatform := getPlatform(platform)
+	dbSchema := getSchema()
+	db, err := setupDB(t, dbSchema)
 
-	db, err := setupDB(t, dbPlatform, dbSchema)
-
-	employee := dbPlatform.getSchemaAccessName(dbSchema.Name, "employee")
-	department := dbPlatform.getSchemaAccessName(dbSchema.Name, "department")
+	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
+	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

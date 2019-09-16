@@ -10,7 +10,7 @@ type ForeignKey struct {
 type Table struct {
 	Name        string       `json:"name"`
 	PrimaryKey  []string     `json:"primary_key"`
-	Columns     []*Column     `json:"columns"`
+	Columns     []*Column    `json:"columns"`
 	Checks      []string     `json:"checks"`
 	Comment     string       `json:"comment"`
 	ForeignKeys []ForeignKey `json:"foreign_keys"`

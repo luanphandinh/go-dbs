@@ -1,16 +1,14 @@
 package dbs
 
-import (
-	"database/sql"
-	"fmt"
-)
+import "database/sql"
 
 // Schema defined the db schema structure
 type Schema struct {
-	Name     string   `json:"name"`
-	Platform string   `json:"platform"`
-	Tables   []*Table `json:"tables"`
-	Comment  string   `json:"comment"`
+	Name    string   `json:"name"`
+	Tables  []*Table `json:"tables"`
+	Comment string   `json:"comment"`
+
+	db       *sql.DB
 }
 
 // WithName set the schema name
@@ -20,15 +18,9 @@ func (schema *Schema) WithName(name string) *Schema {
 	return schema
 }
 
-// OnPlatform define the platform that schema will use to install
-// All supported platforms are:
-// 		sqlite3
-// 		mysql:5.7
-// 		mysql:8.0
-// 		postgres
-// 		sqlserver
-func (schema *Schema) OnPlatform(platform string) *Schema {
-	schema.Platform = platform
+// SetDB set a db connection to schema
+func (schema *Schema) SetDB(db *sql.DB) *Schema {
+	schema.db = db
 
 	return schema
 }
@@ -55,27 +47,64 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 	return schema
 }
 
-// Install the schema
-func (schema *Schema) Install(db *sql.DB) error {
-	platform := getPlatform(schema.Platform)
-	if platform == nil {
-		return fmt.Errorf("invalid platform")
+// HasTable return true if table exists
+func (schema *Schema) HasTable(table string) bool {
+	db := schema.db
+
+	var name string
+	if err := db.QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
+		return false
+	} else {
+		return name == table || name == _platform().getSchemaAccessName(schema.Name, table)
+	}
+}
+
+// IsExists return true if schema exists
+func (schema *Schema) IsExists() bool {
+	db := schema.db
+
+	command := _platform().checkSchemaExistSQL(schema.Name);
+	if command == "" {
+		return true
 	}
 
-	tx, err := db.Begin()
+	var name string
+	if err := db.QueryRow(command).Scan(&name); err != nil {
+		return false
+	} else {
+		return name == schema.Name
+	}
+}
+
+// Install the schema
+func (schema *Schema) Install() error {
+	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
+	if schema.IsExists() {
+		createSchemaSQL = ""
+	}
+
+	createTableSQLs := make([]string, 0)
+	for _, table := range schema.Tables {
+		if schema.HasTable(table.Name) {
+			continue
+		}
+		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
+	}
+
+	tx, err := schema.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	if schemaCreation := platform.buildSchemaCreateSQL(schema); schemaCreation != "" {
-		if _, err := tx.Exec(schemaCreation); err != nil {
+	if createSchemaSQL != "" {
+		if _, err := tx.Exec(createSchemaSQL); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	for _, table := range schema.Tables {
-		if _, err := tx.Exec(platform.buildTableCreateSQL(schema.Name, table)); err != nil {
+	for _, createTableSQL := range createTableSQLs {
+		if _, err := tx.Exec(createTableSQL); err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -86,25 +115,20 @@ func (schema *Schema) Install(db *sql.DB) error {
 }
 
 // Drop the schema
-func (schema *Schema) Drop(db *sql.DB) error {
-	platform := getPlatform(schema.Platform)
-	if platform == nil {
-		return fmt.Errorf("invalid platform")
-	}
-
-	tx, err := db.Begin()
+func (schema *Schema) Drop() error {
+	tx, err := schema.db.Begin()
 	if err != nil {
 		return err
 	}
 
 	for i := len(schema.Tables) - 1; i >= 0; i-- {
-		if _, err := tx.Exec(platform.getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
+		if _, err := tx.Exec(_platform().getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	if schemaDrop := platform.getSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
+	if schemaDrop := _platform().getSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
 		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()
 			return err
