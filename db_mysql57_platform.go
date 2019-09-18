@@ -128,3 +128,7 @@ func (platform *dbMySQL57Platform) checkSchemaExistSQL(schema string) string {
 func (platform *dbMySQL57Platform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SHOW TABLES LIKE '" + table + "'"
 }
+
+func (platform *dbMySQL57Platform) getSchemaTablesSQL(schema string) string {
+	return "SHOW TABLES"
+}

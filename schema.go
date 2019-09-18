@@ -1,6 +1,9 @@
 package dbs
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Schema defined the db schema structure
 type Schema struct {
@@ -59,11 +62,35 @@ func (schema *Schema) HasTable(table string) bool {
 	}
 }
 
+// GetTables return all tables in schema
+func (schema *Schema) GetTables() []string {
+	db := schema.db
+
+	tables := make([]string, 0)
+	rows, err := db.Query(_platform().getSchemaTablesSQL(schema.Name))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var name string
+	for rows.Next() {
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		tables = append(tables, name)
+	}
+
+	return tables
+}
+
 // IsExists return true if schema exists
 func (schema *Schema) IsExists() bool {
 	db := schema.db
 
-	command := _platform().checkSchemaExistSQL(schema.Name);
+	command := _platform().checkSchemaExistSQL(schema.Name)
 	if command == "" {
 		return true
 	}

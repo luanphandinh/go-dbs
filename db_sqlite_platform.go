@@ -132,3 +132,7 @@ func (platform *dbSqlitePlatform) checkSchemaExistSQL(schema string) string {
 func (platform *dbSqlitePlatform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'"
 }
+
+func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
+	return "SELECT name FROM sqlite_master WHERE type='table'"
+}

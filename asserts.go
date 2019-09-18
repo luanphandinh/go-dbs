@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -25,7 +26,6 @@ func assertFalse(t *testing.T, actual bool) {
 		t.Fail()
 	}
 }
-
 
 func assertStringEquals(t *testing.T, expected string, actual string) {
 	if expected != actual {
@@ -75,6 +75,25 @@ func assertHasErrorMessage(t *testing.T, message string, err error) {
 	if message != err.Error() {
 		compareLog(message, err.Error())
 		t.Fail()
+	}
+}
+
+func assertArrayStringEquals(t *testing.T, expected []string, actual []string) {
+	if len(expected) != len(actual) {
+		compareLog("Expected subarray strings", "Length can not be larger than actual")
+		t.Fail()
+		return
+	}
+
+	for index, value := range expected {
+		acVal := actual[index]
+		if value != acVal {
+			compareLog(
+				"Expected \"" + value + "\" at index: " + strconv.Itoa(index),
+				"Found \"" +acVal + "\" at index: " + strconv.Itoa(index),
+			)
+			t.Fail()
+		}
 	}
 }
 

@@ -125,6 +125,11 @@ func TestSchemaInstall(t *testing.T) {
 	assertTrue(t, dbSchema.HasTable("employee"))
 	assertTrue(t, dbSchema.HasTable("department"))
 	assertTrue(t, dbSchema.HasTable("storage"))
+	assertArrayStringEquals(
+		t,
+		[]string{"department", "employee" , "storage"},
+		dbSchema.GetTables(),
+	)
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)

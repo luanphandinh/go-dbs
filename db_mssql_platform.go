@@ -131,3 +131,7 @@ func (platform *dbMsSQLPlatform) checkSchemaExistSQL(schema string) string {
 func (platform *dbMsSQLPlatform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '" + table + "' AND TABLE_SCHEMA = '" + schema + "'"
 }
+
+func (platform *dbMsSQLPlatform) getSchemaTablesSQL(schema string) string {
+	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + schema + "'"
+}

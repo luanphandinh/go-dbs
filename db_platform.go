@@ -41,6 +41,7 @@ type dbPlatform interface {
 
 	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
+	getSchemaTablesSQL(schema string) string
 }
 
 var _dbPlatform dbPlatform
