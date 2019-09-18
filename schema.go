@@ -111,8 +111,9 @@ func (schema *Schema) Install() error {
 	}
 
 	createTableSQLs := make([]string, 0)
+	tables := schema.GetTables()
 	for _, table := range schema.Tables {
-		if schema.HasTable(table.Name) {
+		if inStringArray(table.Name, tables) {
 			continue
 		}
 		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
