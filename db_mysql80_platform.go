@@ -129,3 +129,7 @@ func (platform *dbMySQL80Platform) checkSchemaHasTableSQL(schema string, table s
 func (platform *dbMySQL80Platform) getSchemaTablesSQL(schema string) string {
 	return "SHOW TABLES"
 }
+
+func (platform *dbMySQL80Platform) getTableColumnsSQL(schema string , table string) string {
+	return ""
+}

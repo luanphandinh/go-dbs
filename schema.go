@@ -86,6 +86,34 @@ func (schema *Schema) GetTables() []string {
 	return tables
 }
 
+func (schema *Schema) GetTableColumns(table string) []*Column {
+	// return make([]*Column, 0)
+	db := schema.db
+
+	columns := make([]*Column, 0)
+	rows, err := db.Query(_platform().getTableColumnsSQL(schema.Name, table))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var field, dbType, nullable, key, extra string
+	var defaultVal sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&field, &dbType, &nullable, &key, &defaultVal, &extra)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dVal := ""
+		if defaultVal.Valid {
+			dVal = defaultVal.String
+		}
+
+		columns = append(columns, _parseColumn(field, dbType, nullable, dVal, extra))
+	}
+
+	return columns
+}
+
 // IsExists return true if schema exists
 func (schema *Schema) IsExists() bool {
 	db := schema.db

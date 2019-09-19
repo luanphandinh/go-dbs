@@ -92,7 +92,7 @@ func getSchema() *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbSchema *Schema) *sql.DB {
 	db, err := sql.Open(
 		_platform().getDriverName(),
 		_platform().getDBConnectionString(serverName, 3306, user, password, dbName),
@@ -110,12 +110,12 @@ func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
 
 	assertNotHasError(t, dbSchema.Install())
 
-	return db, err
+	return db
 }
 
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema()
-	db, err := setupDB(t, dbSchema)
+	db := setupDB(t, dbSchema)
 
 	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
 	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
@@ -131,7 +131,7 @@ func TestSchemaInstall(t *testing.T) {
 		dbSchema.GetTables(),
 	)
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
@@ -181,12 +181,12 @@ func TestSchemaInstall(t *testing.T) {
 
 func TestAutoIncrement(t *testing.T) {
 	dbSchema := getSchema()
-	db, err := setupDB(t, dbSchema)
+	db := setupDB(t, dbSchema)
 
 	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
 	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
@@ -203,4 +203,14 @@ func TestAutoIncrement(t *testing.T) {
 	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s where id = 2", employee)).Scan(&id, &valid, &name, &age)
 	assertIntEquals(t, 2, id)
 	assertNotHasError(t, err)
+}
+
+func TestSchemaGetColumns(t *testing.T) {
+	dbSchema := getSchema()
+	setupDB(t, dbSchema)
+
+	if platform == mysql57 {
+		cols := dbSchema.GetTableColumns("employee")
+		assertStringEquals(t, "id", cols[0].Name)
+	}
 }

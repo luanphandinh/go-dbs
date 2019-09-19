@@ -42,6 +42,7 @@ type dbPlatform interface {
 	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
 	getSchemaTablesSQL(schema string) string
+	getTableColumnsSQL(schema string , table string) string
 }
 
 var _dbPlatform dbPlatform
@@ -207,4 +208,18 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 
 func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
+}
+
+func _parseColumn(field string, dbType string, nullable string, defaultVal string, extra string) *Column {
+	col := new(Column).WithName(field)
+
+	if nullable == "NO" {
+		col.IsNotNull()
+	}
+
+	if extra == "auto_increment" {
+		col.IsAutoIncrement()
+	}
+
+	return col
 }

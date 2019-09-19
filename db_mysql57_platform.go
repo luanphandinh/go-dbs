@@ -126,9 +126,13 @@ func (platform *dbMySQL57Platform) checkSchemaExistSQL(schema string) string {
 }
 
 func (platform *dbMySQL57Platform) checkSchemaHasTableSQL(schema string, table string) string {
-	return "SHOW TABLES LIKE '" + table + "'"
+	return "SHOW TABLES LIKE '" + platform.getSchemaAccessName(schema, table) + "'"
 }
 
 func (platform *dbMySQL57Platform) getSchemaTablesSQL(schema string) string {
 	return "SHOW TABLES"
+}
+
+func (platform *dbMySQL57Platform) getTableColumnsSQL(schema string , table string) string {
+	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
 }

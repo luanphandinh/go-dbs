@@ -173,3 +173,7 @@ func (platform *dbPostgresPlatform) checkSchemaHasTableSQL(schema string, table 
 func (platform *dbPostgresPlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='" + schema + "'"
 }
+
+func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string , table string) string {
+	return ""
+}
