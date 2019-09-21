@@ -1,26 +1,20 @@
 package dbs
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 // Schema defined the db schema structure
 type Schema struct {
 	Name    string   `json:"name"`
 	Tables  []*Table `json:"tables"`
 	Comment string   `json:"comment"`
-
-	db       *sql.DB
 }
 
 // WithName set the schema name
 func (schema *Schema) WithName(name string) *Schema {
 	schema.Name = name
-
-	return schema
-}
-
-// SetDB set a db connection to schema
-func (schema *Schema) SetDB(db *sql.DB) *Schema {
-	schema.db = db
 
 	return schema
 }
@@ -49,31 +43,75 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 
 // HasTable return true if table exists
 func (schema *Schema) HasTable(table string) bool {
-	db := schema.db
+	var name string
+	if err := _db().QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
+		return false
+	}
+
+	return name == table || name == _platform().getSchemaAccessName(schema.Name, table)
+}
+
+// GetTables return all tables in schema
+func (schema *Schema) GetTables() []string {
+	tables := make([]string, 0)
+	rows, err := _db().Query(_platform().getSchemaTablesSQL(schema.Name))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
 	var name string
-	if err := db.QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
-		return false
-	} else {
-		return name == table || name == _platform().getSchemaAccessName(schema.Name, table)
+	for rows.Next() {
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		tables = append(tables, name)
 	}
+
+	return tables
+}
+
+// GetTableColumns return all column in table
+func (schema *Schema) GetTableColumns(table string) []*Column {
+	columns := make([]*Column, 0)
+	rows, err := _db().Query(_platform().getTableColumnsSQL(schema.Name, table))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var field, dbType, nullable, key, extra string
+	var defaultVal sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&field, &dbType, &nullable, &key, &defaultVal, &extra)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dVal := ""
+		if defaultVal.Valid {
+			dVal = defaultVal.String
+		}
+
+		columns = append(columns, _parseColumn(field, dbType, nullable, key, dVal, extra))
+	}
+
+	return columns
 }
 
 // IsExists return true if schema exists
 func (schema *Schema) IsExists() bool {
-	db := schema.db
-
-	command := _platform().checkSchemaExistSQL(schema.Name);
+	command := _platform().checkSchemaExistSQL(schema.Name)
 	if command == "" {
 		return true
 	}
 
 	var name string
-	if err := db.QueryRow(command).Scan(&name); err != nil {
+	if err := _db().QueryRow(command).Scan(&name); err != nil {
 		return false
-	} else {
-		return name == schema.Name
 	}
+
+	return name == schema.Name
 }
 
 // Install the schema
@@ -84,14 +122,15 @@ func (schema *Schema) Install() error {
 	}
 
 	createTableSQLs := make([]string, 0)
+	tables := schema.GetTables()
 	for _, table := range schema.Tables {
-		if schema.HasTable(table.Name) {
+		if inStringArray(table.Name, tables) {
 			continue
 		}
 		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
 	}
 
-	tx, err := schema.db.Begin()
+	tx, err := _db().Begin()
 	if err != nil {
 		return err
 	}
@@ -116,7 +155,7 @@ func (schema *Schema) Install() error {
 
 // Drop the schema
 func (schema *Schema) Drop() error {
-	tx, err := schema.db.Begin()
+	tx, err := _db().Begin()
 	if err != nil {
 		return err
 	}

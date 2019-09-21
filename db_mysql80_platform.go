@@ -125,3 +125,11 @@ func (platform *dbMySQL80Platform) checkSchemaExistSQL(schema string) string {
 func (platform *dbMySQL80Platform) checkSchemaHasTableSQL(schema string, table string) string {
 	return "SHOW TABLES LIKE '" + table + "'"
 }
+
+func (platform *dbMySQL80Platform) getSchemaTablesSQL(schema string) string {
+	return "SHOW TABLES"
+}
+
+func (platform *dbMySQL80Platform) getTableColumnsSQL(schema string , table string) string {
+	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
+}

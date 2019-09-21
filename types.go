@@ -6,6 +6,7 @@ const (
 	SMALLINT   string = "SMALLINT"
 	MEDIUMINT  string = "MEDIUMINT"
 	INT        string = "INT"
+	INTEGER    string = "INTEGER"
 	BIGINT     string = "BIGINT"
 	DECIMAL    string = "DECIMAL"
 	NUMERIC    string = "NUMERIC"
@@ -33,6 +34,40 @@ const (
 	TIMESTAMP  string = "TIMESTAMP"
 	YEAR       string = "YEAR"
 )
+
+var allTypes = []string{
+	TINYINT,
+	SMALLINT,
+	MEDIUMINT,
+	INT,
+	INTEGER,
+	BIGINT,
+	DECIMAL,
+	NUMERIC,
+	FLOAT,
+	DOUBLE,
+	BIT,
+	CHAR,
+	VARCHAR,
+	NVARCHAR,
+	BINARY,
+	VARBINARY,
+	TINYBLOB,
+	BLOB,
+	MEDIUMBLOB,
+	LONGBLOB,
+	TINYTEXT,
+	TEXT,
+	MEDIUMTEXT,
+	LONGTEXT,
+	ENUM,
+	SET,
+	DATE,
+	TIME,
+	DATETIME,
+	TIMESTAMP,
+	YEAR,
+}
 
 var integerTypes = []string{
 	TINYINT,

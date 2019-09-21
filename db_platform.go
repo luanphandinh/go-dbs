@@ -1,5 +1,11 @@
 package dbs
 
+import (
+	"regexp"
+	"strconv"
+	"strings"
+)
+
 type dbPlatform interface {
 	getDriverName() string
 	getDBConnectionString(server string, port int, user string, password string, dbName string) string
@@ -41,54 +47,8 @@ type dbPlatform interface {
 
 	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
-}
-
-var _dbPlatform dbPlatform
-var _cachedPlatforms = make(map[string]dbPlatform)
-
-// SetPlatform define the platform that entire dbs will use
-// Supported platforms: sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver
-func SetPlatform(platform string) {
-	_dbPlatform = _getPlatform(platform)
-}
-
-func _platform() dbPlatform {
-	return _dbPlatform
-}
-
-func _getPlatform(platform string) dbPlatform {
-	if cached := _cachedPlatforms[platform]; cached != nil {
-		return cached
-	}
-
-	cache := _makePlatform(platform)
-	_cachedPlatforms[platform] = cache
-
-	return cache
-}
-
-func _makePlatform(platform string) dbPlatform {
-	if platform == mysql57 {
-		return new(dbMySQL57Platform)
-	}
-
-	if platform == mysql80 {
-		return new(dbMySQL80Platform)
-	}
-
-	if platform == sqlite3 {
-		return new(dbSqlitePlatform)
-	}
-
-	if platform == postgres {
-		return new(dbPostgresPlatform)
-	}
-
-	if platform == mssql {
-		return new(dbMsSQLPlatform)
-	}
-
-	return nil
+	getSchemaTablesSQL(schema string) string
+	getTableColumnsSQL(schema string , table string) string
 }
 
 func _getUniqueDeclaration() string {
@@ -206,4 +166,41 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 
 func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
+}
+
+func _parseColumn(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
+	col := new(Column).WithName(field)
+
+	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
+
+	if key == "UNI" {
+		col.IsUnique()
+	}
+
+	for _, val := range dbTypes {
+		if val == "unsigned" {
+			col.IsUnsigned()
+		}
+
+		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
+			col.WithType(dbType)
+		}
+
+		length, err := strconv.Atoi(val)
+		if err == nil {
+			col.WithLength(length)
+		}
+	}
+
+	if nullable == "NO" {
+		col.IsNotNull()
+	}
+
+	if extra == "auto_increment" {
+		col.IsAutoIncrement()
+	}
+
+	col.WithDefault(dVal)
+
+	return col
 }

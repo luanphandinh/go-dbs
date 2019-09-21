@@ -20,7 +20,6 @@ var (
 )
 
 func getSchema() *Schema {
-	SetPlatform(platform)
 	// return &Schema{
 	// 	Name:     "company",
 	// 	dbPlatform: platform,
@@ -92,41 +91,71 @@ func getSchema() *Schema {
 	return schema
 }
 
-func setupDB(t *testing.T, dbSchema *Schema) (*sql.DB, error) {
+func setupDB(t *testing.T, dbSchema *Schema) *sql.DB {
 	db, err := sql.Open(
-		_platform().getDriverName(),
-		_platform().getDBConnectionString(serverName, 3306, user, password, dbName),
+		_getPlatform(platform).getDriverName(),
+		_getPlatform(platform).getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
-	dbSchema.SetDB(db)
+	SetPlatform(platform, db)
 	assertNotHasError(t, err)
 
 	assertNotHasError(t, dbSchema.Drop())
 	if platform == postgres || platform == mssql {
 		assertFalse(t, dbSchema.IsExists())
 	}
-	assertFalse(t, dbSchema.HasTable("employee"))
 	assertFalse(t, dbSchema.HasTable("department"))
+	assertFalse(t, dbSchema.HasTable("employee"))
 	assertFalse(t, dbSchema.HasTable("storage"))
 
 	assertNotHasError(t, dbSchema.Install())
 
-	return db, err
+	return db
 }
 
 func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema()
-	db, err := setupDB(t, dbSchema)
-
-	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
-	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
-	storage := _platform().getSchemaAccessName(dbSchema.Name, "storage")
+	setupDB(t, dbSchema)
 
 	assertTrue(t, dbSchema.IsExists())
 	assertTrue(t, dbSchema.HasTable("employee"))
 	assertTrue(t, dbSchema.HasTable("department"))
 	assertTrue(t, dbSchema.HasTable("storage"))
+	assertArrayStringEquals(
+		t,
+		[]string{"department", "employee" , "storage"},
+		dbSchema.GetTables(),
+	)
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
+	if platform == mysql80 || platform == mysql57 {
+		schemaDepartmentCols := dbSchema.Tables[0].Columns
+		departmentCols := dbSchema.GetTableColumns("department")
+		for index, col := range departmentCols {
+			assertFalse(t, schemaDepartmentCols[index].diff(col))
+		}
+
+		schemaEmployeeCols := dbSchema.Tables[1].Columns
+		employeeCols := dbSchema.GetTableColumns("employee")
+		for index, col := range employeeCols {
+			assertFalse(t, schemaEmployeeCols[index].diff(col))
+		}
+
+		schemaStorageCols := dbSchema.Tables[2].Columns
+		storageCols := dbSchema.GetTableColumns("storage")
+		for index, col := range storageCols {
+			assertFalse(t, schemaStorageCols[index].diff(col))
+		}
+	}
+}
+
+func TestSchemaWorks(t *testing.T) {
+	dbSchema := getSchema()
+	db := setupDB(t, dbSchema)
+
+	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
+	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
+	storage := _platform().getSchemaAccessName(dbSchema.Name, "storage")
+
+	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
 	// Checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
@@ -172,30 +201,4 @@ func TestSchemaInstall(t *testing.T) {
 	assertFloatEquals(t, 1.01, revenue)
 
 	assertNotHasError(t, dbSchema.Install())
-}
-
-func TestAutoIncrement(t *testing.T) {
-	dbSchema := getSchema()
-	db, err := setupDB(t, dbSchema)
-
-	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
-	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
-
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
-	assertNotHasError(t, err)
-
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
-	assertNotHasError(t, err)
-
-	var valid, age, id int
-	var name string
-	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s", employee)).Scan(&id, &valid, &name, &age)
-	assertIntEquals(t, 1, id)
-	assertNotHasError(t, err)
-
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
-	assertNotHasError(t, err)
-	err = db.QueryRow(fmt.Sprintf("select id, valid, name, age from %s where id = 2", employee)).Scan(&id, &valid, &name, &age)
-	assertIntEquals(t, 2, id)
-	assertNotHasError(t, err)
 }
