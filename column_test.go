@@ -1,8 +1,6 @@
 package dbs
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestColumnDeclaration(t *testing.T) {
 	mysqlPlatform := _getPlatform(mysql80)

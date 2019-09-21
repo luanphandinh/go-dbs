@@ -1,6 +1,9 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 const mssql string = "sqlserver"
 
@@ -138,4 +141,8 @@ func (platform *dbMsSQLPlatform) getSchemaTablesSQL(schema string) string {
 
 func (platform *dbMsSQLPlatform) getTableColumnsSQL(schema string , table string) string {
 	return ""
+}
+
+func (platform *dbMsSQLPlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	return make([]*Column, 0)
 }

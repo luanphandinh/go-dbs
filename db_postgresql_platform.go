@@ -1,6 +1,9 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 const postgres string = "postgres"
 
@@ -176,4 +179,8 @@ func (platform *dbPostgresPlatform) getSchemaTablesSQL(schema string) string {
 
 func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string , table string) string {
 	return ""
+}
+
+func (platform *dbPostgresPlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	return make([]*Column, 0)
 }

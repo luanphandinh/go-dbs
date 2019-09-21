@@ -1,6 +1,9 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 const (
 	mysql   string = "mysql"
@@ -135,4 +138,8 @@ func (platform *dbMySQL57Platform) getSchemaTablesSQL(schema string) string {
 
 func (platform *dbMySQL57Platform) getTableColumnsSQL(schema string , table string) string {
 	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
+}
+
+func (platform *dbMySQL57Platform) parseTableColumns(rows *sql.Rows) []*Column {
+	return make([]*Column, 0)
 }

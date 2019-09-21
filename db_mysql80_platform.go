@@ -1,6 +1,9 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 const mysql80 string = "mysql:8.0"
 
@@ -132,4 +135,8 @@ func (platform *dbMySQL80Platform) getSchemaTablesSQL(schema string) string {
 
 func (platform *dbMySQL80Platform) getTableColumnsSQL(schema string , table string) string {
 	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
+}
+
+func (platform *dbMySQL80Platform) parseTableColumns(rows *sql.Rows) []*Column {
+	return make([]*Column, 0)
 }

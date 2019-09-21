@@ -1,6 +1,7 @@
 package dbs
 
 import (
+	"database/sql"
 	"regexp"
 	"strconv"
 	"strings"
@@ -48,7 +49,9 @@ type dbPlatform interface {
 	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
 	getSchemaTablesSQL(schema string) string
+
 	getTableColumnsSQL(schema string , table string) string
+	parseTableColumns(rows *sql.Rows) []*Column
 }
 
 func _getUniqueDeclaration() string {

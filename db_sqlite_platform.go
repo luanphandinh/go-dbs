@@ -1,6 +1,9 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"strconv"
+)
 
 const sqlite3 string = "sqlite3"
 
@@ -139,4 +142,8 @@ func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
 
 func (platform *dbSqlitePlatform) getTableColumnsSQL(schema string , table string) string {
 	return ""
+}
+
+func (platform *dbSqlitePlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	return make([]*Column, 0)
 }
