@@ -1,17 +1,27 @@
 package dbs
 
+import (
+	"database/sql"
+	"log"
+)
 
 var _dbPlatform dbPlatform
+var _sqlDB *sql.DB
 var _cachedPlatforms = make(map[string]dbPlatform)
 
-// SetPlatform define the platform that entire dbs will use
+// SetPlatform define the platform that entire dbs will use along with the database connection
 // Supported platforms: sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver
-func SetPlatform(platform string) {
+func SetPlatform(platform string, db *sql.DB) {
 	_dbPlatform = _getPlatform(platform)
+	_sqlDB = db
 }
 
 func _platform() dbPlatform {
 	return _dbPlatform
+}
+
+func _db() *sql.DB {
+	return _sqlDB
 }
 
 func _getPlatform(platform string) dbPlatform {
@@ -20,6 +30,10 @@ func _getPlatform(platform string) dbPlatform {
 	}
 
 	cache := _makePlatform(platform)
+	if cache == nil {
+		log.Fatal("platform not supported" + platform)
+	}
+
 	_cachedPlatforms[platform] = cache
 
 	return cache

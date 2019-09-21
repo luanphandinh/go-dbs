@@ -20,7 +20,6 @@ var (
 )
 
 func getSchema() *Schema {
-	SetPlatform(platform)
 	// return &Schema{
 	// 	Name:     "company",
 	// 	dbPlatform: platform,
@@ -94,10 +93,10 @@ func getSchema() *Schema {
 
 func setupDB(t *testing.T, dbSchema *Schema) *sql.DB {
 	db, err := sql.Open(
-		_platform().getDriverName(),
-		_platform().getDBConnectionString(serverName, 3306, user, password, dbName),
+		_getPlatform(platform).getDriverName(),
+		_getPlatform(platform).getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
-	dbSchema.SetDB(db)
+	SetPlatform(platform, db)
 	assertNotHasError(t, err)
 
 	assertNotHasError(t, dbSchema.Drop())

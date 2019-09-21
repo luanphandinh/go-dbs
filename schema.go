@@ -10,20 +10,11 @@ type Schema struct {
 	Name    string   `json:"name"`
 	Tables  []*Table `json:"tables"`
 	Comment string   `json:"comment"`
-
-	db *sql.DB
 }
 
 // WithName set the schema name
 func (schema *Schema) WithName(name string) *Schema {
 	schema.Name = name
-
-	return schema
-}
-
-// SetDB set a db connection to schema
-func (schema *Schema) SetDB(db *sql.DB) *Schema {
-	schema.db = db
 
 	return schema
 }
@@ -52,10 +43,8 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 
 // HasTable return true if table exists
 func (schema *Schema) HasTable(table string) bool {
-	db := schema.db
-
 	var name string
-	if err := db.QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
+	if err := _db().QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
 		return false
 	}
 
@@ -64,10 +53,8 @@ func (schema *Schema) HasTable(table string) bool {
 
 // GetTables return all tables in schema
 func (schema *Schema) GetTables() []string {
-	db := schema.db
-
 	tables := make([]string, 0)
-	rows, err := db.Query(_platform().getSchemaTablesSQL(schema.Name))
+	rows, err := _db().Query(_platform().getSchemaTablesSQL(schema.Name))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,11 +75,8 @@ func (schema *Schema) GetTables() []string {
 
 // GetTableColumns return all column in table
 func (schema *Schema) GetTableColumns(table string) []*Column {
-	// return make([]*Column, 0)
-	db := schema.db
-
 	columns := make([]*Column, 0)
-	rows, err := db.Query(_platform().getTableColumnsSQL(schema.Name, table))
+	rows, err := _db().Query(_platform().getTableColumnsSQL(schema.Name, table))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -117,15 +101,13 @@ func (schema *Schema) GetTableColumns(table string) []*Column {
 
 // IsExists return true if schema exists
 func (schema *Schema) IsExists() bool {
-	db := schema.db
-
 	command := _platform().checkSchemaExistSQL(schema.Name)
 	if command == "" {
 		return true
 	}
 
 	var name string
-	if err := db.QueryRow(command).Scan(&name); err != nil {
+	if err := _db().QueryRow(command).Scan(&name); err != nil {
 		return false
 	}
 
@@ -148,7 +130,7 @@ func (schema *Schema) Install() error {
 		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
 	}
 
-	tx, err := schema.db.Begin()
+	tx, err := _db().Begin()
 	if err != nil {
 		return err
 	}
@@ -173,7 +155,7 @@ func (schema *Schema) Install() error {
 
 // Drop the schema
 func (schema *Schema) Drop() error {
-	tx, err := schema.db.Begin()
+	tx, err := _db().Begin()
 	if err != nil {
 		return err
 	}

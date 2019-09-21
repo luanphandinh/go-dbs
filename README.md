@@ -7,8 +7,8 @@ Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver) schema.
 #### 1. Set platform:
 ```go
     // supported platforms: "sqlite3", "mysql:5.7", "mysql:8.0", "postgres", "sqlserver"
-
-    dbs.SetPlatform("sqlite3")
+    // db is your `*sql.DB`
+    dbs.SetPlatform("sqlite3", db)
 
 ```
 
@@ -90,9 +90,7 @@ Or using builders:
 
 #### 3. Install
 ```go
-    // With db is the connection(`*sql.DB`) to your database
-
-    dbSchema.SetDB(db).Install()
+    dbSchema.Install()
 ```
 
 * Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.

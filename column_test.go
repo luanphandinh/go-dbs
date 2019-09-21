@@ -72,7 +72,7 @@ func TestColumnDeclaration(t *testing.T) {
 }
 
 func TestColumnParse(t *testing.T) {
-	SetPlatform(platform)
+	SetPlatform(platform, nil)
 
 	col := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
 
