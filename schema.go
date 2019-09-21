@@ -1,7 +1,6 @@
 package dbs
 
 import (
-	"database/sql"
 	"log"
 )
 
@@ -75,28 +74,12 @@ func (schema *Schema) GetTables() []string {
 
 // GetTableColumns return all column in table
 func (schema *Schema) GetTableColumns(table string) []*Column {
-	columns := make([]*Column, 0)
 	rows, err := _db().Query(_platform().getTableColumnsSQL(schema.Name, table))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var field, dbType, nullable, key, extra string
-	var defaultVal sql.NullString
-	for rows.Next() {
-		err := rows.Scan(&field, &dbType, &nullable, &key, &defaultVal, &extra)
-		if err != nil {
-			log.Fatal(err)
-		}
-		dVal := ""
-		if defaultVal.Valid {
-			dVal = defaultVal.String
-		}
-
-		columns = append(columns, _parseColumn(field, dbType, nullable, key, dVal, extra))
-	}
-
-	return columns
+	return _platform().parseTableColumns(rows)
 }
 
 // IsExists return true if schema exists

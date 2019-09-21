@@ -2,9 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 type dbPlatform interface {
@@ -169,41 +166,4 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 
 func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
-}
-
-func _parseColumn(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
-	col := new(Column).WithName(field)
-
-	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
-
-	if key == "UNI" {
-		col.IsUnique()
-	}
-
-	for _, val := range dbTypes {
-		if val == "unsigned" {
-			col.IsUnsigned()
-		}
-
-		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
-			col.WithType(dbType)
-		}
-
-		length, err := strconv.Atoi(val)
-		if err == nil {
-			col.WithLength(length)
-		}
-	}
-
-	if nullable == "NO" {
-		col.IsNotNull()
-	}
-
-	if extra == "auto_increment" {
-		col.IsAutoIncrement()
-	}
-
-	col.WithDefault(dVal)
-
-	return col
 }

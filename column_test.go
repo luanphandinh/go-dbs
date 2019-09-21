@@ -74,7 +74,7 @@ func TestColumnParse(t *testing.T) {
 
 	col := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
 
-	parsedCol := _parseColumn("id", "int(10) unsigned", "NO", "", "", "auto_increment")
+	parsedCol := _parseColumnMySQL("id", "int(10) unsigned", "NO", "", "", "auto_increment")
 	assertStringEquals(t, "id", parsedCol.Name)
 	assertStringEquals(t, INT, parsedCol.Type)
 	assertIntEquals(t, 10, parsedCol.Length)

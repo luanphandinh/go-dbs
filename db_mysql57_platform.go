@@ -2,7 +2,10 @@ package dbs
 
 import (
 	"database/sql"
+	"log"
+	"regexp"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -136,10 +139,68 @@ func (platform *dbMySQL57Platform) getSchemaTablesSQL(schema string) string {
 	return "SHOW TABLES"
 }
 
+// This will query data from mysql and return format of
+// Field | Type 			| Null 	| Key 	| Default 	| Extra
+// id    | int(10) unsigned	| NO	| PRI	| NULL		| auto_increment
+//		 |					| YES	| UNI	| 1			| ""
 func (platform *dbMySQL57Platform) getTableColumnsSQL(schema string , table string) string {
 	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
 }
 
 func (platform *dbMySQL57Platform) parseTableColumns(rows *sql.Rows) []*Column {
-	return make([]*Column, 0)
+	columns := make([]*Column, 0)
+
+	var field, dbType, nullable, key, extra string
+	var defaultVal sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&field, &dbType, &nullable, &key, &defaultVal, &extra)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dVal := ""
+		if defaultVal.Valid {
+			dVal = defaultVal.String
+		}
+
+		columns = append(columns, _parseColumnMySQL(field, dbType, nullable, key, dVal, extra))
+	}
+
+	return columns
+}
+
+func _parseColumnMySQL(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
+	col := new(Column).WithName(field)
+
+	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
+
+	if key == "UNI" {
+		col.IsUnique()
+	}
+
+	for _, val := range dbTypes {
+		if val == "unsigned" {
+			col.IsUnsigned()
+		}
+
+		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
+			col.WithType(dbType)
+		}
+
+		length, err := strconv.Atoi(val)
+		if err == nil {
+			col.WithLength(length)
+		}
+	}
+
+	if nullable == "NO" {
+		col.IsNotNull()
+	}
+
+	if extra == "auto_increment" {
+		col.IsAutoIncrement()
+	}
+
+	col.WithDefault(dVal)
+
+	return col
 }
