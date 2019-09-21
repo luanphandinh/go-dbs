@@ -131,5 +131,5 @@ func (platform *dbMySQL80Platform) getSchemaTablesSQL(schema string) string {
 }
 
 func (platform *dbMySQL80Platform) getTableColumnsSQL(schema string , table string) string {
-	return ""
+	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
 }

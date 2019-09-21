@@ -11,7 +11,7 @@ type Schema struct {
 	Tables  []*Table `json:"tables"`
 	Comment string   `json:"comment"`
 
-	db       *sql.DB
+	db *sql.DB
 }
 
 // WithName set the schema name
@@ -57,9 +57,9 @@ func (schema *Schema) HasTable(table string) bool {
 	var name string
 	if err := db.QueryRow(_platform().checkSchemaHasTableSQL(schema.Name, table)).Scan(&name); err != nil {
 		return false
-	} else {
-		return name == table || name == _platform().getSchemaAccessName(schema.Name, table)
 	}
+
+	return name == table || name == _platform().getSchemaAccessName(schema.Name, table)
 }
 
 // GetTables return all tables in schema
@@ -86,6 +86,7 @@ func (schema *Schema) GetTables() []string {
 	return tables
 }
 
+// GetTableColumns return all column in table
 func (schema *Schema) GetTableColumns(table string) []*Column {
 	// return make([]*Column, 0)
 	db := schema.db
@@ -108,7 +109,7 @@ func (schema *Schema) GetTableColumns(table string) []*Column {
 			dVal = defaultVal.String
 		}
 
-		columns = append(columns, _parseColumn(field, dbType, nullable, dVal, extra))
+		columns = append(columns, _parseColumn(field, dbType, nullable, key, dVal, extra))
 	}
 
 	return columns
@@ -126,9 +127,9 @@ func (schema *Schema) IsExists() bool {
 	var name string
 	if err := db.QueryRow(command).Scan(&name); err != nil {
 		return false
-	} else {
-		return name == schema.Name
 	}
+
+	return name == schema.Name
 }
 
 // Install the schema

@@ -1,6 +1,8 @@
 package dbs
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestColumnDeclaration(t *testing.T) {
 	mysqlPlatform := _getPlatform(mysql80)
@@ -67,4 +69,22 @@ func TestColumnDeclaration(t *testing.T) {
 	assertStringEquals(t, "age INTEGER(2) DEFAULT 10 CHECK (age < 150)", sqlitePlatform.buildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INT(2) DEFAULT 10 CHECK (age < 150)", postgresPlatform.buildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INT(2) DEFAULT 10 CHECK (age < 150)", mssqlPlatform.buildColumnDeclarationSQL(age))
+}
+
+func TestColumnParse(t *testing.T) {
+	SetPlatform(platform)
+
+	col := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
+
+	parsedCol := _parseColumn("id", "int(10) unsigned", "NO", "", "", "auto_increment")
+	assertStringEquals(t, "id", parsedCol.Name)
+	assertStringEquals(t, INT, parsedCol.Type)
+	assertIntEquals(t, 10, parsedCol.Length)
+	assertTrue(t, parsedCol.Unsigned)
+	assertTrue(t, parsedCol.NotNull)
+	assertTrue(t, parsedCol.AutoIncrement)
+	assertFalse(t, col.diff(parsedCol))
+
+	col.WithName("sub_id")
+	assertTrue(t, col.diff(parsedCol))
 }

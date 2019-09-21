@@ -1,5 +1,11 @@
 package dbs
 
+import (
+	"regexp"
+	"strconv"
+	"strings"
+)
+
 type dbPlatform interface {
 	getDriverName() string
 	getDBConnectionString(server string, port int, user string, password string, dbName string) string
@@ -210,8 +216,29 @@ func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
 }
 
-func _parseColumn(field string, dbType string, nullable string, defaultVal string, extra string) *Column {
+func _parseColumn(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
 	col := new(Column).WithName(field)
+
+	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
+
+	if key == "UNI" {
+		col.IsUnique()
+	}
+
+	for _, val := range dbTypes {
+		if val == "unsigned" {
+			col.IsUnsigned()
+		}
+
+		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
+			col.WithType(dbType)
+		}
+
+		length, err := strconv.Atoi(val)
+		if err == nil {
+			col.WithLength(length)
+		}
+	}
 
 	if nullable == "NO" {
 		col.IsNotNull()
@@ -220,6 +247,8 @@ func _parseColumn(field string, dbType string, nullable string, defaultVal strin
 	if extra == "auto_increment" {
 		col.IsAutoIncrement()
 	}
+
+	col.WithDefault(dVal)
 
 	return col
 }

@@ -1,5 +1,7 @@
 package dbs
 
+import "strings"
+
 // Column defined the db column struct
 type Column struct {
 	Name          string `json:"name"`
@@ -87,4 +89,44 @@ func (col *Column) AddCheck(check string) *Column {
 	col.Check = check
 
 	return col
+}
+
+func (col *Column) diff(col2 *Column) bool {
+	if col.Name != col2.Name {
+		return true
+	}
+
+	// @TODO: enhance type mapping
+	if ! strings.Contains(col.Type, col2.Type) {
+		return true
+	}
+
+	if col.Unsigned != col2.Unsigned {
+		return true
+	}
+
+	if col.NotNull != col.NotNull {
+		return true
+	}
+
+	if col.AutoIncrement != col2.AutoIncrement {
+		return true
+	}
+
+	if col.Unsigned != col2.Unsigned {
+		return true
+	}
+
+	// @TODO: primary and unique in mysql ???
+	if col.Unique != col2.Unique {
+		return true
+	}
+
+	if col.Default != col2.Default {
+		return true
+	}
+
+	// @TODO: check compare
+
+	return false
 }
