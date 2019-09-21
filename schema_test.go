@@ -126,7 +126,7 @@ func TestSchemaInstall(t *testing.T) {
 		dbSchema.GetTables(),
 	)
 
-	if platform == mysql80 || platform == mysql57 || platform == postgres {
+	if platform == mysql80 || platform == mysql57 || platform == postgres || platform == sqlite3 {
 		schemaDepartmentCols := dbSchema.Tables[0].Columns
 		departmentCols := dbSchema.GetTableColumns("department")
 		for index, col := range departmentCols {

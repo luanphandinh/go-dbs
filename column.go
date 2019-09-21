@@ -110,7 +110,7 @@ func (col *Column) diffAll(col2 *Column) bool {
 	}
 
 	// @TODO: enhance type mapping
-	if ! strings.Contains(col.Type, col2.Type) {
+	if ! strings.Contains(col.Type, col2.Type) && ! strings.Contains(col2.Type, col.Type) {
 		return true
 	}
 

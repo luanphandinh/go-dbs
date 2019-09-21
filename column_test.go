@@ -72,7 +72,7 @@ func TestColumnDeclaration(t *testing.T) {
 func TestColumnParse(t *testing.T) {
 	SetPlatform(platform, nil)
 
-	col := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
+	colId := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
 
 	parsedCol := _parseColumnMySQL("id", "int(10) unsigned", "NO", "", "", "auto_increment")
 	assertStringEquals(t, "id", parsedCol.Name)
@@ -81,8 +81,22 @@ func TestColumnParse(t *testing.T) {
 	assertTrue(t, parsedCol.Unsigned)
 	assertTrue(t, parsedCol.NotNull)
 	assertTrue(t, parsedCol.AutoIncrement)
-	assertFalse(t, col.diff(parsedCol))
+	assertFalse(t, colId.diff(parsedCol))
 
-	col.WithName("sub_id")
-	assertTrue(t, col.diff(parsedCol))
+	colId.WithName("sub_id")
+	assertTrue(t, colId.diff(parsedCol))
+
+
+	colName := new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsUnsigned().IsNotNull().IsAutoIncrement()
+
+	parsedCol = _parseColumnMySQLite("name", "NVARCHAR(20)", true, "")
+	assertStringEquals(t, "name", parsedCol.Name)
+	assertStringEquals(t, NVARCHAR, parsedCol.Type)
+	assertIntEquals(t, 20, parsedCol.Length)
+	assertTrue(t, parsedCol.NotNull)
+
+	assertFalse(t, colName.diff(parsedCol))
+
+	colName.WithName("sub_id")
+	assertTrue(t, colName.diff(parsedCol))
 }
