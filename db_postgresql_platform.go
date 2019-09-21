@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"database/sql"
+	"log"
 	"strconv"
 )
 
@@ -177,10 +178,23 @@ func (platform *dbPostgresPlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='" + schema + "'"
 }
 
+// column_name
 func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string , table string) string {
-	return ""
+	return "SELECT column_name from information_schema.columns WHERE table_name = '" + table + "'" + " AND table_schema='" + schema + "'"
 }
 
 func (platform *dbPostgresPlatform) parseTableColumns(rows *sql.Rows) []*Column {
-	return make([]*Column, 0)
+	columns := make([]*Column, 0)
+
+	var field string
+	for rows.Next() {
+		err := rows.Scan(&field)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		columns = append(columns, new(Column).WithName(field))
+	}
+
+	return columns
 }
