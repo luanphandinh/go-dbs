@@ -45,6 +45,7 @@ type dbPlatform interface {
 	checkSchemaHasTableSQL(schema string, table string) string
 	getSchemaTablesSQL(schema string) string
 
+	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
 	parseTableColumns(rows *sql.Rows) []*Column // parse rows returned from getTableColumnsSQL()
 }

@@ -141,6 +141,7 @@ func (platform *dbMsSQLPlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + schema + "'"
 }
 
+// https://docs.microsoft.com/en-us/sql/relational-databases/system-information-schema-views/columns-transact-sql?view=sql-server-2017
 // ORDINAL_POSITION     COLUMN_NAME 	DATA_TYPE    	IS_NULLABLE 	COLUMN_DEFAULT
 // ----------  			----------  	-----------  	----------  	----------
 // 0           			id          	int     		NO				NULL
