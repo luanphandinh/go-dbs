@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"fmt"
+	"runtime/debug"
 	"strconv"
 	"testing"
 )
@@ -101,4 +102,5 @@ func compareLog(expected interface{}, actual interface{})  {
 	fmt.Println("expected[-] / actual[+]")
 	fmt.Println("- ", expected)
 	fmt.Println("+ ", actual)
+	fmt.Println(string(debug.Stack()))
 }
