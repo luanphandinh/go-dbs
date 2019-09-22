@@ -69,8 +69,11 @@ func TestColumnDeclaration(t *testing.T) {
 	assertStringEquals(t, "age INT(2) DEFAULT 10 CHECK (age < 150)", mssqlPlatform.buildColumnDeclarationSQL(age))
 }
 
-func TestColumnParse(t *testing.T) {
+func TestColumnMySQLParse(t *testing.T) {
 	SetPlatform(platform, nil)
+	if _platform().getDriverName() != mysql {
+		return
+	}
 
 	colId := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
 
@@ -85,18 +88,40 @@ func TestColumnParse(t *testing.T) {
 
 	colId.WithName("sub_id")
 	assertTrue(t, colId.diff(parsedCol))
+}
 
+func TestColumnSQLiteParse(t *testing.T) {
+	if platform != sqlite3 {
+		return
+	}
+
+	SetPlatform(platform, nil)
 
 	colName := new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsUnsigned().IsNotNull().IsAutoIncrement()
 
-	parsedCol = _parseColumnMySQLite("name", "NVARCHAR(20)", true, "")
+	parsedCol := _parseColumnMySQLite("name", "NVARCHAR(20)", true, "")
 	assertStringEquals(t, "name", parsedCol.Name)
 	assertStringEquals(t, NVARCHAR, parsedCol.Type)
 	assertIntEquals(t, 20, parsedCol.Length)
 	assertTrue(t, parsedCol.NotNull)
-
 	assertFalse(t, colName.diff(parsedCol))
-
 	colName.WithName("sub_id")
 	assertTrue(t, colName.diff(parsedCol))
+}
+
+func TestColumnMsSQLParse(t *testing.T) {
+	if platform != mssql {
+		return
+	}
+
+	SetPlatform(platform, nil)
+
+	colCategory := new(Column).WithName("category").WithType(NVARCHAR).WithLength(20).IsUnsigned().IsNotNull().IsAutoIncrement()
+	parsedCol := _parseColumnMSSQL("category", "nvarchar", "NO", "")
+	assertStringEquals(t, "category", parsedCol.Name)
+	assertStringEquals(t, NVARCHAR, parsedCol.Type)
+	assertFalse(t, parsedCol.NotNull)
+	assertFalse(t, colCategory.diff(parsedCol))
+	colCategory.WithName("sub_id")
+	assertTrue(t, colCategory.diff(parsedCol))
 }
