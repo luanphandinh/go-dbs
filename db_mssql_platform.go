@@ -1,6 +1,11 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"log"
+	"strconv"
+	"strings"
+)
 
 const mssql string = "sqlserver"
 
@@ -12,10 +17,10 @@ func (platform *dbMsSQLPlatform) getDriverName() string {
 
 func (platform *dbMsSQLPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	info := make([]string, 0)
-	info = append(info, "server=" + server)
-	info = append(info, "user id=" + user)
-	info = append(info, "password=" + password)
-	info = append(info, "database=" + dbName)
+	info = append(info, "server="+server)
+	info = append(info, "user id="+user)
+	info = append(info, "password="+password)
+	info = append(info, "database="+dbName)
 
 	return concatStrings(info, ";")
 }
@@ -136,6 +141,51 @@ func (platform *dbMsSQLPlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" + schema + "'"
 }
 
-func (platform *dbMsSQLPlatform) getTableColumnsSQL(schema string , table string) string {
-	return ""
+// https://docs.microsoft.com/en-us/sql/relational-databases/system-information-schema-views/columns-transact-sql?view=sql-server-2017
+// ORDINAL_POSITION     COLUMN_NAME 	DATA_TYPE    	IS_NULLABLE 	COLUMN_DEFAULT
+// ----------  			----------  	-----------  	----------  	----------
+// 0           			id          	int     		NO				NULL
+// 1           			name        	bit				YES				((0))
+func (platform *dbMsSQLPlatform) getTableColumnsSQL(schema string, table string) string {
+	return "SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT" +
+		" FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '" + table +
+		"' AND TABLE_SCHEMA = '" + schema + "'"
+}
+
+func (platform *dbMsSQLPlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	columns := make([]*Column, 0)
+
+	var cid, field, dbType, notnull string
+	var dfltValue sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&cid, &field, &dbType, &notnull, &dfltValue)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dVal := ""
+		if dfltValue.Valid {
+			dVal = dfltValue.String
+		}
+
+		columns = append(columns, _parseColumnMSSQL(field, dbType, notnull, dVal))
+	}
+
+	return columns
+}
+
+func _parseColumnMSSQL(field string, dbType string, notnull string, dVal string) *Column {
+	col := new(Column).WithName(field)
+
+	if dbTypeVal := strings.ToUpper(dbType); inStringArray(dbTypeVal, allTypes) {
+		col.WithType(dbTypeVal)
+	}
+
+	if notnull != "NO" {
+		col.IsNotNull()
+	}
+
+	col.WithDefault(dVal)
+
+	return col
 }

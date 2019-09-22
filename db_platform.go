@@ -1,9 +1,7 @@
 package dbs
 
 import (
-	"regexp"
-	"strconv"
-	"strings"
+	"database/sql"
 )
 
 type dbPlatform interface {
@@ -21,9 +19,7 @@ type dbPlatform interface {
 	getDefaultDeclaration(expression string) string
 	getColumnCommentDeclaration(expression string) string // For inline comment
 	getColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
-	// Checks constraint is parsed but will be ignored in mysql5.7
-	getColumnCheckDeclaration(expression string) string
-
+	getColumnCheckDeclaration(expression string) string // Checks constraint is parsed but will be ignored in mysql5.7
 	buildColumnDeclarationSQL(col *Column) string
 	buildColumnsDeclarationSQL(cols []*Column) []string
 
@@ -31,12 +27,11 @@ type dbPlatform interface {
 	buildSchemaCreateSQL(schema *Schema) string
 	getSchemaCreateDeclarationSQL(schema string) string
 	getSchemaDropDeclarationSQL(schema string) string
+	getSchemaCommentDeclaration(schema string, expression string) string
 
 	// table SQL declarations
 	getSchemaAccessName(schema string, name string) string
-	getSchemaCommentDeclaration(schema string, expression string) string
-	// Checks constraint is parsed but will be ignored in mysql5.7
-	getTableChecksDeclaration(expressions []string) []string
+	getTableChecksDeclaration(expressions []string) []string // Checks constraint is parsed but will be ignored in mysql5.7
 	buildTableCreateSQL(schema string, table *Table) string
 	getTableDropSQL(schema string, table string) string
 	getTableCommentDeclarationSQL(name string, expression string) string
@@ -45,10 +40,14 @@ type dbPlatform interface {
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
 
+	// Actions get, set, check
 	checkSchemaExistSQL(schema string) string
 	checkSchemaHasTableSQL(schema string, table string) string
 	getSchemaTablesSQL(schema string) string
+
+	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
+	parseTableColumns(rows *sql.Rows) []*Column // parse rows returned from getTableColumnsSQL()
 }
 
 func _getUniqueDeclaration() string {
@@ -166,41 +165,4 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 
 func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
-}
-
-func _parseColumn(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
-	col := new(Column).WithName(field)
-
-	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
-
-	if key == "UNI" {
-		col.IsUnique()
-	}
-
-	for _, val := range dbTypes {
-		if val == "unsigned" {
-			col.IsUnsigned()
-		}
-
-		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
-			col.WithType(dbType)
-		}
-
-		length, err := strconv.Atoi(val)
-		if err == nil {
-			col.WithLength(length)
-		}
-	}
-
-	if nullable == "NO" {
-		col.IsNotNull()
-	}
-
-	if extra == "auto_increment" {
-		col.IsAutoIncrement()
-	}
-
-	col.WithDefault(dVal)
-
-	return col
 }

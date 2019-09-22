@@ -1,6 +1,11 @@
 package dbs
 
-import "strconv"
+import (
+	"database/sql"
+	"log"
+	"regexp"
+	"strconv"
+)
 
 const sqlite3 string = "sqlite3"
 
@@ -137,6 +142,58 @@ func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT name FROM sqlite_master WHERE type='table'"
 }
 
-func (platform *dbSqlitePlatform) getTableColumnsSQL(schema string , table string) string {
-	return ""
+// cid         name        type        	notnull     dflt_value	pk
+// ----------  ----------  -----------  ----------  ----------	----------
+// 0           id          INTEGER     	1                      	1
+// 1           name        NVARCHAR(20)	0           1          	0
+func (platform *dbSqlitePlatform) getTableColumnsSQL(schema string, table string) string {
+	return "PRAGMA table_info(" + table + ")"
+}
+
+func (platform *dbSqlitePlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	columns := make([]*Column, 0)
+
+	var notnull, pk bool
+	var cid, field, dbType string
+	var dfltValue sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&cid, &field, &dbType, &notnull, &dfltValue, &pk)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		dVal := ""
+		if dfltValue.Valid {
+			dVal = dfltValue.String
+		}
+
+		columns = append(columns, _parseColumnMySQLite(field, dbType, notnull, dVal))
+	}
+
+	return columns
+}
+
+func _parseColumnMySQLite(field string, dbType string, notnull bool, dVal string) *Column {
+	col := new(Column).WithName(field)
+
+	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
+
+	for _, val := range dbTypes {
+		if inStringArray(val, allTypes) {
+			col.WithType(val)
+		}
+
+		length, err := strconv.Atoi(val)
+		if err == nil {
+			col.WithLength(length)
+		}
+	}
+
+	if notnull {
+		col.IsNotNull()
+	}
+
+	col.WithDefault(dVal)
+
+	return col
 }

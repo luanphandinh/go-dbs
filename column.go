@@ -91,13 +91,26 @@ func (col *Column) AddCheck(check string) *Column {
 	return col
 }
 
+// @TODO: This is experiment method and have no actual value for now.
 func (col *Column) diff(col2 *Column) bool {
+	if _platform().getDriverName() == mysql {
+		return col.diffAll(col2)
+	}
+
+	if col.Name != col2.Name {
+		return true
+	}
+
+	return false
+}
+
+func (col *Column) diffAll(col2 *Column) bool {
 	if col.Name != col2.Name {
 		return true
 	}
 
 	// @TODO: enhance type mapping
-	if ! strings.Contains(col.Type, col2.Type) {
+	if ! strings.Contains(col.Type, col2.Type) && ! strings.Contains(col2.Type, col.Type) {
 		return true
 	}
 

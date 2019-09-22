@@ -126,24 +126,22 @@ func TestSchemaInstall(t *testing.T) {
 		dbSchema.GetTables(),
 	)
 
-	if platform == mysql80 || platform == mysql57 {
-		schemaDepartmentCols := dbSchema.Tables[0].Columns
-		departmentCols := dbSchema.GetTableColumns("department")
-		for index, col := range departmentCols {
-			assertFalse(t, schemaDepartmentCols[index].diff(col))
-		}
+	schemaDepartmentCols := dbSchema.Tables[0].Columns
+	departmentCols := dbSchema.GetTableColumns("department")
+	for index, col := range departmentCols {
+		assertFalse(t, schemaDepartmentCols[index].diff(col))
+	}
 
-		schemaEmployeeCols := dbSchema.Tables[1].Columns
-		employeeCols := dbSchema.GetTableColumns("employee")
-		for index, col := range employeeCols {
-			assertFalse(t, schemaEmployeeCols[index].diff(col))
-		}
+	schemaEmployeeCols := dbSchema.Tables[1].Columns
+	employeeCols := dbSchema.GetTableColumns("employee")
+	for index, col := range employeeCols {
+		assertFalse(t, schemaEmployeeCols[index].diff(col))
+	}
 
-		schemaStorageCols := dbSchema.Tables[2].Columns
-		storageCols := dbSchema.GetTableColumns("storage")
-		for index, col := range storageCols {
-			assertFalse(t, schemaStorageCols[index].diff(col))
-		}
+	schemaStorageCols := dbSchema.Tables[2].Columns
+	storageCols := dbSchema.GetTableColumns("storage")
+	for index, col := range storageCols {
+		assertFalse(t, schemaStorageCols[index].diff(col))
 	}
 }
 
