@@ -204,3 +204,7 @@ func _parseColumnMySQL(field string, dbType string, nullable string, key string,
 
 	return col
 }
+
+func (platform *dbMySQL57Platform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}

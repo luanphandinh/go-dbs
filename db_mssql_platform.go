@@ -189,3 +189,7 @@ func _parseColumnMSSQL(field string, dbType string, notnull string, dVal string)
 
 	return col
 }
+
+func (platform *dbMsSQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}

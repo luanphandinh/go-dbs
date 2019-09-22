@@ -197,3 +197,7 @@ func _parseColumnMySQLite(field string, dbType string, notnull bool, dVal string
 
 	return col
 }
+
+func (platform *dbSqlitePlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}

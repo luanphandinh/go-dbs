@@ -198,3 +198,7 @@ func (platform *dbPostgresPlatform) parseTableColumns(rows *sql.Rows) []*Column 
 
 	return columns
 }
+
+func (platform *dbPostgresPlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}

@@ -140,3 +140,7 @@ func (platform *dbMySQL80Platform) getTableColumnsSQL(schema string , table stri
 func (platform *dbMySQL80Platform) parseTableColumns(rows *sql.Rows) []*Column {
 	return make([]*Column, 0)
 }
+
+func (platform *dbMySQL80Platform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}
