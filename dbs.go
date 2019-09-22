@@ -62,4 +62,3 @@ func _makePlatform(platform string) dbPlatform {
 
 	return nil
 }
-
