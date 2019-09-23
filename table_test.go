@@ -59,7 +59,7 @@ func prepareTestTable() *Table {
 }
 
 func TestToTableDeclaration(t *testing.T) {
-	mysqlPlatform := _getPlatform(mysql80)
+	mysqlPlatform := _getPlatform(mysql)
 	mysql57Platform := _getPlatform(mysql57)
 	sqlitePlatform := _getPlatform(sqlite3)
 	postgresPlatform := _getPlatform(postgres)

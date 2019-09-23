@@ -3,18 +3,12 @@ package dbs
 import "testing"
 
 func TestColumnDeclaration(t *testing.T) {
-	mysqlPlatform := _getPlatform(mysql80)
+	mysqlPlatform := _getPlatform(mysql)
 	mysql57Platform := _getPlatform(mysql57)
 	sqlitePlatform := _getPlatform(sqlite3)
 	postgresPlatform := _getPlatform(postgres)
 	mssqlPlatform := _getPlatform(mssql)
 
-	// id := Column{
-	// 	Name:          "id",
-	// 	Type:          INT,
-	// 	NotNull:       true,
-	// 	AutoIncrement: true,
-	// }
 	id := new(Column).WithName("id").WithType(INT).IsNotNull().IsAutoIncrement()
 	assertStringEquals(t, "id INT NOT NULL AUTO_INCREMENT", mysqlPlatform.buildColumnDeclarationSQL(id))
 	assertStringEquals(t, "id INT NOT NULL AUTO_INCREMENT", mysql57Platform.buildColumnDeclarationSQL(id))
@@ -29,10 +23,6 @@ func TestColumnDeclaration(t *testing.T) {
 	assertStringEquals(t, "name TEXT NOT NULL", postgresPlatform.buildColumnDeclarationSQL(name))
 	assertStringEquals(t, "name TEXT NOT NULL", mssqlPlatform.buildColumnDeclarationSQL(name))
 
-	// age := Column{}
-	// age.Name = "age"
-	// age.Type = "INT"
-	// age.Unsigned = true
 	age := new(Column).WithName("age").WithType(INT).IsUnsigned()
 	assertStringEquals(t, "age INT UNSIGNED", mysqlPlatform.buildColumnDeclarationSQL(age))
 	assertStringEquals(t, "age INT UNSIGNED", mysql57Platform.buildColumnDeclarationSQL(age))

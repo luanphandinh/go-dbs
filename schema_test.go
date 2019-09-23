@@ -128,18 +128,21 @@ func TestSchemaInstall(t *testing.T) {
 
 	schemaDepartmentCols := dbSchema.Tables[0].Columns
 	departmentCols := dbSchema.GetTableColumns("department")
+	assertIntEquals(t, len(departmentCols), len(schemaDepartmentCols))
 	for index, col := range departmentCols {
 		assertFalse(t, schemaDepartmentCols[index].diff(col))
 	}
 
 	schemaEmployeeCols := dbSchema.Tables[1].Columns
 	employeeCols := dbSchema.GetTableColumns("employee")
+	assertIntEquals(t, len(employeeCols), len(schemaEmployeeCols))
 	for index, col := range employeeCols {
 		assertFalse(t, schemaEmployeeCols[index].diff(col))
 	}
 
 	schemaStorageCols := dbSchema.Tables[2].Columns
 	storageCols := dbSchema.GetTableColumns("storage")
+	assertIntEquals(t, len(storageCols), len(schemaStorageCols))
 	for index, col := range storageCols {
 		assertFalse(t, schemaStorageCols[index].diff(col))
 	}

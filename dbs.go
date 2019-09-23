@@ -40,12 +40,8 @@ func _getPlatform(platform string) dbPlatform {
 }
 
 func _makePlatform(platform string) dbPlatform {
-	if platform == mysql57 {
-		return new(dbMySQL57Platform)
-	}
-
-	if platform == mysql80 {
-		return new(dbMySQL80Platform)
+	if platform == mysql57 || platform == mysql {
+		return new(dbMySQLPlatform)
 	}
 
 	if platform == sqlite3 {
