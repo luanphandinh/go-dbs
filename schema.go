@@ -82,6 +82,27 @@ func (schema *Schema) GetTableColumns(table string) []*Column {
 	return _platform().parseTableColumns(rows)
 }
 
+// GetTableColumnNames return all column names in table
+func (schema *Schema) GetTableColumnNames(table string) []string {
+	rows, err := _db().Query(_platform().getTableColumnNamesSQL(schema.Name, table))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	columns := make([]string, 0)
+	var name string
+	for rows.Next() {
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		columns = append(columns, name)
+	}
+
+	return columns
+}
+
 // IsExists return true if schema exists
 func (schema *Schema) IsExists() bool {
 	command := _platform().checkSchemaExistSQL(schema.Name)

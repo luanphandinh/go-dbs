@@ -178,6 +178,10 @@ func (platform *dbPostgresPlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='" + schema + "'"
 }
 
+func (platform *dbPostgresPlatform) getTableColumnNamesSQL(schema string, table string) string {
+	return "SELECT column_name from information_schema.columns WHERE table_name = '" + table + "'" + " AND table_schema='" + schema + "'"
+}
+
 // column_name
 func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string , table string) string {
 	return "SELECT column_name from information_schema.columns WHERE table_name = '" + table + "'" + " AND table_schema='" + schema + "'"
@@ -197,4 +201,8 @@ func (platform *dbPostgresPlatform) parseTableColumns(rows *sql.Rows) []*Column 
 	}
 
 	return columns
+}
+
+func (platform *dbPostgresPlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
 }

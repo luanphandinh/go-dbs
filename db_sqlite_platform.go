@@ -142,6 +142,10 @@ func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT name FROM sqlite_master WHERE type='table'"
 }
 
+func (platform *dbSqlitePlatform) getTableColumnNamesSQL(schema string, table string) string {
+	return "SELECT name from pragma_table_info('" + table + "')"
+}
+
 // cid         name        type        	notnull     dflt_value	pk
 // ----------  ----------  -----------  ----------  ----------	----------
 // 0           id          INTEGER     	1                      	1
@@ -196,4 +200,8 @@ func _parseColumnMySQLite(field string, dbType string, notnull bool, dVal string
 	col.WithDefault(dVal)
 
 	return col
+}
+
+func (platform *dbSqlitePlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
 }

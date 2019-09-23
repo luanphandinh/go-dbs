@@ -1,12 +1,12 @@
 # go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
-Manage databse(sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver) schema.
+Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
 ```
 
 # Usage
 #### 1. Set platform:
 ```go
-    // supported platforms: "sqlite3", "mysql:5.7", "mysql:8.0", "postgres", "sqlserver"
+    // supported platforms: "sqlite3", "mysql", "postgres", "sqlserver"
     // db is your `*sql.DB`
     dbs.SetPlatform("sqlite3", db)
 
@@ -17,7 +17,7 @@ Normal declaration:
 ```go
     dbSchema := &Schema{
         Name:     "company",
-        Platform: "mysql:8.0", // or mysql:5.7, sqlite, postgres, sqlserver
+        Platform: "mysql", // or sqlite, postgres, sqlserver
         Tables: []*Table{
             {
                 Name:       "department",

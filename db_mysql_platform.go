@@ -1,0 +1,215 @@
+package dbs
+
+import (
+	"database/sql"
+	"log"
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+const (
+	mysql   string = "mysql"
+	mysql57 string = "mysql:5.7"
+)
+
+type dbMySQLPlatform struct{}
+
+func (platform *dbMySQLPlatform) getDriverName() string {
+	return mysql
+}
+
+func (platform *dbMySQLPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
+	return user + ":" + password + "@tcp(" + server + ")/" + dbName
+}
+
+func (platform *dbMySQLPlatform) chainCommands(commands ...string) string {
+	return concatStrings(commands, "\n")
+}
+
+func (platform *dbMySQLPlatform) getTypeDeclaration(col *Column) string {
+	if col.Length > 0 {
+		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
+	}
+
+	return col.Type
+}
+
+func (platform *dbMySQLPlatform) getUniqueDeclaration() string {
+	return _getUniqueDeclaration()
+}
+
+func (platform *dbMySQLPlatform) getNotNullDeclaration() string {
+	return _getNotNullDeclaration()
+}
+
+func (platform *dbMySQLPlatform) getPrimaryDeclaration(key []string) string {
+	return _getPrimaryDeclaration(key)
+}
+
+func (platform *dbMySQLPlatform) getAutoIncrementDeclaration() string {
+	return "AUTO_INCREMENT"
+}
+
+func (platform *dbMySQLPlatform) getUnsignedDeclaration() string {
+	return "UNSIGNED"
+}
+
+func (platform *dbMySQLPlatform) getDefaultDeclaration(expression string) string {
+	return _getDefaultDeclaration(expression)
+}
+
+func (platform *dbMySQLPlatform) getColumnCommentDeclaration(expression string) string {
+	return "COMMENT '" + expression + "'"
+}
+
+func (platform *dbMySQLPlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
+	return make([]string, 0)
+}
+
+func (platform *dbMySQLPlatform) getColumnCheckDeclaration(expression string) string {
+	return _getColumnCheckDeclaration(expression)
+}
+
+func (platform *dbMySQLPlatform) buildColumnDeclarationSQL(col *Column) string {
+	return _buildColumnDeclarationSQL(platform, col)
+}
+
+func (platform *dbMySQLPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
+	return _buildColumnsDeclarationSQL(platform, cols)
+}
+
+func (platform *dbMySQLPlatform) buildSchemaCreateSQL(schema *Schema) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) getSchemaCreateDeclarationSQL(schema string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) getSchemaDropDeclarationSQL(schema string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) getSchemaAccessName(schema string, name string) string {
+	return name
+}
+
+func (platform *dbMySQLPlatform) getSchemaCommentDeclaration(schema string, expression string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) getTableChecksDeclaration(expressions []string) []string {
+	return _getTableChecksDeclaration(expressions)
+}
+
+func (platform *dbMySQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
+func (platform *dbMySQLPlatform) getTableCommentDeclarationSQL(name string, expression string) string {
+	return "COMMENT '" + expression + "'"
+}
+
+func (platform *dbMySQLPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
+	return _buildTableCreateSQL(platform, schema, table)
+}
+
+func (platform *dbMySQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {
+	return _getTableDropSQL(platform, schema, table)
+}
+
+func (platform *dbMySQLPlatform) getSequenceCreateSQL(sequence string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) getSequenceDropSQL(sequence string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) checkSchemaExistSQL(schema string) string {
+	return ""
+}
+
+func (platform *dbMySQLPlatform) checkSchemaHasTableSQL(schema string, table string) string {
+	return "SHOW TABLES LIKE '" + platform.getSchemaAccessName(schema, table) + "'"
+}
+
+func (platform *dbMySQLPlatform) getSchemaTablesSQL(schema string) string {
+	return "SHOW TABLES"
+}
+
+func (platform *dbMySQLPlatform) getTableColumnNamesSQL(schema string, table string) string {
+	return "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" + table + "'" +
+		" ORDER BY ORDINAL_POSITION ASC"
+}
+
+// This will query data from mysql and return format of
+// Field | Type 			| Null 	| Key 	| Default 	| Extra
+// id    | int(10) unsigned	| NO	| PRI	| NULL		| auto_increment
+//		 |					| YES	| UNI	| 1			| ""
+func (platform *dbMySQLPlatform) getTableColumnsSQL(schema string , table string) string {
+	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
+}
+
+func (platform *dbMySQLPlatform) parseTableColumns(rows *sql.Rows) []*Column {
+	columns := make([]*Column, 0)
+
+	var field, dbType, nullable, key, extra string
+	var defaultVal sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&field, &dbType, &nullable, &key, &defaultVal, &extra)
+		if err != nil {
+			log.Fatal(err)
+		}
+		dVal := ""
+		if defaultVal.Valid {
+			dVal = defaultVal.String
+		}
+
+		columns = append(columns, _parseColumnMySQL(field, dbType, nullable, key, dVal, extra))
+	}
+
+	return columns
+}
+
+func _parseColumnMySQL(field string, dbType string, nullable string, key string, dVal string, extra string) *Column {
+	col := new(Column).WithName(field)
+
+	dbTypes := regexp.MustCompile(`\(|\)|\s`).Split(dbType, -1)
+
+	if key == "UNI" {
+		col.IsUnique()
+	}
+
+	for _, val := range dbTypes {
+		if val == "unsigned" {
+			col.IsUnsigned()
+		}
+
+		if dbType := strings.ToUpper(val); inStringArray(dbType, allTypes) {
+			col.WithType(dbType)
+		}
+
+		length, err := strconv.Atoi(val)
+		if err == nil {
+			col.WithLength(length)
+		}
+	}
+
+	if nullable == "NO" {
+		col.IsNotNull()
+	}
+
+	if extra == "auto_increment" {
+		col.IsAutoIncrement()
+	}
+
+	col.WithDefault(dVal)
+
+	return col
+}
+
+func (platform *dbMySQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
+	return false
+}
