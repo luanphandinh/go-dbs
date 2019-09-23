@@ -139,6 +139,11 @@ func (platform *dbMySQLPlatform) getSchemaTablesSQL(schema string) string {
 	return "SHOW TABLES"
 }
 
+func (platform *dbMySQLPlatform) getTableColumnNamesSQL(schema string, table string) string {
+	return "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '" + table + "'" +
+		" ORDER BY ORDINAL_POSITION ASC"
+}
+
 // This will query data from mysql and return format of
 // Field | Type 			| Null 	| Key 	| Default 	| Extra
 // id    | int(10) unsigned	| NO	| PRI	| NULL		| auto_increment

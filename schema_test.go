@@ -126,6 +126,24 @@ func TestSchemaInstall(t *testing.T) {
 		dbSchema.GetTables(),
 	)
 
+	assertArrayStringEquals(
+		t,
+		[]string{"id", "name", "revenue", "position"},
+		dbSchema.GetTableColumnNames("department"),
+	)
+
+	assertArrayStringEquals(
+		t,
+		[]string{"id", "name", "department_id", "valid", "age"},
+		dbSchema.GetTableColumnNames("employee"),
+	)
+
+	assertArrayStringEquals(
+		t,
+		[]string{"room", "description"},
+		dbSchema.GetTableColumnNames("storage"),
+	)
+
 	schemaDepartmentCols := dbSchema.Tables[0].Columns
 	departmentCols := dbSchema.GetTableColumns("department")
 	assertIntEquals(t, len(departmentCols), len(schemaDepartmentCols))

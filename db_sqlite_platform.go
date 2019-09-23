@@ -142,6 +142,10 @@ func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
 	return "SELECT name FROM sqlite_master WHERE type='table'"
 }
 
+func (platform *dbSqlitePlatform) getTableColumnNamesSQL(schema string, table string) string {
+	return "SELECT name from pragma_table_info('" + table + "')"
+}
+
 // cid         name        type        	notnull     dflt_value	pk
 // ----------  ----------  -----------  ----------  ----------	----------
 // 0           id          INTEGER     	1                      	1
