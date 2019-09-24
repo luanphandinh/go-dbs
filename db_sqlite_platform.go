@@ -118,6 +118,10 @@ func (platform *dbSqlitePlatform) buildTableCreateSQL(schema string, table *Tabl
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
+func (platform *dbSqlitePlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return ""
+}
+
 func (platform *dbSqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }

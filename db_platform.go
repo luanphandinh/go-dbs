@@ -33,6 +33,7 @@ type dbPlatform interface {
 	getSchemaAccessName(schema string, name string) string
 	getTableChecksDeclaration(expressions []string) []string // Checks constraint is parsed but will be ignored in mysql5.7
 	buildTableCreateSQL(schema string, table *Table) string
+	buildTableAddColumnSQL(schema string, table string, col *Column) string
 	getTableDropSQL(schema string, table string) string
 	getTableCommentDeclarationSQL(name string, expression string) string
 	getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string

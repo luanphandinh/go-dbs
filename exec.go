@@ -75,18 +75,29 @@ func fetchTableColumnNames(schema string, table string) []string {
 	return columns
 }
 
+// @TODO: This func is a real mess, need to clean up later.
 func install(schema *Schema) error {
+	createTableSQLs := make([]string, 0)
+	alterTableSQLs := make([]string, 0)
+
 	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
 	if checkSchemaExists(schema.Name) {
 		createSchemaSQL = ""
 	}
 
-	createTableSQLs := make([]string, 0)
-	tables := fetchTables(schema.Name)
+	existedTables := fetchTables(schema.Name)
 	for _, table := range schema.Tables {
-		if inStringArray(table.Name, tables) {
+		if inStringArray(table.Name, existedTables) {
+			cols := fetchTableColumnNames(schema.Name, table.Name)
+			for _, col := range table.Columns {
+				if inStringArray(col.Name, cols) {
+					continue
+				}
+				alterTableSQLs = append(alterTableSQLs, _platform().buildColumnDeclarationSQL(col))
+			}
 			continue
 		}
+
 		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
 	}
 

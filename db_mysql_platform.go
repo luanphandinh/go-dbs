@@ -115,6 +115,10 @@ func (platform *dbMySQLPlatform) buildTableCreateSQL(schema string, table *Table
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
+func (platform *dbMySQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return ""
+}
+
 func (platform *dbMySQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }

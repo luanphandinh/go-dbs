@@ -113,11 +113,15 @@ func (platform *dbMsSQLPlatform) getTableCommentDeclarationSQL(name string, expr
 	return ""
 }
 
-func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table) string {
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
-func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {
+func (platform *dbMsSQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return ""
+}
+
+func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) string {
 	return _getTableDropSQL(platform, schema, table)
 }
 

@@ -154,6 +154,10 @@ func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Ta
 	return platform.chainCommands(commands...)
 }
 
+func (platform *dbPostgresPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return ""
+}
+
 func (platform *dbPostgresPlatform) getTableDropSQL(schema string, table string) (tableString string) {
 	return _getTableDropSQL(platform, schema, table)
 }
