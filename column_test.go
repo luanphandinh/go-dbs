@@ -65,7 +65,7 @@ func TestColumnMySQLParse(t *testing.T) {
 		return
 	}
 
-	colId := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
+	colID := new(Column).WithName("id").WithType(INT).WithLength(10).IsUnsigned().IsNotNull().IsAutoIncrement()
 
 	parsedCol := _parseColumnMySQL("id", "int(10) unsigned", "NO", "", "", "auto_increment")
 	assertStringEquals(t, "id", parsedCol.Name)
@@ -74,10 +74,10 @@ func TestColumnMySQLParse(t *testing.T) {
 	assertTrue(t, parsedCol.Unsigned)
 	assertTrue(t, parsedCol.NotNull)
 	assertTrue(t, parsedCol.AutoIncrement)
-	assertFalse(t, colId.diff(parsedCol))
+	assertFalse(t, colID.diff(parsedCol))
 
-	colId.WithName("sub_id")
-	assertTrue(t, colId.diff(parsedCol))
+	colID.WithName("sub_id")
+	assertTrue(t, colID.diff(parsedCol))
 }
 
 func TestColumnSQLiteParse(t *testing.T) {

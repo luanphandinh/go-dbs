@@ -16,6 +16,16 @@ func SetPlatform(platform string, db *sql.DB) {
 	_sqlDB = db
 }
 
+// Install schema
+func Install(schema *Schema) error {
+	return install(schema)
+}
+
+// Drop schema
+func Drop(schema *Schema) error {
+	return drop(schema)
+}
+
 func _platform() dbPlatform {
 	return _dbPlatform
 }

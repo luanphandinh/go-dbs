@@ -58,7 +58,6 @@ Normal declaration:
 
 Or using builders:
 ```go
-    dbs.SetPlatform("sql:5.7")
     schema := new(dbs.Schema).WithName("company").WithComment("The Company Schema")
 
     department := new(dbs.Table).WithName("department").WithComment("Departments of company")
@@ -90,16 +89,17 @@ Or using builders:
 
 #### 3. Install
 ```go
-    dbSchema.Install()
+    dbs.Install(dbSchema)
 ```
 
 * Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.
 * Schema name will be used by `postgres` and `sqlserver`.
 
 # ISSUES
-Data:
 * Please refer your data types as your database platform
 * Currently `go-dbs` *doest not support* centralized data types across platforms
+* Any error or failure will resulted int `log.Fatal()` since the schema installation is important,
+so thing need to be failed as soon as possible 
 
 # TODO
 * Query Builder
