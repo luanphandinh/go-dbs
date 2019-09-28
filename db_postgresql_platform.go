@@ -65,11 +65,11 @@ func (platform *dbPostgresPlatform) getUnsignedDeclaration() string {
 }
 
 func (platform *dbPostgresPlatform) buildColumnDefinitionSQL(col *Column) string {
-	return _buildColumnDeclarationSQL(platform, col)
+	return _buildColumnDefinitionSQL(platform, col)
 }
 
-func (platform *dbPostgresPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
-	return _buildColumnsDeclarationSQL(platform, cols)
+func (platform *dbPostgresPlatform) buildColumnsDefinitionSQL(cols []*Column) []string {
+	return _buildColumnsDefinitionSQL(platform, cols)
 }
 
 func (platform *dbPostgresPlatform) getColumnCommentDeclaration(expression string) string {

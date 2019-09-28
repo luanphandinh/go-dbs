@@ -72,11 +72,11 @@ func (platform *dbMySQLPlatform) getColumnCheckDeclaration(expression string) st
 }
 
 func (platform *dbMySQLPlatform) buildColumnDefinitionSQL(col *Column) string {
-	return _buildColumnDeclarationSQL(platform, col)
+	return _buildColumnDefinitionSQL(platform, col)
 }
 
-func (platform *dbMySQLPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
-	return _buildColumnsDeclarationSQL(platform, cols)
+func (platform *dbMySQLPlatform) buildColumnsDefinitionSQL(cols []*Column) []string {
+	return _buildColumnsDefinitionSQL(platform, cols)
 }
 
 func (platform *dbMySQLPlatform) buildSchemaCreateSQL(schema *Schema) string {

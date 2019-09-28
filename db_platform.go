@@ -21,7 +21,7 @@ type dbPlatform interface {
 	getColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
 	getColumnCheckDeclaration(expression string) string // Checks constraint is parsed but will be ignored in mysql5.7
 	buildColumnDefinitionSQL(col *Column) string
-	buildColumnsDeclarationSQL(cols []*Column) []string
+	buildColumnsDefinitionSQL(cols []*Column) []string
 
 	// schema SQL declarations
 	buildSchemaCreateSQL(schema *Schema) string
@@ -88,7 +88,7 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 	return "DROP SCHEMA IF EXISTS " + schema + " CASCADE"
 }
 
-func _buildColumnDeclarationSQL(platform dbPlatform, col *Column) (colString string) {
+func _buildColumnDefinitionSQL(platform dbPlatform, col *Column) (colString string) {
 	declaration := make([]string, 0)
 	declaration = append(declaration, col.Name)
 	declaration = append(declaration, platform.getTypeDeclaration(col))
@@ -124,7 +124,7 @@ func _buildColumnDeclarationSQL(platform dbPlatform, col *Column) (colString str
 	return concatStrings(declaration, " ")
 }
 
-func _buildColumnsDeclarationSQL(platform dbPlatform, cols []*Column) []string {
+func _buildColumnsDefinitionSQL(platform dbPlatform, cols []*Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
 		declarations[index] = platform.buildColumnDefinitionSQL(col)
@@ -148,7 +148,7 @@ func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, forei
 func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) string {
 	tableName := platform.getSchemaAccessName(schema, table.Name)
 	tableCreation := make([]string, 0)
-	tableCreation = append(tableCreation, platform.buildColumnsDeclarationSQL(table.Columns)...)
+	tableCreation = append(tableCreation, platform.buildColumnsDefinitionSQL(table.Columns)...)
 	if len(table.PrimaryKey) > 0 {
 		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.PrimaryKey))
 	}
