@@ -57,12 +57,12 @@ func (platform *dbMsSQLPlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *dbMsSQLPlatform) buildColumnDeclarationSQL(col *Column) string {
-	return _buildColumnDeclarationSQL(platform, col)
+func (platform *dbMsSQLPlatform) buildColumnDefinitionSQL(col *Column) string {
+	return _buildColumnDefinitionSQL(platform, col)
 }
 
-func (platform *dbMsSQLPlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
-	return _buildColumnsDeclarationSQL(platform, cols)
+func (platform *dbMsSQLPlatform) buildColumnsDefinitionSQL(cols []*Column) []string {
+	return _buildColumnsDefinitionSQL(platform, cols)
 }
 
 func (platform *dbMsSQLPlatform) getColumnCommentDeclaration(expression string) string {
@@ -113,11 +113,15 @@ func (platform *dbMsSQLPlatform) getTableCommentDeclarationSQL(name string, expr
 	return ""
 }
 
-func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
+func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table) string {
 	return _buildTableCreateSQL(platform, schema, table)
 }
 
-func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {
+func (platform *dbMsSQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDefinitionSQL(col)
+}
+
+func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) string {
 	return _getTableDropSQL(platform, schema, table)
 }
 

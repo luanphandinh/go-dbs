@@ -10,10 +10,20 @@ var _sqlDB *sql.DB
 var _cachedPlatforms = make(map[string]dbPlatform)
 
 // SetPlatform define the platform that entire dbs will use along with the database connection
-// Supported platforms: sqlite3, mysql:5.7, mysql:8.0, postgres, sqlserver
+// Supported platforms: sqlite3, mysql, postgres, sqlserver
 func SetPlatform(platform string, db *sql.DB) {
 	_dbPlatform = _getPlatform(platform)
 	_sqlDB = db
+}
+
+// Install schema
+func Install(schema *Schema) error {
+	return install(schema)
+}
+
+// Drop schema
+func Drop(schema *Schema) error {
+	return drop(schema)
 }
 
 func _platform() dbPlatform {

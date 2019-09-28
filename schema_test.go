@@ -99,15 +99,15 @@ func setupDB(t *testing.T, dbSchema *Schema) *sql.DB {
 	SetPlatform(platform, db)
 	assertNotHasError(t, err)
 
-	assertNotHasError(t, dbSchema.Drop())
+	assertNotHasError(t, Drop(dbSchema))
 	if platform == postgres || platform == mssql {
-		assertFalse(t, dbSchema.IsExists())
+		assertFalse(t, checkSchemaExists(dbSchema.Name))
 	}
-	assertFalse(t, dbSchema.HasTable("department"))
-	assertFalse(t, dbSchema.HasTable("employee"))
-	assertFalse(t, dbSchema.HasTable("storage"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
 
-	assertNotHasError(t, dbSchema.Install())
+	assertNotHasError(t, Install(dbSchema))
 
 	return db
 }
@@ -116,54 +116,69 @@ func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema()
 	setupDB(t, dbSchema)
 
-	assertTrue(t, dbSchema.IsExists())
-	assertTrue(t, dbSchema.HasTable("employee"))
-	assertTrue(t, dbSchema.HasTable("department"))
-	assertTrue(t, dbSchema.HasTable("storage"))
+	assertTrue(t, checkSchemaExists(dbSchema.Name))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
 	assertArrayStringEquals(
 		t,
 		[]string{"department", "employee" , "storage"},
-		dbSchema.GetTables(),
+		 fetchTables(dbSchema.Name),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "revenue", "position"},
-		dbSchema.GetTableColumnNames("department"),
+		 fetchTableColumnNames(dbSchema.Name, "department"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "department_id", "valid", "age"},
-		dbSchema.GetTableColumnNames("employee"),
+		 fetchTableColumnNames(dbSchema.Name, "employee"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"room", "description"},
-		dbSchema.GetTableColumnNames("storage"),
+		 fetchTableColumnNames(dbSchema.Name, "storage"),
 	)
 
 	schemaDepartmentCols := dbSchema.Tables[0].Columns
-	departmentCols := dbSchema.GetTableColumns("department")
+	departmentCols := fetchTableColumns(dbSchema.Name, "department")
 	assertIntEquals(t, len(departmentCols), len(schemaDepartmentCols))
 	for index, col := range departmentCols {
 		assertFalse(t, schemaDepartmentCols[index].diff(col))
 	}
 
 	schemaEmployeeCols := dbSchema.Tables[1].Columns
-	employeeCols := dbSchema.GetTableColumns("employee")
+	employeeCols := fetchTableColumns(dbSchema.Name, "employee")
 	assertIntEquals(t, len(employeeCols), len(schemaEmployeeCols))
 	for index, col := range employeeCols {
 		assertFalse(t, schemaEmployeeCols[index].diff(col))
 	}
 
 	schemaStorageCols := dbSchema.Tables[2].Columns
-	storageCols := dbSchema.GetTableColumns("storage")
+	storageCols := fetchTableColumns(dbSchema.Name, "storage")
 	assertIntEquals(t, len(storageCols), len(schemaStorageCols))
 	for index, col := range storageCols {
 		assertFalse(t, schemaStorageCols[index].diff(col))
 	}
+
+	// Migrate
+	employee := dbSchema.GetTables("employee")
+	employee.AddColumn(new(Column).WithName("health_check").WithType(SMALLINT))
+	assertNotHasError(t, Install(dbSchema))
+
+	assertTrue(t, checkSchemaExists(dbSchema.Name))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
+	assertArrayStringEquals(
+		t,
+		[]string{"id", "name", "department_id", "valid", "age", "health_check"},
+		fetchTableColumnNames(dbSchema.Name, "employee"),
+	)
 }
 
 func TestSchemaWorks(t *testing.T) {
@@ -219,5 +234,5 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
 
-	assertNotHasError(t, dbSchema.Install())
+	assertNotHasError(t, Install(dbSchema))
 }

@@ -70,16 +70,16 @@ func (platform *dbSqlitePlatform) getColumnsCommentDeclaration(schema string, ta
 	return make([]string, 0)
 }
 
-func (platform *dbSqlitePlatform) buildColumnsDeclarationSQL(cols []*Column) []string {
-	return _buildColumnsDeclarationSQL(platform, cols)
-}
-
 func (platform *dbSqlitePlatform) getColumnCheckDeclaration(expression string) string {
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *dbSqlitePlatform) buildColumnDeclarationSQL(col *Column) string {
-	return _buildColumnDeclarationSQL(platform, col)
+func (platform *dbSqlitePlatform) buildColumnDefinitionSQL(col *Column) string {
+	return _buildColumnDefinitionSQL(platform, col)
+}
+
+func (platform *dbSqlitePlatform) buildColumnsDefinitionSQL(cols []*Column) []string {
+	return _buildColumnsDefinitionSQL(platform, cols)
 }
 
 func (platform *dbSqlitePlatform) buildSchemaCreateSQL(schema *Schema) string {
@@ -116,6 +116,10 @@ func (platform *dbSqlitePlatform) getTableCommentDeclarationSQL(name string, exp
 
 func (platform *dbSqlitePlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
 	return _buildTableCreateSQL(platform, schema, table)
+}
+
+func (platform *dbSqlitePlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDefinitionSQL(col)
 }
 
 func (platform *dbSqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {
