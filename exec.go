@@ -93,7 +93,7 @@ func install(schema *Schema) error {
 				if inStringArray(col.Name, cols) {
 					continue
 				}
-				alterTableSQLs = append(alterTableSQLs, _platform().buildColumnDeclarationSQL(col))
+				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.Name, table.Name, col))
 			}
 			continue
 		}
@@ -115,6 +115,13 @@ func install(schema *Schema) error {
 
 	for _, createTableSQL := range createTableSQLs {
 		if _, err := tx.Exec(createTableSQL); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	for _, alterTableSQL := range alterTableSQLs {
+		if _, err := tx.Exec(alterTableSQL); err != nil {
 			tx.Rollback()
 			return err
 		}

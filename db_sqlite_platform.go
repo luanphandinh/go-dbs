@@ -119,7 +119,7 @@ func (platform *dbSqlitePlatform) buildTableCreateSQL(schema string, table *Tabl
 }
 
 func (platform *dbSqlitePlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return ""
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDeclarationSQL(col)
 }
 
 func (platform *dbSqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {

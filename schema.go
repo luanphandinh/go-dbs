@@ -35,3 +35,19 @@ func (schema *Schema) AddTables(tables []*Table) *Schema {
 
 	return schema
 }
+
+// GetTablesAt return a table in schema.Tables at `index`
+func (schema *Schema) GetTablesAt(index int) *Table {
+	return schema.Tables[index]
+}
+
+// GetTables return a table in schema.Tables with name
+func (schema *Schema) GetTables(name string) *Table {
+	for _, table := range schema.Tables {
+		if table.Name == name {
+			return table
+		}
+	}
+
+	return nil
+}

@@ -164,6 +164,21 @@ func TestSchemaInstall(t *testing.T) {
 	for index, col := range storageCols {
 		assertFalse(t, schemaStorageCols[index].diff(col))
 	}
+
+	// Migrate
+	employee := dbSchema.GetTables("employee")
+	employee.AddColumn(new(Column).WithName("health_check").WithType(SMALLINT))
+	assertNotHasError(t, Install(dbSchema))
+
+	assertTrue(t, checkSchemaExists(dbSchema.Name))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
+	assertArrayStringEquals(
+		t,
+		[]string{"id", "name", "department_id", "valid", "age", "health_check"},
+		fetchTableColumnNames(dbSchema.Name, "employee"),
+	)
 }
 
 func TestSchemaWorks(t *testing.T) {

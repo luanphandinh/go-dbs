@@ -81,7 +81,10 @@ func assertHasErrorMessage(t *testing.T, message string, err error) {
 
 func assertArrayStringEquals(t *testing.T, expected []string, actual []string) {
 	if len(expected) != len(actual) {
-		failLog("Expected subarray strings", "Length can not be larger than actual")
+		failLog(
+			fmt.Sprintf("Expected subarray strings: %#v", expected),
+			fmt.Sprintf("Found: %#v", actual),
+		)
 		t.Fail()
 		return
 	}
