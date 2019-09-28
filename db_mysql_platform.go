@@ -71,7 +71,7 @@ func (platform *dbMySQLPlatform) getColumnCheckDeclaration(expression string) st
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *dbMySQLPlatform) buildColumnDeclarationSQL(col *Column) string {
+func (platform *dbMySQLPlatform) buildColumnDefinitionSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
@@ -116,7 +116,7 @@ func (platform *dbMySQLPlatform) buildTableCreateSQL(schema string, table *Table
 }
 
 func (platform *dbMySQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDeclarationSQL(col)
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDefinitionSQL(col)
 }
 
 func (platform *dbMySQLPlatform) getTableDropSQL(schema string, table string) (tableString string) {

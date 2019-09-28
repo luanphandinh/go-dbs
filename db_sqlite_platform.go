@@ -78,7 +78,7 @@ func (platform *dbSqlitePlatform) getColumnCheckDeclaration(expression string) s
 	return _getColumnCheckDeclaration(expression)
 }
 
-func (platform *dbSqlitePlatform) buildColumnDeclarationSQL(col *Column) string {
+func (platform *dbSqlitePlatform) buildColumnDefinitionSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
@@ -119,7 +119,7 @@ func (platform *dbSqlitePlatform) buildTableCreateSQL(schema string, table *Tabl
 }
 
 func (platform *dbSqlitePlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDeclarationSQL(col)
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDefinitionSQL(col)
 }
 
 func (platform *dbSqlitePlatform) getTableDropSQL(schema string, table string) (tableString string) {

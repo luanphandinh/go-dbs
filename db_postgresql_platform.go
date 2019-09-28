@@ -64,7 +64,7 @@ func (platform *dbPostgresPlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *dbPostgresPlatform) buildColumnDeclarationSQL(col *Column) string {
+func (platform *dbPostgresPlatform) buildColumnDefinitionSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
@@ -155,7 +155,7 @@ func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Ta
 }
 
 func (platform *dbPostgresPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDeclarationSQL(col)
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDefinitionSQL(col)
 }
 
 func (platform *dbPostgresPlatform) getTableDropSQL(schema string, table string) (tableString string) {

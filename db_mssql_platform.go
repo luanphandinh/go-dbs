@@ -57,7 +57,7 @@ func (platform *dbMsSQLPlatform) getUnsignedDeclaration() string {
 	return ""
 }
 
-func (platform *dbMsSQLPlatform) buildColumnDeclarationSQL(col *Column) string {
+func (platform *dbMsSQLPlatform) buildColumnDefinitionSQL(col *Column) string {
 	return _buildColumnDeclarationSQL(platform, col)
 }
 
@@ -118,7 +118,7 @@ func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table
 }
 
 func (platform *dbMsSQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDeclarationSQL(col)
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDefinitionSQL(col)
 }
 
 func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) string {

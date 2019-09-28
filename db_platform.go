@@ -20,7 +20,7 @@ type dbPlatform interface {
 	getColumnCommentDeclaration(expression string) string // For inline comment
 	getColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
 	getColumnCheckDeclaration(expression string) string // Checks constraint is parsed but will be ignored in mysql5.7
-	buildColumnDeclarationSQL(col *Column) string
+	buildColumnDefinitionSQL(col *Column) string
 	buildColumnsDeclarationSQL(cols []*Column) []string
 
 	// schema SQL declarations
@@ -127,7 +127,7 @@ func _buildColumnDeclarationSQL(platform dbPlatform, col *Column) (colString str
 func _buildColumnsDeclarationSQL(platform dbPlatform, cols []*Column) []string {
 	declarations := make([]string, len(cols))
 	for index, col := range cols {
-		declarations[index] = platform.buildColumnDeclarationSQL(col)
+		declarations[index] = platform.buildColumnDefinitionSQL(col)
 	}
 
 	return declarations
