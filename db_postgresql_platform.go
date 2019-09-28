@@ -155,7 +155,7 @@ func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Ta
 }
 
 func (platform *dbPostgresPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return ""
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD COLUMN " + platform.buildColumnDeclarationSQL(col)
 }
 
 func (platform *dbPostgresPlatform) getTableDropSQL(schema string, table string) (tableString string) {
