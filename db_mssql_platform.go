@@ -118,7 +118,7 @@ func (platform *dbMsSQLPlatform) buildTableCreateSQL(schema string, table *Table
 }
 
 func (platform *dbMsSQLPlatform) buildTableAddColumnSQL(schema string, table string, col *Column) string {
-	return ""
+	return "ALTER TABLE " + platform.getSchemaAccessName(schema, table) + " ADD " + platform.buildColumnDeclarationSQL(col)
 }
 
 func (platform *dbMsSQLPlatform) getTableDropSQL(schema string, table string) string {
