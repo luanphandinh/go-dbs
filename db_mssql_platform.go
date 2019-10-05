@@ -30,11 +30,11 @@ func (platform *dbMsSQLPlatform) chainCommands(commands ...string) string {
 }
 
 func (platform *dbMsSQLPlatform) getTypeDeclaration(col *Column) string {
-	if col.Length > 0 {
-		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
+	if col.length > 0 {
+		return col.dbType + "(" + strconv.Itoa(col.length) + ")"
 	}
 
-	return col.Type
+	return col.dbType
 }
 
 func (platform *dbMsSQLPlatform) getUniqueDeclaration() string {
@@ -78,7 +78,7 @@ func (platform *dbMsSQLPlatform) getColumnCheckDeclaration(expression string) st
 }
 
 func (platform *dbMsSQLPlatform) buildSchemaCreateSQL(schema *Schema) string {
-	return platform.getSchemaCreateDeclarationSQL(schema.Name)
+	return platform.getSchemaCreateDeclarationSQL(schema.name)
 }
 
 func (platform *dbMsSQLPlatform) getSchemaCreateDeclarationSQL(schema string) string {

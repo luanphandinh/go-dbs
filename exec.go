@@ -81,24 +81,24 @@ func install(schema *Schema) error {
 	alterTableSQLs := make([]string, 0)
 
 	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
-	if checkSchemaExists(schema.Name) {
+	if checkSchemaExists(schema.name) {
 		createSchemaSQL = ""
 	}
 
-	existedTables := fetchTables(schema.Name)
-	for _, table := range schema.Tables {
-		if inStringArray(table.Name, existedTables) {
-			cols := fetchTableColumnNames(schema.Name, table.Name)
-			for _, col := range table.Columns {
-				if inStringArray(col.Name, cols) {
+	existedTables := fetchTables(schema.name)
+	for _, table := range schema.tables {
+		if inStringArray(table.name, existedTables) {
+			cols := fetchTableColumnNames(schema.name, table.name)
+			for _, col := range table.columns {
+				if inStringArray(col.name, cols) {
 					continue
 				}
-				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.Name, table.Name, col))
+				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.name, table.name, col))
 			}
 			continue
 		}
 
-		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.Name, table))
+		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.name, table))
 	}
 
 	tx, err := _db().Begin()
@@ -137,14 +137,14 @@ func drop(schema *Schema) error {
 		return err
 	}
 
-	for i := len(schema.Tables) - 1; i >= 0; i-- {
-		if _, err := tx.Exec(_platform().getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
+	for i := len(schema.tables) - 1; i >= 0; i-- {
+		if _, err := tx.Exec(_platform().getTableDropSQL(schema.name, schema.tables[i].name)); err != nil {
 			tx.Rollback()
 			return err
 		}
 	}
 
-	if schemaDrop := _platform().getSchemaDropDeclarationSQL(schema.Name); schemaDrop != "" {
+	if schemaDrop := _platform().getSchemaDropDeclarationSQL(schema.name); schemaDrop != "" {
 		if _, err := tx.Exec(schemaDrop); err != nil {
 			tx.Rollback()
 			return err

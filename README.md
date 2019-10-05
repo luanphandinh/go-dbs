@@ -13,50 +13,6 @@ Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
 ```
 
 #### 2. Define schema
-Normal declaration:
-```go
-    dbSchema := &Schema{
-        Name:     "company",
-        Platform: "mysql", // or sqlite, postgres, sqlserver
-        Tables: []*Table{
-            {
-                Name:       "department",
-                PrimaryKey: []string{"id"},
-                Columns: []*Column{
-                    {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-                    {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-                    {Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-                    {Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
-                },
-                Comment: "Departments of company",
-            },
-            {
-                Name:       "employee",
-                PrimaryKey: []string{"id"},
-                Columns: []*Column{
-                    {Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-                    {Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-                    {Name: "department_id", Type: INT, Unsigned: true},
-                    {Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-                    {Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
-                },
-                Checks: []string{"age < 50"},
-                ForeignKeys: []ForeignKey{
-                    {Referer: "department_id", Reference: "department(id)"},
-                },
-            },
-            {
-                Name:       "storage",
-                Columns: []*Column{
-                    {Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
-                    {Name: "description", Type: TEXT},
-                },
-            },
-        },
-    }
-```
-
-Or using builders:
 ```go
     schema := new(dbs.Schema).WithName("company").WithComment("The Company Schema")
 

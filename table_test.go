@@ -4,47 +4,47 @@ import "testing"
 
 func prepareTestTable() *Table {
 	id := &Column{
-		Name:          "id",
-		Type:          INT,
-		NotNull:       true,
-		AutoIncrement: true,
+		name:          "id",
+		dbType:        INT,
+		notNull:       true,
+		autoIncrement: true,
 	}
 
 	subID := &Column{
-		Name:    "sub_id",
-		Type:    INT,
-		NotNull: true,
+		name:    "sub_id",
+		dbType:  INT,
+		notNull: true,
 	}
 
 	name := &Column{
-		Name:    "name",
-		Type:    TEXT,
-		NotNull: true,
+		name:    "name",
+		dbType:  TEXT,
+		notNull: true,
 	}
 
 	age := &Column{
-		Name:    "age",
-		Type:    INT,
-		Length:  4,
-		Default: "10",
-		Check:   "age < 1000",
-		Comment: "age should less than 1000",
+		name:         "age",
+		dbType:       INT,
+		length:       4,
+		defaultValue: "10",
+		check:        "age < 1000",
+		comment:      "age should less than 1000",
 	}
 
 	// Plain object
 	// table := &Table{
-	// 	Name:       "user",
-	// 	PrimaryKey: []string{"id"},
-	// 	Columns: []Column{
+	// 	name:       "user",
+	// 	primaryKey: []string{"id"},
+	// 	columns: []Column{
 	// 		id,
 	// 		subID,
 	// 		name,
 	// 		age,
 	// 	},
-	// 	Checks:  []string{"age > 50"},
-	// 	Comment: "The user table",
-	// 	ForeignKeys: []ForeignKey{
-	// 		{Referer: "sub_id", Reference: "other_table(id)"},
+	// 	checks:  []string{"age > 50"},
+	// 	comment: "The user table",
+	// 	foreignKeys: []ForeignKey{
+	// 		{referer: "sub_id", reference: "other_table(id)"},
 	// 	},
 	// }
 	table := new(Table)
@@ -143,10 +143,10 @@ ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		msSQLPlatform.buildTableCreateSQL("public", table),
 	)
 
-	table.PrimaryKey = []string{"id", "name"}
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", msSQLPlatform.getPrimaryDeclaration(table.PrimaryKey))
+	table.primaryKey = []string{"id", "name"}
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", msSQLPlatform.getPrimaryDeclaration(table.primaryKey))
 }

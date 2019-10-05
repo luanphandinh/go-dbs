@@ -30,15 +30,15 @@ func (platform *dbPostgresPlatform) chainCommands(commands ...string) string {
 }
 
 func (platform *dbPostgresPlatform) getTypeDeclaration(col *Column) string {
-	colType := col.Type
+	colType := col.dbType
 
 	// @TODO: make some type reference that centralized all types together across platforms
 	if colType == NVARCHAR {
 		 colType = VARCHAR
 	}
 
-	if col.Length > 0 {
-		return colType + "(" + strconv.Itoa(col.Length) + ")"
+	if col.length > 0 {
+		return colType + "(" + strconv.Itoa(col.length) + ")"
 	}
 
 	return colType
@@ -78,11 +78,11 @@ func (platform *dbPostgresPlatform) getColumnCommentDeclaration(expression strin
 
 func (platform *dbPostgresPlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
 	comments := make([]string, 0)
-	tableName := platform.getSchemaAccessName(schema, table.Name)
-	for _, col := range table.Columns {
-		if col.Comment != "" {
-			colName := tableName + "." + col.Name
-			comment := " IS '" + col.Comment + "'"
+	tableName := platform.getSchemaAccessName(schema, table.name)
+	for _, col := range table.columns {
+		if col.comment != "" {
+			colName := tableName + "." + col.name
+			comment := " IS '" + col.comment + "'"
 			comments = append(comments, "COMMENT ON COLUMN " + colName + comment)
 		}
 	}
@@ -96,9 +96,9 @@ func (platform *dbPostgresPlatform) getColumnCheckDeclaration(expression string)
 
 func (platform *dbPostgresPlatform) buildSchemaCreateSQL(schema *Schema) string {
 	commands := make([]string, 0)
-	commands = append(commands, platform.getSchemaCreateDeclarationSQL(schema.Name))
-	if schema.Comment != "" {
-		commands = append(commands, platform.getSchemaCommentDeclaration(schema.Name, schema.Comment))
+	commands = append(commands, platform.getSchemaCreateDeclarationSQL(schema.name))
+	if schema.comment != "" {
+		commands = append(commands, platform.getSchemaCommentDeclaration(schema.name, schema.comment))
 	}
 
 	return platform.chainCommands(commands...)
@@ -137,15 +137,15 @@ func (platform *dbPostgresPlatform) getTableCommentDeclarationSQL(name string, e
 }
 
 func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
-	tableName := platform.getSchemaAccessName(schema, table.Name)
+	tableName := platform.getSchemaAccessName(schema, table.name)
 
 	commands := make([]string, 0)
 	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
-	for _, col := range table.Columns {
-		if col.AutoIncrement {
-			seqName := platform.getSchemaAccessName(schema, table.Name + "_" + col.Name + "_seq")
-			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.Name + " SET DEFAULT NEXTVAL('" + seqName + "')"
+	for _, col := range table.columns {
+		if col.autoIncrement {
+			seqName := platform.getSchemaAccessName(schema, table.name + "_" + col.name+  "_seq")
+			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.name + " SET DEFAULT NEXTVAL('" + seqName + "')"
 			commands = append(commands, platform.getSequenceCreateSQL(seqName))
 			commands = append(commands, alterTableCommand)
 		}

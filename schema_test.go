@@ -20,46 +20,6 @@ var (
 )
 
 func getSchema() *Schema {
-	// return &Schema{
-	// 	Name:     "company",
-	// 	dbPlatform: platform,
-	// 	Comment:  "The Company Schema",
-	// 	Tables: []*Table{
-	// 		{
-	// 			Name:       "department",
-	// 			PrimaryKey: []string{"id"},
-	// 			Columns: []*Column{
-	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-	// 				{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-	// 				{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
-	// 			},
-	// 			Comment: "Departments of company",
-	// 		},
-	// 		{
-	// 			Name:       "employee",
-	// 			PrimaryKey: []string{"id"},
-	// 			Columns: []*Column{
-	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-	// 				{Name: "department_id", Type: INT, Unsigned: true},
-	// 				{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-	// 				{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
-	// 			},
-	// 			Checks: []string{"age < 50"},
-	// 			ForeignKeys: []ForeignKey{
-	// 				{Referer: "department_id", Reference: "department(id)"},
-	// 			},
-	// 		},
-	// 		{
-	// 			Name:       "storage",
-	// 			Columns: []*Column{
-	// 				{Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
-	// 				{Name: "description", Type: TEXT},
-	// 			},
-	// 		},
-	// 	},
-	// }
 	schema := new(Schema).WithName("company").WithComment("The Company Schema")
 
 	department := new(Table).WithName("department").WithComment("Departments of company")
@@ -101,11 +61,11 @@ func setupDB(t *testing.T, dbSchema *Schema) *sql.DB {
 
 	assertNotHasError(t, Drop(dbSchema))
 	if platform == postgres || platform == mssql {
-		assertFalse(t, checkSchemaExists(dbSchema.Name))
+		assertFalse(t, checkSchemaExists(dbSchema.name))
 	}
-	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
-	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
-	assertFalse(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.name, "department"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.name, "employee"))
+	assertFalse(t, checkSchemaHasTableSQL(dbSchema.name, "storage"))
 
 	assertNotHasError(t, Install(dbSchema))
 
@@ -116,68 +76,68 @@ func TestSchemaInstall(t *testing.T) {
 	dbSchema := getSchema()
 	setupDB(t, dbSchema)
 
-	assertTrue(t, checkSchemaExists(dbSchema.Name))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
+	assertTrue(t, checkSchemaExists(dbSchema.name))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "employee"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "department"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "storage"))
 	assertArrayStringEquals(
 		t,
 		[]string{"department", "employee" , "storage"},
-		 fetchTables(dbSchema.Name),
+		 fetchTables(dbSchema.name),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "revenue", "position"},
-		 fetchTableColumnNames(dbSchema.Name, "department"),
+		 fetchTableColumnNames(dbSchema.name, "department"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "department_id", "valid", "age"},
-		 fetchTableColumnNames(dbSchema.Name, "employee"),
+		 fetchTableColumnNames(dbSchema.name, "employee"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"room", "description"},
-		 fetchTableColumnNames(dbSchema.Name, "storage"),
+		 fetchTableColumnNames(dbSchema.name, "storage"),
 	)
 
-	schemaDepartmentCols := dbSchema.Tables[0].Columns
-	departmentCols := fetchTableColumns(dbSchema.Name, "department")
+	schemaDepartmentCols := dbSchema.tables[0].columns
+	departmentCols := fetchTableColumns(dbSchema.name, "department")
 	assertIntEquals(t, len(departmentCols), len(schemaDepartmentCols))
 	for index, col := range departmentCols {
 		assertFalse(t, schemaDepartmentCols[index].diff(col))
 	}
 
-	schemaEmployeeCols := dbSchema.Tables[1].Columns
-	employeeCols := fetchTableColumns(dbSchema.Name, "employee")
+	schemaEmployeeCols := dbSchema.tables[1].columns
+	employeeCols := fetchTableColumns(dbSchema.name, "employee")
 	assertIntEquals(t, len(employeeCols), len(schemaEmployeeCols))
 	for index, col := range employeeCols {
 		assertFalse(t, schemaEmployeeCols[index].diff(col))
 	}
 
-	schemaStorageCols := dbSchema.Tables[2].Columns
-	storageCols := fetchTableColumns(dbSchema.Name, "storage")
+	schemaStorageCols := dbSchema.tables[2].columns
+	storageCols := fetchTableColumns(dbSchema.name, "storage")
 	assertIntEquals(t, len(storageCols), len(schemaStorageCols))
 	for index, col := range storageCols {
 		assertFalse(t, schemaStorageCols[index].diff(col))
 	}
 
 	// Migrate
-	employee := dbSchema.GetTables("employee")
+	employee := dbSchema.GetTable("employee")
 	employee.AddColumn(new(Column).WithName("health_check").WithType(SMALLINT))
 	assertNotHasError(t, Install(dbSchema))
 
-	assertTrue(t, checkSchemaExists(dbSchema.Name))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "employee"))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "department"))
-	assertTrue(t, checkSchemaHasTableSQL(dbSchema.Name, "storage"))
+	assertTrue(t, checkSchemaExists(dbSchema.name))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "employee"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "department"))
+	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "storage"))
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "department_id", "valid", "age", "health_check"},
-		fetchTableColumnNames(dbSchema.Name, "employee"),
+		fetchTableColumnNames(dbSchema.name, "employee"),
 	)
 }
 
@@ -185,13 +145,13 @@ func TestSchemaWorks(t *testing.T) {
 	dbSchema := getSchema()
 	db := setupDB(t, dbSchema)
 
-	employee := _platform().getSchemaAccessName(dbSchema.Name, "employee")
-	department := _platform().getSchemaAccessName(dbSchema.Name, "department")
-	storage := _platform().getSchemaAccessName(dbSchema.Name, "storage")
+	employee := _platform().getSchemaAccessName(dbSchema.name, "employee")
+	department := _platform().getSchemaAccessName(dbSchema.name, "department")
+	storage := _platform().getSchemaAccessName(dbSchema.name, "storage")
 
 	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
-	// Checks constraint is parsed but will be ignored in mysql5.7
+	// checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
 	if platform != mysql57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 5, 1)", employee))

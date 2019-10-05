@@ -24,15 +24,15 @@ func (platform *dbSqlitePlatform) chainCommands(commands ...string) string {
 }
 
 func (platform *dbSqlitePlatform) getTypeDeclaration(col *Column) string {
-	dbType := col.Type
+	dbType := col.dbType
 
 	// @TODO: make some type reference that centralized all types together across platforms
-	if inStringArray(col.Type, integerTypes) {
+	if inStringArray(col.dbType, integerTypes) {
 		dbType = "INTEGER"
 	}
 
-	if col.Length > 0 {
-		return dbType + "(" + strconv.Itoa(col.Length) + ")"
+	if col.length > 0 {
+		return dbType + "(" + strconv.Itoa(col.length) + ")"
 	}
 
 	return dbType
