@@ -78,7 +78,7 @@ func (platform *dbMsSQLPlatform) getColumnCheckDeclaration(expression string) st
 }
 
 func (platform *dbMsSQLPlatform) buildSchemaCreateSQL(schema *Schema) string {
-	return platform.getSchemaCreateDeclarationSQL(schema.Name)
+	return platform.getSchemaCreateDeclarationSQL(schema.name)
 }
 
 func (platform *dbMsSQLPlatform) getSchemaCreateDeclarationSQL(schema string) string {

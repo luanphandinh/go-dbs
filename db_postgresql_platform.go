@@ -96,9 +96,9 @@ func (platform *dbPostgresPlatform) getColumnCheckDeclaration(expression string)
 
 func (platform *dbPostgresPlatform) buildSchemaCreateSQL(schema *Schema) string {
 	commands := make([]string, 0)
-	commands = append(commands, platform.getSchemaCreateDeclarationSQL(schema.Name))
-	if schema.Comment != "" {
-		commands = append(commands, platform.getSchemaCommentDeclaration(schema.Name, schema.Comment))
+	commands = append(commands, platform.getSchemaCreateDeclarationSQL(schema.name))
+	if schema.comment != "" {
+		commands = append(commands, platform.getSchemaCommentDeclaration(schema.name, schema.comment))
 	}
 
 	return platform.chainCommands(commands...)
