@@ -105,7 +105,7 @@ func (platform *dbMsSQLPlatform) getTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbMsSQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbMsSQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 

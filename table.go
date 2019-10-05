@@ -13,7 +13,7 @@ type Table struct {
 	columns     []*Column
 	checks      []string
 	comment     string
-	foreignKeys []ForeignKey
+	foreignKeys []*ForeignKey
 }
 
 // WithName set name for table
@@ -69,7 +69,7 @@ func (table *Table) AddChecks(checks []string) *Table {
 
 // AddForeignKey create a ForeignKey object and add to table
 func (table *Table) AddForeignKey(referer string, reference string) *Table {
-	table.foreignKeys = append(table.foreignKeys, ForeignKey{referer: referer, reference: reference})
+	table.foreignKeys = append(table.foreignKeys, &ForeignKey{referer: referer, reference: reference})
 
 	return table
 }

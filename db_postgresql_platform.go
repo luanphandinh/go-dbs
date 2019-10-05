@@ -128,7 +128,7 @@ func (platform *dbPostgresPlatform) getTableChecksDeclaration(expressions []stri
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 

@@ -103,7 +103,7 @@ func (platform *dbMySQLPlatform) getTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbMySQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbMySQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 

@@ -106,7 +106,7 @@ func (platform *dbSqlitePlatform) getTableChecksDeclaration(expressions []string
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbSqlitePlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbSqlitePlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
