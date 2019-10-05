@@ -44,7 +44,7 @@ func install(db *sql.DB) error {
 }
 
 func getFunction(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-dbType", "application/json")
 
 	server := "localhost:3306"
 	user := "admin"

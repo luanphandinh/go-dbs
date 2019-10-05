@@ -90,35 +90,35 @@ func _getSchemaDropDeclarationSQL(schema string) string {
 
 func _buildColumnDefinitionSQL(platform dbPlatform, col *Column) (colString string) {
 	declaration := make([]string, 0)
-	declaration = append(declaration, col.Name)
+	declaration = append(declaration, col.name)
 	declaration = append(declaration, platform.getTypeDeclaration(col))
 
-	if col.Unsigned {
+	if col.unsigned {
 		declaration = append(declaration, platform.getUnsignedDeclaration())
 	}
 
-	if col.NotNull {
+	if col.notNull {
 		declaration = append(declaration, platform.getNotNullDeclaration())
 	}
 
-	if col.Default != "" {
-		declaration = append(declaration, platform.getDefaultDeclaration(col.Default))
+	if col.defaultValue != "" {
+		declaration = append(declaration, platform.getDefaultDeclaration(col.defaultValue))
 	}
 
-	if col.AutoIncrement {
+	if col.autoIncrement {
 		declaration = append(declaration, platform.getAutoIncrementDeclaration())
 	}
 
-	if col.Unique {
+	if col.unique {
 		declaration = append(declaration, platform.getUniqueDeclaration())
 	}
 
-	if col.Check != "" {
-		declaration = append(declaration, platform.getColumnCheckDeclaration(col.Check))
+	if col.check != "" {
+		declaration = append(declaration, platform.getColumnCheckDeclaration(col.check))
 	}
 
-	if col.Comment != "" {
-		declaration = append(declaration, platform.getColumnCommentDeclaration(col.Comment))
+	if col.comment != "" {
+		declaration = append(declaration, platform.getColumnCommentDeclaration(col.comment))
 	}
 
 	return concatStrings(declaration, " ")

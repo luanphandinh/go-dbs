@@ -4,42 +4,42 @@ import "strings"
 
 // Column defined the db column struct
 type Column struct {
-	Name          string `json:"name"`
-	Type          string `json:"type"`
-	NotNull       bool   `json:"not_null"`
-	AutoIncrement bool   `json:"auto_increment"`
-	Unsigned      bool   `json:"unsigned"`
-	Unique        bool   `json:"unique"`
-	Length        int    `json:"length"`
-	Default       string `json:"default"`
-	Check         string `json:"check"`
-	Comment       string `json:"comment"`
+	name          string
+	dbType        string
+	notNull       bool
+	autoIncrement bool
+	unsigned      bool
+	unique        bool
+	length        int
+	defaultValue  string
+	check         string
+	comment       string
 }
 
 // WithName set name for column.
 func (col *Column) WithName(name string) *Column {
-	col.Name = name
+	col.name = name
 
 	return col
 }
 
 // WithComment set comment for column.
 func (col *Column) WithComment(comment string) *Column {
-	col.Comment = comment
+	col.comment = comment
 
 	return col
 }
 
 // WithType define column type.
 func (col *Column) WithType(dbType string) *Column {
-	col.Type = dbType
+	col.dbType = dbType
 
 	return col
 }
 
 // IsNotNull mark column as NOT NULL.
 func (col *Column) IsNotNull() *Column {
-	col.NotNull = true
+	col.notNull = true
 
 	return col
 }
@@ -49,21 +49,21 @@ func (col *Column) IsNotNull() *Column {
 // 		postgresql: GENERATE A SEQUENCE FOR THAT COLUMN
 // 		msssql: 	IDENTITY(1,1)
 func (col *Column) IsAutoIncrement() *Column {
-	col.AutoIncrement = true
+	col.autoIncrement = true
 
 	return col
 }
 
 // IsUnsigned mark column as UNSIGNED in mysql.
 func (col *Column) IsUnsigned() *Column {
-	col.Unsigned = true
+	col.unsigned = true
 
 	return col
 }
 
 // IsUnique mark column as UNIQUE.
 func (col *Column) IsUnique() *Column {
-	col.Unique = true
+	col.unique = true
 
 	return col
 }
@@ -71,14 +71,14 @@ func (col *Column) IsUnique() *Column {
 // WithLength set length of column's type.
 // eg: NVARCHAR(length)
 func (col *Column) WithLength(length int) *Column {
-	col.Length = length
+	col.length = length
 
 	return col
 }
 
 // WithDefault set "DEFAULT" value for column.
 func (col *Column) WithDefault(val string) *Column {
-	col.Default = val
+	col.defaultValue = val
 
 	return col
 }
@@ -86,7 +86,7 @@ func (col *Column) WithDefault(val string) *Column {
 // AddCheck for column.
 // eg: "age > 10"
 func (col *Column) AddCheck(check string) *Column {
-	col.Check = check
+	col.check = check
 
 	return col
 }
@@ -97,7 +97,7 @@ func (col *Column) diff(col2 *Column) bool {
 		return col.diffAll(col2)
 	}
 
-	if col.Name != col2.Name {
+	if col.name != col2.name {
 		return true
 	}
 
@@ -105,37 +105,37 @@ func (col *Column) diff(col2 *Column) bool {
 }
 
 func (col *Column) diffAll(col2 *Column) bool {
-	if col.Name != col2.Name {
+	if col.name != col2.name {
 		return true
 	}
 
 	// @TODO: enhance type mapping
-	if ! strings.Contains(col.Type, col2.Type) && ! strings.Contains(col2.Type, col.Type) {
+	if ! strings.Contains(col.dbType, col2.dbType) && ! strings.Contains(col2.dbType, col.dbType) {
 		return true
 	}
 
-	if col.Unsigned != col2.Unsigned {
+	if col.unsigned != col2.unsigned {
 		return true
 	}
 
-	if col.NotNull != col.NotNull {
+	if col.notNull != col.notNull {
 		return true
 	}
 
-	if col.AutoIncrement != col2.AutoIncrement {
+	if col.autoIncrement != col2.autoIncrement {
 		return true
 	}
 
-	if col.Unsigned != col2.Unsigned {
+	if col.unsigned != col2.unsigned {
 		return true
 	}
 
 	// @TODO: primary and unique in mysql ???
-	if col.Unique != col2.Unique {
+	if col.unique != col2.unique {
 		return true
 	}
 
-	if col.Default != col2.Default {
+	if col.defaultValue != col2.defaultValue {
 		return true
 	}
 

@@ -28,11 +28,11 @@ func (platform *dbMySQLPlatform) chainCommands(commands ...string) string {
 }
 
 func (platform *dbMySQLPlatform) getTypeDeclaration(col *Column) string {
-	if col.Length > 0 {
-		return col.Type + "(" + strconv.Itoa(col.Length) + ")"
+	if col.length > 0 {
+		return col.dbType + "(" + strconv.Itoa(col.length) + ")"
 	}
 
-	return col.Type
+	return col.dbType
 }
 
 func (platform *dbMySQLPlatform) getUniqueDeclaration() string {
@@ -149,7 +149,7 @@ func (platform *dbMySQLPlatform) getTableColumnNamesSQL(schema string, table str
 }
 
 // This will query data from mysql and return format of
-// Field | Type 			| Null 	| Key 	| Default 	| Extra
+// Field | dbType 			| Null 	| Key 	| defaultValue 	| Extra
 // id    | int(10) unsigned	| NO	| PRI	| NULL		| auto_increment
 //		 |					| YES	| UNI	| 1			| ""
 func (platform *dbMySQLPlatform) getTableColumnsSQL(schema string , table string) string {

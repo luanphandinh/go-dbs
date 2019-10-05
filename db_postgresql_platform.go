@@ -30,15 +30,15 @@ func (platform *dbPostgresPlatform) chainCommands(commands ...string) string {
 }
 
 func (platform *dbPostgresPlatform) getTypeDeclaration(col *Column) string {
-	colType := col.Type
+	colType := col.dbType
 
 	// @TODO: make some type reference that centralized all types together across platforms
 	if colType == NVARCHAR {
 		 colType = VARCHAR
 	}
 
-	if col.Length > 0 {
-		return colType + "(" + strconv.Itoa(col.Length) + ")"
+	if col.length > 0 {
+		return colType + "(" + strconv.Itoa(col.length) + ")"
 	}
 
 	return colType
@@ -80,9 +80,9 @@ func (platform *dbPostgresPlatform) getColumnsCommentDeclaration(schema string, 
 	comments := make([]string, 0)
 	tableName := platform.getSchemaAccessName(schema, table.Name)
 	for _, col := range table.Columns {
-		if col.Comment != "" {
-			colName := tableName + "." + col.Name
-			comment := " IS '" + col.Comment + "'"
+		if col.comment != "" {
+			colName := tableName + "." + col.name
+			comment := " IS '" + col.comment + "'"
 			comments = append(comments, "COMMENT ON COLUMN " + colName + comment)
 		}
 	}
@@ -143,9 +143,9 @@ func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Ta
 	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
 	for _, col := range table.Columns {
-		if col.AutoIncrement {
-			seqName := platform.getSchemaAccessName(schema, table.Name + "_" + col.Name + "_seq")
-			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.Name + " SET DEFAULT NEXTVAL('" + seqName + "')"
+		if col.autoIncrement {
+			seqName := platform.getSchemaAccessName(schema, table.Name + "_" + col.name+ "_seq")
+			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.name + " SET DEFAULT NEXTVAL('" + seqName + "')"
 			commands = append(commands, platform.getSequenceCreateSQL(seqName))
 			commands = append(commands, alterTableCommand)
 		}

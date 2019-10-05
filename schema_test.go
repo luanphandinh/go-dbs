@@ -21,30 +21,30 @@ var (
 
 func getSchema() *Schema {
 	// return &Schema{
-	// 	Name:     "company",
+	// 	name:     "company",
 	// 	dbPlatform: platform,
-	// 	Comment:  "The Company Schema",
+	// 	comment:  "The Company Schema",
 	// 	Tables: []*Table{
 	// 		{
-	// 			Name:       "department",
+	// 			name:       "department",
 	// 			PrimaryKey: []string{"id"},
 	// 			Columns: []*Column{
-	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-	// 				{Name: "revenue", Type: FLOAT, NotNull: true, Default: "1.01"},
-	// 				{Name: "position", Type: SMALLINT, NotNull: true, Unsigned: true, Unique: true},
+	// 				{name: "id", dbType: INT, notNull: true, unsigned: true, autoIncrement: true},
+	// 				{name: "name", dbType: NVARCHAR, notNull: true, length: 20},
+	// 				{name: "revenue", dbType: FLOAT, notNull: true, defaultValue: "1.01"},
+	// 				{name: "position", dbType: SMALLINT, notNull: true, unsigned: true, unique: true},
 	// 			},
-	// 			Comment: "Departments of company",
+	// 			comment: "Departments of company",
 	// 		},
 	// 		{
-	// 			Name:       "employee",
+	// 			name:       "employee",
 	// 			PrimaryKey: []string{"id"},
 	// 			Columns: []*Column{
-	// 				{Name: "id", Type: INT, NotNull: true, Unsigned: true, AutoIncrement: true},
-	// 				{Name: "name", Type: NVARCHAR, NotNull: true, Length: 20},
-	// 				{Name: "department_id", Type: INT, Unsigned: true},
-	// 				{Name: "valid", Type: SMALLINT, Default: "1", Comment: "Indicate employee status"},
-	// 				{Name: "age", Type: SMALLINT, NotNull: true, Unsigned: true, Check: "age > 20"},
+	// 				{name: "id", dbType: INT, notNull: true, unsigned: true, autoIncrement: true},
+	// 				{name: "name", dbType: NVARCHAR, notNull: true, length: 20},
+	// 				{name: "department_id", dbType: INT, unsigned: true},
+	// 				{name: "valid", dbType: SMALLINT, defaultValue: "1", comment: "Indicate employee status"},
+	// 				{name: "age", dbType: SMALLINT, notNull: true, unsigned: true, check: "age > 20"},
 	// 			},
 	// 			Checks: []string{"age < 50"},
 	// 			ForeignKeys: []ForeignKey{
@@ -52,10 +52,10 @@ func getSchema() *Schema {
 	// 			},
 	// 		},
 	// 		{
-	// 			Name:       "storage",
+	// 			name:       "storage",
 	// 			Columns: []*Column{
-	// 				{Name: "room", Type: NVARCHAR, NotNull: true, Length: 50},
-	// 				{Name: "description", Type: TEXT},
+	// 				{name: "room", dbType: NVARCHAR, notNull: true, length: 50},
+	// 				{name: "description", dbType: TEXT},
 	// 			},
 	// 		},
 	// 	},

@@ -90,7 +90,7 @@ func install(schema *Schema) error {
 		if inStringArray(table.Name, existedTables) {
 			cols := fetchTableColumnNames(schema.Name, table.Name)
 			for _, col := range table.Columns {
-				if inStringArray(col.Name, cols) {
+				if inStringArray(col.name, cols) {
 					continue
 				}
 				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.Name, table.Name, col))

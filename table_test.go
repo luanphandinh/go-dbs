@@ -4,36 +4,36 @@ import "testing"
 
 func prepareTestTable() *Table {
 	id := &Column{
-		Name:          "id",
-		Type:          INT,
-		NotNull:       true,
-		AutoIncrement: true,
+		name:          "id",
+		dbType:        INT,
+		notNull:       true,
+		autoIncrement: true,
 	}
 
 	subID := &Column{
-		Name:    "sub_id",
-		Type:    INT,
-		NotNull: true,
+		name:    "sub_id",
+		dbType:  INT,
+		notNull: true,
 	}
 
 	name := &Column{
-		Name:    "name",
-		Type:    TEXT,
-		NotNull: true,
+		name:    "name",
+		dbType:  TEXT,
+		notNull: true,
 	}
 
 	age := &Column{
-		Name:    "age",
-		Type:    INT,
-		Length:  4,
-		Default: "10",
-		Check:   "age < 1000",
-		Comment: "age should less than 1000",
+		name:         "age",
+		dbType:       INT,
+		length:       4,
+		defaultValue: "10",
+		check:        "age < 1000",
+		comment:      "age should less than 1000",
 	}
 
 	// Plain object
 	// table := &Table{
-	// 	Name:       "user",
+	// 	name:       "user",
 	// 	PrimaryKey: []string{"id"},
 	// 	Columns: []Column{
 	// 		id,
@@ -42,7 +42,7 @@ func prepareTestTable() *Table {
 	// 		age,
 	// 	},
 	// 	Checks:  []string{"age > 50"},
-	// 	Comment: "The user table",
+	// 	comment: "The user table",
 	// 	ForeignKeys: []ForeignKey{
 	// 		{Referer: "sub_id", Reference: "other_table(id)"},
 	// 	},
