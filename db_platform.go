@@ -19,7 +19,7 @@ type dbPlatform interface {
 	getDefaultDeclaration(expression string) string
 	getColumnCommentDeclaration(expression string) string // For inline comment
 	getColumnsCommentDeclaration(schema string, table *Table) []string // For external SQL COMMENT on postgresql
-	getColumnCheckDeclaration(expression string) string // Checks constraint is parsed but will be ignored in mysql5.7
+	getColumnCheckDeclaration(expression string) string // checks constraint is parsed but will be ignored in mysql5.7
 	buildColumnDefinitionSQL(col *Column) string
 	buildColumnsDefinitionSQL(cols []*Column) []string
 
@@ -31,7 +31,7 @@ type dbPlatform interface {
 
 	// table SQL declarations
 	getSchemaAccessName(schema string, name string) string
-	getTableChecksDeclaration(expressions []string) []string // Checks constraint is parsed but will be ignored in mysql5.7
+	getTableChecksDeclaration(expressions []string) []string // checks constraint is parsed but will be ignored in mysql5.7
 	buildTableCreateSQL(schema string, table *Table) string
 	buildTableAddColumnSQL(schema string, table string, col *Column) string
 	getTableDropSQL(schema string, table string) string
@@ -138,7 +138,7 @@ func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, forei
 	for _, key := range foreignKeys {
 		keys = append(
 			keys,
-			"FOREIGN KEY (" + key.Referer + ") REFERENCES " + platform.getSchemaAccessName(schema, key.Reference),
+			"FOREIGN KEY (" + key.referer + ") REFERENCES " + platform.getSchemaAccessName(schema, key.reference),
 		)
 	}
 
@@ -146,21 +146,21 @@ func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, forei
 }
 
 func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) string {
-	tableName := platform.getSchemaAccessName(schema, table.Name)
+	tableName := platform.getSchemaAccessName(schema, table.name)
 	tableCreation := make([]string, 0)
-	tableCreation = append(tableCreation, platform.buildColumnsDefinitionSQL(table.Columns)...)
-	if len(table.PrimaryKey) > 0 {
-		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.PrimaryKey))
+	tableCreation = append(tableCreation, platform.buildColumnsDefinitionSQL(table.columns)...)
+	if len(table.primaryKey) > 0 {
+		tableCreation = append(tableCreation, platform.getPrimaryDeclaration(table.primaryKey))
 	}
-	tableCreation = append(tableCreation, platform.getTableReferencesDeclarationSQL(schema, table.ForeignKeys)...)
-	tableCreation = append(tableCreation, platform.getTableChecksDeclaration(table.Checks)...)
+	tableCreation = append(tableCreation, platform.getTableReferencesDeclarationSQL(schema, table.foreignKeys)...)
+	tableCreation = append(tableCreation, platform.getTableChecksDeclaration(table.checks)...)
 
 	tableDeclaration := "CREATE TABLE " + tableName + " (\n\t" + concatStrings(tableCreation, ",\n\t") + "\n)"
 
 	commands := make([]string, 0)
 	commands = append(commands, tableDeclaration)
-	if table.Comment != "" {
-		commands = append(commands, platform.getTableCommentDeclarationSQL(tableName, table.Comment))
+	if table.comment != "" {
+		commands = append(commands, platform.getTableCommentDeclarationSQL(tableName, table.comment))
 	}
 	commands = append(commands, platform.getColumnsCommentDeclaration(schema, table)...)
 

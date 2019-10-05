@@ -34,17 +34,17 @@ func prepareTestTable() *Table {
 	// Plain object
 	// table := &Table{
 	// 	name:       "user",
-	// 	PrimaryKey: []string{"id"},
-	// 	Columns: []Column{
+	// 	primaryKey: []string{"id"},
+	// 	columns: []Column{
 	// 		id,
 	// 		subID,
 	// 		name,
 	// 		age,
 	// 	},
-	// 	Checks:  []string{"age > 50"},
+	// 	checks:  []string{"age > 50"},
 	// 	comment: "The user table",
-	// 	ForeignKeys: []ForeignKey{
-	// 		{Referer: "sub_id", Reference: "other_table(id)"},
+	// 	foreignKeys: []ForeignKey{
+	// 		{referer: "sub_id", reference: "other_table(id)"},
 	// 	},
 	// }
 	table := new(Table)
@@ -143,10 +143,10 @@ ALTER TABLE public.user ALTER id SET DEFAULT NEXTVAL('public.user_id_seq')`,
 		msSQLPlatform.buildTableCreateSQL("public", table),
 	)
 
-	table.PrimaryKey = []string{"id", "name"}
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.PrimaryKey))
-	assertStringEquals(t, "PRIMARY KEY (id, name)", msSQLPlatform.getPrimaryDeclaration(table.PrimaryKey))
+	table.primaryKey = []string{"id", "name"}
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysqlPlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", mysql57Platform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", sqlitePlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", postgresPlatform.getPrimaryDeclaration(table.primaryKey))
+	assertStringEquals(t, "PRIMARY KEY (id, name)", msSQLPlatform.getPrimaryDeclaration(table.primaryKey))
 }

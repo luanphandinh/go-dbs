@@ -87,13 +87,13 @@ func install(schema *Schema) error {
 
 	existedTables := fetchTables(schema.Name)
 	for _, table := range schema.Tables {
-		if inStringArray(table.Name, existedTables) {
-			cols := fetchTableColumnNames(schema.Name, table.Name)
-			for _, col := range table.Columns {
+		if inStringArray(table.name, existedTables) {
+			cols := fetchTableColumnNames(schema.Name, table.name)
+			for _, col := range table.columns {
 				if inStringArray(col.name, cols) {
 					continue
 				}
-				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.Name, table.Name, col))
+				alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.Name, table.name, col))
 			}
 			continue
 		}
@@ -138,7 +138,7 @@ func drop(schema *Schema) error {
 	}
 
 	for i := len(schema.Tables) - 1; i >= 0; i-- {
-		if _, err := tx.Exec(_platform().getTableDropSQL(schema.Name, schema.Tables[i].Name)); err != nil {
+		if _, err := tx.Exec(_platform().getTableDropSQL(schema.Name, schema.Tables[i].name)); err != nil {
 			tx.Rollback()
 			return err
 		}

@@ -27,8 +27,8 @@ func getSchema() *Schema {
 	// 	Tables: []*Table{
 	// 		{
 	// 			name:       "department",
-	// 			PrimaryKey: []string{"id"},
-	// 			Columns: []*Column{
+	// 			primaryKey: []string{"id"},
+	// 			columns: []*Column{
 	// 				{name: "id", dbType: INT, notNull: true, unsigned: true, autoIncrement: true},
 	// 				{name: "name", dbType: NVARCHAR, notNull: true, length: 20},
 	// 				{name: "revenue", dbType: FLOAT, notNull: true, defaultValue: "1.01"},
@@ -38,22 +38,22 @@ func getSchema() *Schema {
 	// 		},
 	// 		{
 	// 			name:       "employee",
-	// 			PrimaryKey: []string{"id"},
-	// 			Columns: []*Column{
+	// 			primaryKey: []string{"id"},
+	// 			columns: []*Column{
 	// 				{name: "id", dbType: INT, notNull: true, unsigned: true, autoIncrement: true},
 	// 				{name: "name", dbType: NVARCHAR, notNull: true, length: 20},
 	// 				{name: "department_id", dbType: INT, unsigned: true},
 	// 				{name: "valid", dbType: SMALLINT, defaultValue: "1", comment: "Indicate employee status"},
 	// 				{name: "age", dbType: SMALLINT, notNull: true, unsigned: true, check: "age > 20"},
 	// 			},
-	// 			Checks: []string{"age < 50"},
-	// 			ForeignKeys: []ForeignKey{
-	// 				{Referer: "department_id", Reference: "department(id)"},
+	// 			checks: []string{"age < 50"},
+	// 			foreignKeys: []ForeignKey{
+	// 				{referer: "department_id", reference: "department(id)"},
 	// 			},
 	// 		},
 	// 		{
 	// 			name:       "storage",
-	// 			Columns: []*Column{
+	// 			columns: []*Column{
 	// 				{name: "room", dbType: NVARCHAR, notNull: true, length: 50},
 	// 				{name: "description", dbType: TEXT},
 	// 			},
@@ -144,21 +144,21 @@ func TestSchemaInstall(t *testing.T) {
 		 fetchTableColumnNames(dbSchema.Name, "storage"),
 	)
 
-	schemaDepartmentCols := dbSchema.Tables[0].Columns
+	schemaDepartmentCols := dbSchema.Tables[0].columns
 	departmentCols := fetchTableColumns(dbSchema.Name, "department")
 	assertIntEquals(t, len(departmentCols), len(schemaDepartmentCols))
 	for index, col := range departmentCols {
 		assertFalse(t, schemaDepartmentCols[index].diff(col))
 	}
 
-	schemaEmployeeCols := dbSchema.Tables[1].Columns
+	schemaEmployeeCols := dbSchema.Tables[1].columns
 	employeeCols := fetchTableColumns(dbSchema.Name, "employee")
 	assertIntEquals(t, len(employeeCols), len(schemaEmployeeCols))
 	for index, col := range employeeCols {
 		assertFalse(t, schemaEmployeeCols[index].diff(col))
 	}
 
-	schemaStorageCols := dbSchema.Tables[2].Columns
+	schemaStorageCols := dbSchema.Tables[2].columns
 	storageCols := fetchTableColumns(dbSchema.Name, "storage")
 	assertIntEquals(t, len(storageCols), len(schemaStorageCols))
 	for index, col := range storageCols {
@@ -191,7 +191,7 @@ func TestSchemaWorks(t *testing.T) {
 
 	_, err := db.Exec(fmt.Sprintf("INSERT INTO %s (name, position) VALUES ('Luan Phan Corps', 1)", department))
 	assertNotHasError(t, err)
-	// Checks constraint is parsed but will be ignored in mysql5.7
+	// checks constraint is parsed but will be ignored in mysql5.7
 	// @TODO query builder will help to create query across platforms
 	if platform != mysql57 {
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 5, 1)", employee))

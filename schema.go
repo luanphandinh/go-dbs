@@ -44,7 +44,7 @@ func (schema *Schema) GetTablesAt(index int) *Table {
 // GetTables return a table in schema.Tables with name
 func (schema *Schema) GetTables(name string) *Table {
 	for _, table := range schema.Tables {
-		if table.Name == name {
+		if table.name == name {
 			return table
 		}
 	}

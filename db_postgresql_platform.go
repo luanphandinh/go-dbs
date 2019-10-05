@@ -78,8 +78,8 @@ func (platform *dbPostgresPlatform) getColumnCommentDeclaration(expression strin
 
 func (platform *dbPostgresPlatform) getColumnsCommentDeclaration(schema string, table *Table) []string {
 	comments := make([]string, 0)
-	tableName := platform.getSchemaAccessName(schema, table.Name)
-	for _, col := range table.Columns {
+	tableName := platform.getSchemaAccessName(schema, table.name)
+	for _, col := range table.columns {
 		if col.comment != "" {
 			colName := tableName + "." + col.name
 			comment := " IS '" + col.comment + "'"
@@ -137,14 +137,14 @@ func (platform *dbPostgresPlatform) getTableCommentDeclarationSQL(name string, e
 }
 
 func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Table) (tableString string) {
-	tableName := platform.getSchemaAccessName(schema, table.Name)
+	tableName := platform.getSchemaAccessName(schema, table.name)
 
 	commands := make([]string, 0)
 	commands = append(commands, _buildTableCreateSQL(platform, schema, table))
 	// Auto increment
-	for _, col := range table.Columns {
+	for _, col := range table.columns {
 		if col.autoIncrement {
-			seqName := platform.getSchemaAccessName(schema, table.Name + "_" + col.name+ "_seq")
+			seqName := platform.getSchemaAccessName(schema, table.name + "_" + col.name+  "_seq")
 			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.name + " SET DEFAULT NEXTVAL('" + seqName + "')"
 			commands = append(commands, platform.getSequenceCreateSQL(seqName))
 			commands = append(commands, alterTableCommand)
