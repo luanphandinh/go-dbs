@@ -28,6 +28,8 @@ func getSchema() *Schema {
 	department.AddColumn(new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
 	department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique())
 	department.AddPrimaryKey([]string{"id"})
+	department.AddIndex("name", "position")
+	department.AddIndex("id", "position")
 
 	employee := new(Table).WithName("employee")
 	employee.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())

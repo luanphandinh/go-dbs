@@ -79,6 +79,7 @@ func fetchTableColumnNames(schema string, table string) []string {
 func install(schema *Schema) error {
 	createTableSQLs := make([]string, 0)
 	alterTableSQLs := make([]string, 0)
+	createIndexSQLs := make([]string, 0)
 
 	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
 	if checkSchemaExists(schema.name) {
@@ -99,6 +100,7 @@ func install(schema *Schema) error {
 		}
 
 		createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.name, table))
+		createIndexSQLs = append(createIndexSQLs, _platform().getTableIndexesDeclarationSQL(schema.name, table.name, table.indexes)...)
 	}
 
 	tx, err := _db().Begin()
@@ -122,6 +124,13 @@ func install(schema *Schema) error {
 
 	for _, alterTableSQL := range alterTableSQLs {
 		if _, err := tx.Exec(alterTableSQL); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	for _, createIndexSQL := range createIndexSQLs {
+		if _, err := tx.Exec(createIndexSQL); err != nil {
 			tx.Rollback()
 			return err
 		}

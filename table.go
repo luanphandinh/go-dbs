@@ -6,6 +6,12 @@ type ForeignKey struct {
 	reference string
 }
 
+// TableIndex (es)
+type TableIndex struct {
+	cols []string
+	name string
+}
+
 // Table defined db table structure
 type Table struct {
 	name        string
@@ -13,7 +19,8 @@ type Table struct {
 	columns     []*Column
 	checks      []string
 	comment     string
-	foreignKeys []ForeignKey
+	foreignKeys []*ForeignKey
+	indexes     []*TableIndex
 }
 
 // WithName set name for table
@@ -67,9 +74,20 @@ func (table *Table) AddChecks(checks []string) *Table {
 	return table
 }
 
-// AddForeignKey create a ForeignKey object and add to table
+// AddForeignKey create a ForeignKey object and add to table declaration
 func (table *Table) AddForeignKey(referer string, reference string) *Table {
-	table.foreignKeys = append(table.foreignKeys, ForeignKey{referer: referer, reference: reference})
+	table.foreignKeys = append(table.foreignKeys, &ForeignKey{referer: referer, reference: reference})
+
+	return table
+}
+
+// AddIndex create a TableIndex object and add to table declaration
+// eg:
+//		table.AddIndex("last_name", "first_name")
+//		table.AddIndex("country_code", "phone_number")
+func (table *Table) AddIndex(cols ...string) *Table {
+	indexName := concatStrings(cols, "_")
+	table.indexes = append(table.indexes, &TableIndex{name: "idx_" + table.name + "_" + indexName, cols: cols})
 
 	return table
 }

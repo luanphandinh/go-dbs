@@ -105,8 +105,19 @@ func (platform *dbMsSQLPlatform) getTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbMsSQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbMsSQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
+func (platform *dbMsSQLPlatform) getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string {
+	statements := make([]string, len(indexes))
+	for i, index := range indexes {
+		statements[i] = "CREATE INDEX " + index.name +
+			" ON " + platform.getSchemaAccessName(schema, table) +
+			" (" + concatStrings(index.cols, ", ") + ")"
+	}
+
+	return statements
 }
 
 func (platform *dbMsSQLPlatform) getTableCommentDeclarationSQL(name string, expression string) string {

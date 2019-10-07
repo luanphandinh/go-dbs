@@ -128,8 +128,19 @@ func (platform *dbPostgresPlatform) getTableChecksDeclaration(expressions []stri
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
+func (platform *dbPostgresPlatform) getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string {
+	statements := make([]string, len(indexes))
+	for i, index := range indexes {
+		statements[i] = "CREATE INDEX " + index.name +
+			" ON " + platform.getSchemaAccessName(schema, table) +
+			" (" + concatStrings(index.cols, ", ") + ")"
+	}
+
+	return statements
 }
 
 func (platform *dbPostgresPlatform) getTableCommentDeclarationSQL(name string, expression string) string {

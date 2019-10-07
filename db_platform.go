@@ -36,7 +36,8 @@ type dbPlatform interface {
 	buildTableAddColumnSQL(schema string, table string, col *Column) string
 	getTableDropSQL(schema string, table string) string
 	getTableCommentDeclarationSQL(name string, expression string) string
-	getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string
+	getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string
+	getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string
 
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string
@@ -133,7 +134,7 @@ func _buildColumnsDefinitionSQL(platform dbPlatform, cols []*Column) []string {
 	return declarations
 }
 
-func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, foreignKeys []ForeignKey) []string {
+func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, foreignKeys []*ForeignKey) []string {
 	keys := make([]string, 0)
 	for _, key := range foreignKeys {
 		keys = append(

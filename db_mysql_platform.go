@@ -103,8 +103,19 @@ func (platform *dbMySQLPlatform) getTableChecksDeclaration(expressions []string)
 	return _getTableChecksDeclaration(expressions)
 }
 
-func (platform *dbMySQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []ForeignKey) []string {
+func (platform *dbMySQLPlatform) getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string {
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
+}
+
+func (platform *dbMySQLPlatform) getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string {
+	statements := make([]string, len(indexes))
+	for i, index := range indexes {
+		statements[i] = "CREATE INDEX " + index.name +
+			" ON " + platform.getSchemaAccessName(schema, table) +
+			" (" + concatStrings(index.cols, ", ") + ")"
+	}
+
+	return statements
 }
 
 func (platform *dbMySQLPlatform) getTableCommentDeclarationSQL(name string, expression string) string {
