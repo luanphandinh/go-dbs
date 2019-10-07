@@ -37,6 +37,7 @@ type dbPlatform interface {
 	getTableDropSQL(schema string, table string) string
 	getTableCommentDeclarationSQL(name string, expression string) string
 	getTableReferencesDeclarationSQL(schema string, foreignKeys []*ForeignKey) []string
+	getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string
 
 	getSequenceCreateSQL(sequence string) string
 	getSequenceDropSQL(sequence string) string

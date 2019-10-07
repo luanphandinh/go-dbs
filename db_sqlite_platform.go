@@ -110,6 +110,17 @@ func (platform *dbSqlitePlatform) getTableReferencesDeclarationSQL(schema string
 	return _getTableReferencesDeclarationSQL(platform, schema, foreignKeys)
 }
 
+func (platform *dbSqlitePlatform) getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string {
+	statements := make([]string, len(indexes))
+	for i, index := range indexes {
+		statements[i] = "CREATE UNIQUE INDEX " + index.name +
+			" ON " + platform.getSchemaAccessName(schema, table) +
+			" (" + concatStrings(index.cols, ", ") + ")"
+	}
+
+	return statements
+}
+
 func (platform *dbSqlitePlatform) getTableCommentDeclarationSQL(name string, expression string) string {
 	return ""
 }
