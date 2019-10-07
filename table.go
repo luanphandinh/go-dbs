@@ -60,16 +60,8 @@ func (table *Table) AddColumns(cols []*Column) *Table {
 
 // AddCheck to table
 // eg: table.AddCheck("age > 10")
-func (table *Table) AddCheck(check string) *Table {
-	table.checks = append(table.checks, check)
-
-	return table
-}
-
-// AddChecks to table
-// eg: table.AddCheck([]string{"age > 10", "age < 100"})
-func (table *Table) AddChecks(checks []string) *Table {
-	table.checks = append(table.checks, checks...)
+func (table *Table) AddCheck(check ...string) *Table {
+	table.checks = append(table.checks, check...)
 
 	return table
 }

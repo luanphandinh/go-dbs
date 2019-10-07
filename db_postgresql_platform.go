@@ -133,14 +133,7 @@ func (platform *dbPostgresPlatform) getTableReferencesDeclarationSQL(schema stri
 }
 
 func (platform *dbPostgresPlatform) getTableIndexesDeclarationSQL(schema string, table string, indexes []*TableIndex) []string {
-	statements := make([]string, len(indexes))
-	for i, index := range indexes {
-		statements[i] = "CREATE INDEX " + index.name +
-			" ON " + platform.getSchemaAccessName(schema, table) +
-			" (" + concatStrings(index.cols, ", ") + ")"
-	}
-
-	return statements
+	return _getTableIndexesDeclarationSQL(platform, schema, table, indexes)
 }
 
 func (platform *dbPostgresPlatform) getTableCommentDeclarationSQL(name string, expression string) string {

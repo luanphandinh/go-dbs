@@ -146,6 +146,17 @@ func _getTableReferencesDeclarationSQL(platform dbPlatform, schema string, forei
 	return keys
 }
 
+func _getTableIndexesDeclarationSQL(platform dbPlatform, schema string, table string, indexes []*TableIndex) []string {
+	statements := make([]string, len(indexes))
+	for i, index := range indexes {
+		statements[i] = "CREATE INDEX " + index.name +
+			" ON " + platform.getSchemaAccessName(schema, table) +
+			" (" + concatStrings(index.cols, ", ") + ")"
+	}
+
+	return statements
+}
+
 func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) string {
 	tableName := platform.getSchemaAccessName(schema, table.name)
 	tableCreation := make([]string, 0)
