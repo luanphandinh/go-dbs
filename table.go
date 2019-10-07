@@ -38,7 +38,7 @@ func (table *Table) WithComment(comment string) *Table {
 }
 
 // AddPrimaryKey defined primary of table
-func (table *Table) AddPrimaryKey(key []string) *Table {
+func (table *Table) AddPrimaryKey(key ...string) *Table {
 	table.primaryKey = key
 
 	return table

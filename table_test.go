@@ -49,7 +49,7 @@ func prepareTestTable() *Table {
 	// }
 	table := new(Table)
 	table.WithName("user").WithComment("The user table")
-	table.AddPrimaryKey([]string{"id"})
+	table.AddPrimaryKey("id")
 	table.AddColumn(id)
 	table.AddColumns([]*Column{subID, name, age})
 	table.AddForeignKey("sub_id", "other_table(id)")

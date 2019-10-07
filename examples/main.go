@@ -16,7 +16,9 @@ func install(db *sql.DB) error {
 	department.AddColumn(new(dbs.Column).WithName("name").WithType(dbs.NVARCHAR).WithLength(20).IsNotNull())
 	department.AddColumn(new(dbs.Column).WithName("revenue").WithType(dbs.FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
 	department.AddColumn(new(dbs.Column).WithName("position").WithType(dbs.SMALLINT).IsNotNull().IsUnsigned().IsUnique())
-	department.AddPrimaryKey([]string{"id"})
+	department.AddPrimaryKey("id", "name")
+	department.AddIndex("name", "position")
+	department.AddIndex("id", "name", "position")
 
 	employee := new(dbs.Table).WithName("employee")
 	employee.AddColumn(new(dbs.Column).WithName("id").WithType(dbs.INT).IsNotNull().IsUnsigned().IsAutoIncrement())
@@ -25,7 +27,7 @@ func install(db *sql.DB) error {
 	employee.AddColumn(new(dbs.Column).WithName("valid").WithType(dbs.SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
 	employee.AddColumn(new(dbs.Column).WithName("age").WithType(dbs.SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
 
-	employee.AddPrimaryKey([]string{"id"})
+	employee.AddPrimaryKey("id")
 	employee.AddCheck("age < 50")
 	employee.AddForeignKey("department_id", "department(id)")
 
