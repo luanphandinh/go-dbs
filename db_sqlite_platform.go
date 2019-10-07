@@ -150,7 +150,7 @@ func (platform *dbSqlitePlatform) checkSchemaExistSQL(schema string) string {
 }
 
 func (platform *dbSqlitePlatform) checkSchemaHasTableSQL(schema string, table string) string {
-	return "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'"
+	return "SELECT name FROM sqlite_master WHERE type='table' AND name='" + platform.getSchemaAccessName(schema, table) + "'"
 }
 
 func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
@@ -158,7 +158,7 @@ func (platform *dbSqlitePlatform) getSchemaTablesSQL(schema string) string {
 }
 
 func (platform *dbSqlitePlatform) getTableColumnNamesSQL(schema string, table string) string {
-	return "SELECT name from pragma_table_info('" + table + "')"
+	return "SELECT name from pragma_table_info('" + platform.getSchemaAccessName(schema, table) + "')"
 }
 
 // cid         name        type        	notnull     dflt_value	pk
@@ -166,7 +166,7 @@ func (platform *dbSqlitePlatform) getTableColumnNamesSQL(schema string, table st
 // 0           id          INTEGER     	1                      	1
 // 1           name        NVARCHAR(20)	0           1          	0
 func (platform *dbSqlitePlatform) getTableColumnsSQL(schema string, table string) string {
-	return "PRAGMA table_info(" + table + ")"
+	return "PRAGMA table_info(" + platform.getSchemaAccessName(schema, table) + ")"
 }
 
 func (platform *dbSqlitePlatform) parseTableColumns(rows *sql.Rows) []*Column {

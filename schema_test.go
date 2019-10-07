@@ -27,7 +27,7 @@ func getSchema() *Schema {
 	department.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
 	department.AddColumn(new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
 	department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique())
-	department.AddPrimaryKey([]string{"id"})
+	department.AddPrimaryKey("id")
 	department.AddIndex("name", "position")
 	department.AddIndex("id", "position")
 
@@ -38,7 +38,7 @@ func getSchema() *Schema {
 	employee.AddColumn(new(Column).WithName("valid").WithType(SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
 	employee.AddColumn(new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
 
-	employee.AddPrimaryKey([]string{"id"})
+	employee.AddPrimaryKey("id")
 	employee.AddCheck("age < 50")
 	employee.AddForeignKey("department_id", "department(id)")
 
