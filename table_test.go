@@ -50,10 +50,10 @@ func prepareTestTable() *Table {
 	table := new(Table)
 	table.WithName("user").WithComment("The user table")
 	table.AddPrimaryKey("id")
-	table.AddColumn(id)
-	table.AddColumns([]*Column{subID, name, age})
+	table.AddColumns(id)
+	table.AddColumns(subID, name, age)
 	table.AddForeignKey("sub_id", "other_table(id)")
-	table.AddCheck("age > 50")
+	table.AddChecks("age > 50")
 
 	return table
 }
