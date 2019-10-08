@@ -75,6 +75,13 @@ func fetchTableColumnNames(schema string, table string) []string {
 	return columns
 }
 
+// @TODO: This func will install schema just like install
+// But run concurrently
+// Should be benchmark alongside with install to see which one is better
+func installConcurrent(schema *Schema) error {
+	return nil
+}
+
 // @TODO: This func is a real mess, need to clean up later.
 func install(schema *Schema) error {
 	createTableSQLs := make([]string, 0)

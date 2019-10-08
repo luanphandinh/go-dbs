@@ -11,9 +11,10 @@ func BenchmarkSequential(b *testing.B) {
 		_getPlatform(platform).getDBConnectionString(serverName, 3306, user, password, dbName),
 	)
 	SetPlatform(platform, db)
+	schema := getSchema()
 
 	for i := 0; i < b.N; i++ {
-		drop(getSchema())
-		install(getSchema())
+		drop(schema)
+		install(schema)
 	}
 }
