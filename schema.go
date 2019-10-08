@@ -22,16 +22,9 @@ func (schema *Schema) WithComment(comment string) *Schema {
 	return schema
 }
 
-// AddTable add defined table to schema
-func (schema *Schema) AddTable(table *Table) *Schema {
-	schema.tables = append(schema.tables, table)
-
-	return schema
-}
-
-// AddTables add a list of defined tables to schema
-func (schema *Schema) AddTables(tables []*Table) *Schema {
-	schema.tables = append(schema.tables, tables...)
+// AddTables add defined table to schema
+func (schema *Schema) AddTables(table ...*Table) *Schema {
+	schema.tables = append(schema.tables, table...)
 
 	return schema
 }

@@ -23,32 +23,38 @@ func getSchema() *Schema {
 	schema := new(Schema).WithName("company").WithComment("The Company Schema")
 
 	department := new(Table).WithName("department").WithComment("Departments of company")
-	department.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-	department.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
-	department.AddColumn(new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"))
-	department.AddColumn(new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique())
+	department.AddColumns(
+		new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement(),
+		new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull(),
+		new(Column).WithName("revenue").WithType(FLOAT).IsNotNull().IsUnsigned().WithDefault("1.01"),
+		new(Column).WithName("position").WithType(SMALLINT).IsNotNull().IsUnsigned().IsUnique(),
+	)
 	department.AddPrimaryKey("id")
 	department.AddIndex("name", "position")
 	department.AddIndex("id", "position")
 
 	employee := new(Table).WithName("employee")
-	employee.AddColumn(new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement())
-	employee.AddColumn(new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull())
-	employee.AddColumn(new(Column).WithName("department_id").WithType(INT).IsUnsigned())
-	employee.AddColumn(new(Column).WithName("valid").WithType(SMALLINT).WithDefault("1").WithComment("Indicate employee status"))
-	employee.AddColumn(new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"))
+	employee.AddColumns(
+		new(Column).WithName("id").WithType(INT).IsNotNull().IsUnsigned().IsAutoIncrement(),
+		new(Column).WithName("name").WithType(NVARCHAR).WithLength(20).IsNotNull(),
+		new(Column).WithName("department_id").WithType(INT).IsUnsigned(),
+		new(Column).WithName("valid").WithType(SMALLINT).WithDefault("1").WithComment("Indicate employee status"),
+		new(Column).WithName("age").WithType(SMALLINT).IsNotNull().IsUnsigned().AddCheck("age > 20"),
+	)
 
 	employee.AddPrimaryKey("id")
-	employee.AddCheck("age < 50")
+	employee.AddChecks("age < 50")
 	employee.AddForeignKey("department_id", "department(id)")
 
 	storage := new(Table).WithName("storage").WithComment("Storage for fun")
-	storage.AddColumn(new(Column).WithName("room").WithType(NVARCHAR).WithLength(50))
-	storage.AddColumn(new(Column).WithName("description").WithType(TEXT))
+	storage.AddColumns(new(Column).WithName("room").WithType(NVARCHAR).WithLength(50))
+	storage.AddColumns(new(Column).WithName("description").WithType(TEXT))
 
-	schema.AddTable(department)
-	schema.AddTable(employee)
-	schema.AddTable(storage)
+	schema.AddTables(
+		department,
+		employee,
+		storage,
+	)
 
 	return schema
 }
@@ -84,26 +90,26 @@ func TestSchemaInstall(t *testing.T) {
 	assertTrue(t, checkSchemaHasTableSQL(dbSchema.name, "storage"))
 	assertArrayStringEquals(
 		t,
-		[]string{"department", "employee" , "storage"},
-		 fetchTables(dbSchema.name),
+		[]string{"department", "employee", "storage"},
+		fetchTables(dbSchema.name),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "revenue", "position"},
-		 fetchTableColumnNames(dbSchema.name, "department"),
+		fetchTableColumnNames(dbSchema.name, "department"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"id", "name", "department_id", "valid", "age"},
-		 fetchTableColumnNames(dbSchema.name, "employee"),
+		fetchTableColumnNames(dbSchema.name, "employee"),
 	)
 
 	assertArrayStringEquals(
 		t,
 		[]string{"room", "description"},
-		 fetchTableColumnNames(dbSchema.name, "storage"),
+		fetchTableColumnNames(dbSchema.name, "storage"),
 	)
 
 	schemaDepartmentCols := dbSchema.tables[0].columns
@@ -129,7 +135,7 @@ func TestSchemaInstall(t *testing.T) {
 
 	// Migrate
 	employee := dbSchema.GetTable("employee")
-	employee.AddColumn(new(Column).WithName("health_check").WithType(SMALLINT))
+	employee.AddColumns(new(Column).WithName("health_check").WithType(SMALLINT))
 	assertNotHasError(t, Install(dbSchema))
 
 	assertTrue(t, checkSchemaExists(dbSchema.name))

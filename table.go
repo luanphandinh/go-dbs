@@ -44,32 +44,17 @@ func (table *Table) AddPrimaryKey(key ...string) *Table {
 	return table
 }
 
-// AddColumn add defined column into table
-func (table *Table) AddColumn(col *Column) *Table {
-	table.columns = append(table.columns, col)
-
-	return table
-}
-
-// AddColumns add a list of defined columns into table
-func (table *Table) AddColumns(cols []*Column) *Table {
-	table.columns = append(table.columns, cols...)
-
-	return table
-}
-
-// AddCheck to table
-// eg: table.AddCheck("age > 10")
-func (table *Table) AddCheck(check string) *Table {
-	table.checks = append(table.checks, check)
+// AddColumns add defined column into table
+func (table *Table) AddColumns(col ...*Column) *Table {
+	table.columns = append(table.columns, col...)
 
 	return table
 }
 
 // AddChecks to table
-// eg: table.AddCheck([]string{"age > 10", "age < 100"})
-func (table *Table) AddChecks(checks []string) *Table {
-	table.checks = append(table.checks, checks...)
+// eg: table.AddChecks("age > 10")
+func (table *Table) AddChecks(check ...string) *Table {
+	table.checks = append(table.checks, check...)
 
 	return table
 }
