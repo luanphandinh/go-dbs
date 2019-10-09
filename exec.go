@@ -1,6 +1,9 @@
 package dbs
 
-import "log"
+import (
+	"log"
+	"sync"
+)
 
 func checkSchemaExists(schema string) bool {
 	command := _platform().checkSchemaExistSQL(schema)
@@ -79,7 +82,105 @@ func fetchTableColumnNames(schema string, table string) []string {
 // But run concurrently
 // Should be benchmark alongside with install to see which one is better
 func installConcurrent(schema *Schema) error {
-	return nil
+	var wg sync.WaitGroup
+	createSchemaSQL := _platform().buildSchemaCreateSQL(schema)
+
+	wg.Add(2)
+	go func(wg *sync.WaitGroup) {
+		if checkSchemaExists(schema.name) {
+			createSchemaSQL = ""
+		}
+		wg.Done()
+	}(&wg)
+
+	var existedTables []string
+	go func(wg *sync.WaitGroup) {
+		existedTables = fetchTables(schema.name)
+		wg.Done()
+	}(&wg)
+
+	wg.Wait()
+
+	alterTableSQLs := make([]string, 0)
+	createTableSQLs := make([]string, 0)
+	createIndexSQLs := make([]string, 0)
+
+	var mutex = &sync.Mutex{}
+	for _, table := range schema.tables {
+		if inStringArray(table.name, existedTables) {
+			wg.Add(1)
+			go func(table *Table, wg *sync.WaitGroup) {
+				cols := fetchTableColumnNames(schema.name, table.name)
+				mutex.Lock()
+				for _, col := range table.columns {
+					if inStringArray(col.name, cols) {
+						continue
+					}
+					alterTableSQLs = append(alterTableSQLs, _platform().buildTableAddColumnSQL(schema.name, table.name, col))
+				}
+				mutex.Unlock()
+
+				wg.Done()
+			}(table, &wg)
+		} else {
+			createTableSQLs = append(createTableSQLs, _platform().buildTableCreateSQL(schema.name, table))
+			createIndexSQLs = append(createIndexSQLs, _platform().getTableIndexesDeclarationSQL(schema.name, table.name, table.indexes)...)
+		}
+	}
+
+	wg.Wait()
+	tx, err := _db().Begin()
+	if err != nil {
+		return err
+	}
+
+	if createSchemaSQL != "" {
+		if _, err := tx.Exec(createSchemaSQL); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	for _, createTableSQL := range createTableSQLs {
+		wg.Add(1)
+		go func(createTableSQL string, wg *sync.WaitGroup) {
+			if _, err := tx.Exec(createTableSQL); err != nil {
+				tx.Rollback()
+				log.Fatal(err.Error())
+			}
+			wg.Done()
+		}(createTableSQL, &wg)
+	}
+
+	wg.Wait()
+
+	for _, alterTableSQL := range alterTableSQLs {
+		wg.Add(1)
+		go func(alterTableSQL string, wg *sync.WaitGroup) {
+			if _, err := tx.Exec(alterTableSQL); err != nil {
+				tx.Rollback()
+				log.Fatal(err.Error())
+			}
+			wg.Done()
+		}(alterTableSQL, &wg)
+	}
+
+	for _, createIndexSQL := range createIndexSQLs {
+		wg.Add(1)
+		go func(createIndexSQL string, wg *sync.WaitGroup) {
+			if _, err := tx.Exec(createIndexSQL); err != nil {
+				tx.Rollback()
+				log.Fatal(err.Error())
+			}
+			wg.Done()
+		}(createIndexSQL, &wg)
+	}
+
+	wg.Wait()
+
+	err = tx.Commit()
+
+	return err
 }
 
 // @TODO: This func is a real mess, need to clean up later.
@@ -148,6 +249,30 @@ func install(schema *Schema) error {
 }
 
 func drop(schema *Schema) error {
+	tx, err := _db().Begin()
+	if err != nil {
+		return err
+	}
+
+	for i := len(schema.tables) - 1; i >= 0; i-- {
+		if _, err := tx.Exec(_platform().getTableDropSQL(schema.name, schema.tables[i].name)); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	if schemaDrop := _platform().getSchemaDropDeclarationSQL(schema.name); schemaDrop != "" {
+		if _, err := tx.Exec(schemaDrop); err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	return err
+}
+
+func dropConcurrent(schema *Schema) error {
 	tx, err := _db().Begin()
 	if err != nil {
 		return err
