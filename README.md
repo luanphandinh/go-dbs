@@ -1,9 +1,20 @@
 # go-dbs [![Build Status](https://travis-ci.org/luanphandinh/go-dbs.svg?branch=master)](https://travis-ci.org/luanphandinh/go-dbs)
 ```
-Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
+Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver).
 ```
+## Contents
+* [Schema](#schema)
+    * [Set platform](#1-set-platform)   
+    * [Define schema](#2-define-schema)
+    * [Install](#3-install)
+* [Query builder](#query-builder)
+    * [Select](#query-builder-select)
+* [Issues](#issues)
+* [TODO](#todo)
 
-# Usage
+<a name="schema"></a>
+### Schema
+<a name="1-set-platform"></a>
 #### 1. Set platform:
 ```go
     // supported platforms: "sqlite3", "mysql", "postgres", "sqlserver"
@@ -11,7 +22,7 @@ Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
     dbs.SetPlatform("sqlite3", db)
 
 ```
-
+<a name="2-define-schema"></a>
 #### 2. Define schema
 ```go
     schema := new(dbs.Schema).WithName("company").WithComment("The Company Schema")
@@ -51,6 +62,7 @@ Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
     )
 ```
 
+<a name="3-install"></a>
 #### 3. Install
 ```go
     dbs.Install(dbSchema)
@@ -59,12 +71,27 @@ Manage databse(sqlite3, mysql, postgres, sqlserver) schema.
 * Since Database and Schema a mostly the same stuff in MySQL, we will just care about tables.
 * Schema name will be used by `postgres` and `sqlserver`.
 
+<a name="query-builder"></a>
+### Query Builder
+
+<a name="query-builder-select"></a>
+#### Select
+```go
+employeeQuery := new(QueryBuilder).OnSchema("company").
+    Select("valid", "name", "age").
+    From("employee").
+    BuildQuery().
+    GetQuery()
+```
+
+<a name="issues"></a>
 # ISSUES
 * Please refer your data types as your database platform
 * Currently `go-dbs` *doest not support* centralized data types across platforms
 * Any error or failure will resulted int `log.Fatal()` since the schema installation is important,
 so thing need to be failed as soon as possible 
 
+<a name="todo"></a>
 # TODO
 * Query Builder
 * Support Migrate Schema
