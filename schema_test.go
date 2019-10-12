@@ -190,13 +190,24 @@ func TestSchemaWorks(t *testing.T) {
 	var valid, age, position int
 	var name string
 	var revenue float32
-	err = db.QueryRow(fmt.Sprintf("select valid, name, age from %s", employee)).Scan(&valid, &name, &age)
+	employeeQuery := new(QueryBuilder).OnSchema("company").
+		Select("valid", "name", "age").
+		From("employee").
+		BuildQuery().
+		GetQuery()
+
+	err = db.QueryRow(employeeQuery).Scan(&valid, &name, &age)
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Luan Phan", name)
 	assertIntEquals(t, 22, age)
 	assertIntEquals(t, 1, valid)
 
-	err = db.QueryRow(fmt.Sprintf("select name, position, revenue from %s", department)).Scan(&name, &position, &revenue)
+	departmentQuery := new(QueryBuilder).OnSchema("company").
+		Select("name, position, revenue").
+		From("department").
+		GetQuery()
+
+	err = db.QueryRow(departmentQuery).Scan(&name, &position, &revenue)
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Luan Phan Corps", name)
 	assertIntEquals(t, 1, position)
