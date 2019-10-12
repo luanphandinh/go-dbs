@@ -3,21 +3,19 @@ package dbs
 import "testing"
 
 func TestQueryBuilder_BuildQuery(t *testing.T) {
-	query := new(QueryBuilder).
+	SetPlatform(sqlite3, nil)
+	query := NewQueryBuilder().
 		OnSchema("company").
 		Select("*", "last_name as lname", "fname").
-		From("employee")
+		From("employee").
+		Where("employee.id = %d", 10).
+		AndWhere("employee.name = '%s'", "Luan Phan")
 
-	SetPlatform(mssql, nil)
-	assertStringEquals(t, "SELECT *, last_name as lname, fname \nFROM company.employee", query.buildQuery())
-
-	SetPlatform(postgres, nil)
-	assertStringEquals(t, "SELECT *, last_name as lname, fname \nFROM company.employee", query.buildQuery())
-
-	SetPlatform(sqlite3, nil)
-	assertStringEquals(t, "SELECT *, last_name as lname, fname \nFROM employee", query.buildQuery())
-
-	SetPlatform(mysql, nil)
-	assertStringEquals(t, "SELECT *, last_name as lname, fname \nFROM employee", query.buildQuery())
-	assertStringEquals(t, "SELECT * \nFROM employee", query.Select("*").buildQuery())
+	assertStringEquals(t,
+		`SELECT *, last_name as lname, fname 
+FROM employee 
+WHERE employee.id = 10
+AND employee.name = 'Luan Phan'`,
+		query.buildQuery(),
+	)
 }

@@ -1,16 +1,40 @@
 package dbs
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 )
 
 type QueryBuilder struct {
-	picks  []string
-	schema string
-	from   string
-	query  string
-	built  bool
-	errs   []string
+	schema     string
+	from       string
+	selections []string
+	// This is all where clauses are put.
+	filter     *Filter
+
+	query string
+	built bool
+	errs  []error
+}
+
+// Filter is used as a placeholder for all where clauses and their conditions.
+type Filter struct {
+	action  string // AND | OR
+	clauses []*Clause
+}
+
+// Clause is a simple expression with args.
+type Clause struct {
+	expression string
+	args       []interface{}
+}
+
+func NewQueryBuilder() *QueryBuilder {
+	builder := new(QueryBuilder)
+	builder.filter = new(Filter)
+
+	return builder
 }
 
 // OnSchema specify schema that query will be executed on
@@ -29,8 +53,8 @@ func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 //  		Select("something as something_else")
 // Apply only second Select() called
 func (builder *QueryBuilder) Select(context ...string) *QueryBuilder {
-	builder.picks = make([]string, 0)
-	builder.picks = append(builder.picks, context...)
+	builder.selections = make([]string, 0)
+	builder.selections = append(builder.selections, context...)
 
 	return builder
 }
@@ -42,6 +66,45 @@ func (builder *QueryBuilder) From(context string) *QueryBuilder {
 	builder.from = strings.Trim(context, " ")
 
 	return builder
+}
+
+func (filter *Filter) add(clauses ...*Clause) {
+	filter.clauses = append(filter.clauses, clauses...)
+}
+
+func (filter *Filter) setAction(action string) error {
+	filter.action = action
+
+	return nil
+}
+
+
+// Where
+// Select, Update condition
+func (builder *QueryBuilder) Where(clause string, args ...interface{}) *QueryBuilder {
+	builder.filter.add(&Clause{clause, args})
+
+	return builder
+}
+
+// AndWhere
+// Join where statement
+func (builder *QueryBuilder) AndWhere(clause string, args ...interface{}) *QueryBuilder {
+	if err := builder.filter.setAction("AND"); err != nil {
+		builder.logError(err)
+	}
+
+	return builder.Where(clause, args...)
+}
+
+// OrWhere
+// Join where statement
+func (builder *QueryBuilder) OrWhere(clause string, args ...interface{}) *QueryBuilder {
+	if err := builder.filter.setAction("OR"); err != nil {
+		builder.logError(err)
+	}
+
+	return builder.Where(clause, args...)
 }
 
 // BuildQuery
@@ -61,8 +124,10 @@ func (builder *QueryBuilder) GetQuery() string {
 	return builder.query
 }
 
-func (builder *QueryBuilder) logError(err string) *QueryBuilder {
-	builder.errs = append(builder.errs, err)
+func (builder *QueryBuilder) logError(err error) *QueryBuilder {
+	if err != nil {
+		builder.errs = append(builder.errs, err)
+	}
 
 	return builder
 }
@@ -71,17 +136,29 @@ func (builder *QueryBuilder) logError(err string) *QueryBuilder {
 func (builder *QueryBuilder) buildQuery() string {
 	declarations := make([]string, 0)
 	declarations = append(declarations, "SELECT")
-	if len(builder.picks) == 0 {
+	if len(builder.selections) == 0 {
 		declarations = append(declarations, "*")
 	} else {
-		declarations = append(declarations, concatStrings(builder.picks, ", "))
+		declarations = append(declarations, concatStrings(builder.selections, ", "))
 	}
 
 	if builder.from == "" {
-		builder.logError("no table provided, please use From()")
+		builder.logError(errors.New("no table provided, please use From()"))
+	} else {
+		declarations = append(declarations, "\nFROM")
+		declarations = append(declarations, _platform().getSchemaAccessName(builder.schema, builder.from))
 	}
-	declarations = append(declarations, "\nFROM")
-	declarations = append(declarations, _platform().getSchemaAccessName(builder.schema, builder.from))
+
+	if clauses := builder.filter.clauses; len(clauses) > 0 {
+		declarations = append(declarations, "\nWHERE")
+		whereClauses := make([]string, 0)
+
+		for _, clause := range clauses {
+			whereClauses = append(whereClauses, fmt.Sprintf(clause.expression, clause.args...))
+		}
+
+		declarations = append(declarations, concatStrings(whereClauses, "\n" + builder.filter.action + " "))
+	}
 
 	return concatStrings(declarations, " ")
 }
