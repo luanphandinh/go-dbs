@@ -1,7 +1,6 @@
 package dbs
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -11,7 +10,7 @@ type QueryBuilder struct {
 	from       string
 	selections []string
 	// This is all where clauses are put.
-	filter     *Filter
+	filter *Filter
 
 	query string
 	built bool
@@ -78,9 +77,9 @@ func (filter *Filter) setAction(action string) error {
 	return nil
 }
 
-
 // Where
-// Select, Update condition
+// eg:
+// builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(clause string, args ...interface{}) *QueryBuilder {
 	builder.filter.add(&Clause{clause, args})
 
@@ -88,7 +87,9 @@ func (builder *QueryBuilder) Where(clause string, args ...interface{}) *QueryBui
 }
 
 // AndWhere
-// Join where statement
+// builder.
+// 	Where("name = '%s'", "Luan Phan").
+//	AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(clause string, args ...interface{}) *QueryBuilder {
 	if err := builder.filter.setAction("AND"); err != nil {
 		builder.logError(err)
@@ -135,30 +136,40 @@ func (builder *QueryBuilder) logError(err error) *QueryBuilder {
 // build SQL Query declaration
 func (builder *QueryBuilder) buildQuery() string {
 	declarations := make([]string, 0)
-	declarations = append(declarations, "SELECT")
+	declarations = append(declarations, builder.selectClause())
+	declarations = append(declarations, builder.fromTableClause())
+	declarations = append(declarations, builder.whereClauses())
+
+	return concatStrings(declarations, "\n")
+}
+
+func (builder *QueryBuilder) selectClause() string {
 	if len(builder.selections) == 0 {
-		declarations = append(declarations, "*")
-	} else {
-		declarations = append(declarations, concatStrings(builder.selections, ", "))
+		return "SELECT *"
 	}
 
-	if builder.from == "" {
-		builder.logError(errors.New("no table provided, please use From()"))
-	} else {
-		declarations = append(declarations, "\nFROM")
-		declarations = append(declarations, _platform().getSchemaAccessName(builder.schema, builder.from))
+	return "SELECT " + concatStrings(builder.selections, ", ")
+}
+
+func (builder *QueryBuilder) fromTableClause() string {
+	if builder.from != "" {
+		return "FROM " + _platform().getSchemaAccessName(builder.schema, builder.from)
 	}
 
-	if clauses := builder.filter.clauses; len(clauses) > 0 {
-		declarations = append(declarations, "\nWHERE")
-		whereClauses := make([]string, 0)
+	return ""
+}
+
+// all where clause
+func (builder *QueryBuilder) whereClauses() string {
+	if clauses := builder.filter.clauses; len(clauses) > 0 && builder.from != "" {
+		where := make([]string, 0)
 
 		for _, clause := range clauses {
-			whereClauses = append(whereClauses, fmt.Sprintf(clause.expression, clause.args...))
+			where = append(where, fmt.Sprintf(clause.expression, clause.args...))
 		}
 
-		declarations = append(declarations, concatStrings(whereClauses, "\n" + builder.filter.action + " "))
+		return "WHERE " + concatStrings(where, "\n"+builder.filter.action+" ")
 	}
 
-	return concatStrings(declarations, " ")
+	return ""
 }

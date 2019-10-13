@@ -12,8 +12,8 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		AndWhere("employee.name = '%s'", "Luan Phan")
 
 	assertStringEquals(t,
-		`SELECT *, last_name as lname, fname 
-FROM employee 
+		`SELECT *, last_name as lname, fname
+FROM employee
 WHERE employee.id = 10
 AND employee.name = 'Luan Phan'`,
 		query.buildQuery(),
