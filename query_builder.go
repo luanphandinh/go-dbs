@@ -5,6 +5,15 @@ import (
 	"strings"
 )
 
+const (
+	_SELECT   = "SELECT"
+	_FROM     = "FROM"
+	_WHERE    = "WHERE"
+	_AND      = "AND"
+	_OR       = "OR"
+	_ORDER_BY = "ORDER BY"
+)
+
 // QueryBuilder create query builder
 type QueryBuilder struct {
 	schema  string
@@ -29,7 +38,7 @@ type clause struct {
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
 	builder.pick = &clause{
-		prefix:     "SELECT",
+		prefix:     _SELECT,
 		expression: "*",
 	}
 
@@ -52,7 +61,7 @@ func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 // Apply only second Select() called
 func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 	builder.pick = &clause{
-		prefix:     "SELECT",
+		prefix:     _SELECT,
 		expression: concatStrings(selections, ", "),
 	}
 
@@ -64,7 +73,7 @@ func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 // 		new(QueryBuilder).Select(..).From("user as u")
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	builder.from = &clause{
-		prefix: "FROM",
+		prefix: _FROM,
 		// @TODO: temporary hack for DB with schema like postgresql, mssql
 		expression: _platform().getSchemaAccessName(builder.schema, expression),
 	}
@@ -76,7 +85,7 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 // ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
-		prefix:     "WHERE",
+		prefix:     _WHERE,
 		expression: expression,
 		args:       args,
 		postfix:    "",
@@ -90,7 +99,7 @@ func (builder *QueryBuilder) Where(expression string, args ...interface{}) *Quer
 // ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
-		prefix:     "AND",
+		prefix:     _AND,
 		expression: expression,
 		args:       args,
 		postfix:    "",
@@ -104,7 +113,7 @@ func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *Q
 // ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
-		prefix:     "OR",
+		prefix:     _OR,
 		expression: expression,
 		args:       args,
 		postfix:    "",
@@ -118,7 +127,7 @@ func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *Qu
 // ex: builder.OrderBy("id ASC", "name")
 func (builder *QueryBuilder) OrderBy(expression ...string) *QueryBuilder {
 	filter := &clause{
-		prefix:     "ORDER BY",
+		prefix:     _ORDER_BY,
 		expression: concatStrings(expression, ", "),
 		args:       nil,
 		postfix:    "",
