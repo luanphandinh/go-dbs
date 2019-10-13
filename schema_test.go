@@ -195,7 +195,6 @@ func TestSchemaWorks(t *testing.T) {
 		From("employee").
 		Where("id > %d", 0).
 		AndWhere("name = '%s'", "Luan Phan").
-		BuildQuery().
 		GetQuery()
 
 	err = db.QueryRow(employeeQuery).Scan(&valid, &name, &age)

@@ -5,28 +5,30 @@ import (
 	"strings"
 )
 
+// QueryBuilder create query builder
 type QueryBuilder struct {
 	schema  string
-	pick    *Clause
-	from    *Clause
-	filters []*Clause
+	pick    *clause
+	from    *clause
+	filters []*clause
 
 	query string
 	built bool
 	errs  []error
 }
 
-// Clause is a simple expression with args.
-type Clause struct {
+// clause is a simple expression with args.
+type clause struct {
 	prefix     string
 	expression string
 	args       []interface{}
 	postfix    string
 }
 
+// NewQueryBuilder make new(QueryBuilder) along with some default config
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
-	builder.pick = &Clause{
+	builder.pick = &clause{
 		prefix:     "SELECT",
 		expression: "*",
 	}
@@ -42,15 +44,14 @@ func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 	return builder
 }
 
-// Select
-// specify one or more columns to be query
+// Select specify one or more columns to be query
 // eg:
 //  	new(QueryBuilder).
 //   		Select("*", "something as something_else").
 //  		Select("something as something_else")
 // Apply only second Select() called
 func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
-	builder.pick = &Clause{
+	builder.pick = &clause{
 		prefix:     "SELECT",
 		expression: concatStrings(selections, ", "),
 	}
@@ -62,7 +63,7 @@ func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 // new(QueryBuilder).Select(..).From("user")
 // new(QueryBuilder).Select(..).From("user as u")
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
-	builder.from = &Clause{
+	builder.from = &clause{
 		prefix:     "FROM",
 		// @TODO: temporary hack for DB with schema like postgresql, mssql
 		expression: _platform().getSchemaAccessName(builder.schema, expression),
@@ -71,63 +72,54 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	return builder
 }
 
-// Where
+// Where apply filter to query
 // eg:
 // builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
+	filter := &clause{
 		prefix:     "WHERE",
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
-// AndWhere
-// builder.
-// 	Where("name = '%s'", "Luan Phan").
-//	AndWhere("age > %d", 10)
+// AndWhere chaining filter on query
+// builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
+	filter := &clause{
 		prefix:     "AND",
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
-// OrWhere
-// Join where statement
+// OrWhere chaining filter on query
+// builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
+	filter := &clause{
 		prefix:     "OR",
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
-	return builder
-}
-
-// BuildQuery
-// use GetQuery to get SQL declaration
-func (builder *QueryBuilder) BuildQuery() *QueryBuilder {
-	builder.query = builder.buildQuery()
-	builder.built = true
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
 // GetQuery returns a built query
 func (builder *QueryBuilder) GetQuery() string {
 	if ! builder.built {
-		builder.BuildQuery()
+		builder.query = builder.buildQuery()
+		builder.built = true
 	}
 
 	return builder.query
@@ -155,7 +147,7 @@ func (builder *QueryBuilder) buildQuery() string {
 	return concatStrings(declarations, "\n")
 }
 
-func (clause *Clause) build() string {
+func (clause *clause) build() string {
 	partials := make([]string, 0)
 	partials = append(partials, clause.prefix, clause.expression, clause.postfix)
 	expression := concatStrings(partials, " ")
