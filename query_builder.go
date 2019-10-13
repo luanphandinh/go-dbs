@@ -37,7 +37,7 @@ func NewQueryBuilder() *QueryBuilder {
 }
 
 // OnSchema specify schema that query will be executed on
-// new(QueryBuilder).OnSchema("some_schema")
+// ex: new(QueryBuilder).OnSchema("some_schema")
 func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 	builder.schema = strings.Trim(schema, " ")
 
@@ -60,11 +60,11 @@ func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 }
 
 // From specify table that query will be executed on
-// new(QueryBuilder).Select(..).From("user")
-// new(QueryBuilder).Select(..).From("user as u")
+// ex: 	new(QueryBuilder).Select(..).From("user")
+// 		new(QueryBuilder).Select(..).From("user as u")
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	builder.from = &clause{
-		prefix:     "FROM",
+		prefix: "FROM",
 		// @TODO: temporary hack for DB with schema like postgresql, mssql
 		expression: _platform().getSchemaAccessName(builder.schema, expression),
 	}
@@ -73,8 +73,7 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 }
 
 // Where apply filter to query
-// eg:
-// builder.Where("name = '%s'", "Luan Phan")
+// ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
 		prefix:     "WHERE",
@@ -88,7 +87,7 @@ func (builder *QueryBuilder) Where(expression string, args ...interface{}) *Quer
 }
 
 // AndWhere chaining filter on query
-// builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
+// ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
 		prefix:     "AND",
@@ -102,12 +101,26 @@ func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *Q
 }
 
 // OrWhere chaining filter on query
-// builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
+// ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
 	filter := &clause{
 		prefix:     "OR",
 		expression: expression,
 		args:       args,
+		postfix:    "",
+	}
+
+	builder.filters = append(builder.filters, filter)
+	return builder
+}
+
+// OrderBy apply order in query
+// ex: builder.OrderBy("id ASC", "name")
+func (builder *QueryBuilder) OrderBy(expression ...string) *QueryBuilder {
+	filter := &clause{
+		prefix:     "ORDER BY",
+		expression: concatStrings(expression, ", "),
+		args:       nil,
 		postfix:    "",
 	}
 
