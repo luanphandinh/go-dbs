@@ -190,9 +190,11 @@ func TestSchemaWorks(t *testing.T) {
 	var valid, age, position int
 	var name string
 	var revenue float32
-	employeeQuery := new(QueryBuilder).OnSchema("company").
+	employeeQuery := NewQueryBuilder().OnSchema("company").
 		Select("valid", "name", "age").
 		From("employee").
+		Where("id > %d", 0).
+		AndWhere("name = '%s'", "Luan Phan").
 		BuildQuery().
 		GetQuery()
 
@@ -202,7 +204,7 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 22, age)
 	assertIntEquals(t, 1, valid)
 
-	departmentQuery := new(QueryBuilder).OnSchema("company").
+	departmentQuery := NewQueryBuilder().OnSchema("company").
 		Select("name, position, revenue").
 		From("department").
 		GetQuery()

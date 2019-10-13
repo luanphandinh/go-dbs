@@ -9,6 +9,7 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Install](#3-install)
 * [Query builder](#query-builder)
     * [Select](#query-builder-select)
+    * [Where](#query-builder-where)
 * [Issues](#issues)
 * [TODO](#todo)
 
@@ -80,6 +81,38 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
 employeeQuery := new(QueryBuilder).OnSchema("company").
     Select("valid", "name", "age").
     From("employee").
+    BuildQuery().
+    GetQuery()
+```
+<a name="query-builder-where"></a>
+#### Where
+* Single where
+```go
+query = NewQueryBuilder().
+    OnSchema("company").
+    Select("*").
+    From("employee").
+    Where("(id = %d)", 1)
+```
+
+* AndWhere | OrWhere
+```go
+NewQueryBuilder().OnSchema("company").
+    Select("valid", "name", "age").
+    From("employee").
+    Where("id = %d", 1).
+    AndWhere("name = '%s'", "Luan Phan"). // OrWhere("name = '%s'", "Luan Phan").
+    BuildQuery().
+    GetQuery()
+```
+
+* Mixed where query
+```go
+NewQueryBuilder().
+    OnSchema("company").
+    From("employee").
+    Where("(id = %d AND name = '%s')", 1, "Luan Phan").
+    OrWhere("department_id = %d", 1).
     BuildQuery().
     GetQuery()
 ```
