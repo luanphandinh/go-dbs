@@ -64,7 +64,8 @@ func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	builder.from = &Clause{
 		prefix:     "FROM",
-		expression: expression,
+		// @TODO: temporary hack for DB with schema like postgresql, mssql
+		expression: _platform().getSchemaAccessName(builder.schema, expression),
 	}
 
 	return builder

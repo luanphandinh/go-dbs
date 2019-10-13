@@ -193,7 +193,7 @@ func TestSchemaWorks(t *testing.T) {
 	employeeQuery := NewQueryBuilder().OnSchema("company").
 		Select("valid", "name", "age").
 		From("employee").
-		Where("id = %d", 1).
+		Where("id > %d", 0).
 		AndWhere("name = '%s'", "Luan Phan").
 		BuildQuery().
 		GetQuery()
