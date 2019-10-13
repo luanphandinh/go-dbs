@@ -18,4 +18,18 @@ WHERE employee.id = 10
 AND employee.name = 'Luan Phan'`,
 		query.buildQuery(),
 	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		From("employee").
+		Where("(id = %d AND name = '%s')", 1, "Luan Phan").
+		OrWhere("department_id = %d", 1)
+
+	assertStringEquals(t,
+		`SELECT *
+FROM employee
+WHERE (id = 1 AND name = 'Luan Phan')
+OR department_id = 1`,
+		query.buildQuery(),
+	)
 }

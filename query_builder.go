@@ -6,32 +6,30 @@ import (
 )
 
 type QueryBuilder struct {
-	schema     string
-	from       string
-	selections []string
-	// This is all where clauses are put.
-	filter *Filter
+	schema  string
+	pick    *Clause
+	from    *Clause
+	filters []*Clause
 
 	query string
 	built bool
 	errs  []error
 }
 
-// Filter is used as a placeholder for all where clauses and their conditions.
-type Filter struct {
-	action  string // AND | OR
-	clauses []*Clause
-}
-
 // Clause is a simple expression with args.
 type Clause struct {
+	prefix     string
 	expression string
 	args       []interface{}
+	postfix    string
 }
 
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
-	builder.filter = new(Filter)
+	builder.pick = &Clause{
+		prefix:     "SELECT",
+		expression: "*",
+	}
 
 	return builder
 }
@@ -51,9 +49,11 @@ func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 //   		Select("*", "something as something_else").
 //  		Select("something as something_else")
 // Apply only second Select() called
-func (builder *QueryBuilder) Select(context ...string) *QueryBuilder {
-	builder.selections = make([]string, 0)
-	builder.selections = append(builder.selections, context...)
+func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
+	builder.pick = &Clause{
+		prefix:     "SELECT",
+		expression: concatStrings(selections, ", "),
+	}
 
 	return builder
 }
@@ -61,28 +61,27 @@ func (builder *QueryBuilder) Select(context ...string) *QueryBuilder {
 // From specify table that query will be executed on
 // new(QueryBuilder).Select(..).From("user")
 // new(QueryBuilder).Select(..).From("user as u")
-func (builder *QueryBuilder) From(context string) *QueryBuilder {
-	builder.from = strings.Trim(context, " ")
+func (builder *QueryBuilder) From(expression string) *QueryBuilder {
+	builder.from = &Clause{
+		prefix:     "FROM",
+		expression: expression,
+	}
 
 	return builder
-}
-
-func (filter *Filter) add(clauses ...*Clause) {
-	filter.clauses = append(filter.clauses, clauses...)
-}
-
-func (filter *Filter) setAction(action string) error {
-	filter.action = action
-
-	return nil
 }
 
 // Where
 // eg:
 // builder.Where("name = '%s'", "Luan Phan")
-func (builder *QueryBuilder) Where(clause string, args ...interface{}) *QueryBuilder {
-	builder.filter.add(&Clause{clause, args})
+func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
+	clause := &Clause{
+		prefix:     "WHERE",
+		expression: expression,
+		args:       args,
+		postfix:    "",
+	}
 
+	builder.filters = append(builder.filters, clause)
 	return builder
 }
 
@@ -90,22 +89,30 @@ func (builder *QueryBuilder) Where(clause string, args ...interface{}) *QueryBui
 // builder.
 // 	Where("name = '%s'", "Luan Phan").
 //	AndWhere("age > %d", 10)
-func (builder *QueryBuilder) AndWhere(clause string, args ...interface{}) *QueryBuilder {
-	if err := builder.filter.setAction("AND"); err != nil {
-		builder.logError(err)
+func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
+	clause := &Clause{
+		prefix:     "AND",
+		expression: expression,
+		args:       args,
+		postfix:    "",
 	}
 
-	return builder.Where(clause, args...)
+	builder.filters = append(builder.filters, clause)
+	return builder
 }
 
 // OrWhere
 // Join where statement
-func (builder *QueryBuilder) OrWhere(clause string, args ...interface{}) *QueryBuilder {
-	if err := builder.filter.setAction("OR"); err != nil {
-		builder.logError(err)
+func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
+	clause := &Clause{
+		prefix:     "OR",
+		expression: expression,
+		args:       args,
+		postfix:    "",
 	}
 
-	return builder.Where(clause, args...)
+	builder.filters = append(builder.filters, clause)
+	return builder
 }
 
 // BuildQuery
@@ -136,40 +143,25 @@ func (builder *QueryBuilder) logError(err error) *QueryBuilder {
 // build SQL Query declaration
 func (builder *QueryBuilder) buildQuery() string {
 	declarations := make([]string, 0)
-	declarations = append(declarations, builder.selectClause())
-	declarations = append(declarations, builder.fromTableClause())
-	declarations = append(declarations, builder.whereClauses())
+	declarations = append(declarations, builder.pick.build())
+	if from := builder.from; from != nil {
+		declarations = append(declarations, builder.from.build())
+		for _, filter := range builder.filters {
+			declarations = append(declarations, filter.build())
+		}
+	}
 
 	return concatStrings(declarations, "\n")
 }
 
-func (builder *QueryBuilder) selectClause() string {
-	if len(builder.selections) == 0 {
-		return "SELECT *"
+func (clause *Clause) build() string {
+	partials := make([]string, 0)
+	partials = append(partials, clause.prefix, clause.expression, clause.postfix)
+	expression := concatStrings(partials, " ")
+
+	if len(clause.args) > 0 {
+		return fmt.Sprintf(expression, clause.args...)
 	}
 
-	return "SELECT " + concatStrings(builder.selections, ", ")
-}
-
-func (builder *QueryBuilder) fromTableClause() string {
-	if builder.from != "" {
-		return "FROM " + _platform().getSchemaAccessName(builder.schema, builder.from)
-	}
-
-	return ""
-}
-
-// all where clause
-func (builder *QueryBuilder) whereClauses() string {
-	if clauses := builder.filter.clauses; len(clauses) > 0 && builder.from != "" {
-		where := make([]string, 0)
-
-		for _, clause := range clauses {
-			where = append(where, fmt.Sprintf(clause.expression, clause.args...))
-		}
-
-		return "WHERE " + concatStrings(where, "\n"+builder.filter.action+" ")
-	}
-
-	return ""
+	return expression
 }
