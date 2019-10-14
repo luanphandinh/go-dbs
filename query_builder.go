@@ -2,32 +2,44 @@ package dbs
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
+const (
+	_SELECT   = "SELECT"
+	_FROM     = "FROM"
+	_WHERE    = "WHERE"
+	_AND      = "AND"
+	_OR       = "OR"
+	_ORDER_BY = "ORDER BY"
+)
+
+// QueryBuilder create query builder
 type QueryBuilder struct {
 	schema  string
-	pick    *Clause
-	from    *Clause
-	filters []*Clause
+	pick    *clause
+	from    *clause
+	filters []*clause
 
 	query string
 	built bool
 	errs  []error
 }
 
-// Clause is a simple expression with args.
-type Clause struct {
+// clause is a simple expression with args.
+type clause struct {
 	prefix     string
 	expression string
 	args       []interface{}
 	postfix    string
 }
 
+// NewQueryBuilder make new(QueryBuilder) along with some default config
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
-	builder.pick = &Clause{
-		prefix:     "SELECT",
+	builder.pick = &clause{
+		prefix:     _SELECT,
 		expression: "*",
 	}
 
@@ -35,23 +47,22 @@ func NewQueryBuilder() *QueryBuilder {
 }
 
 // OnSchema specify schema that query will be executed on
-// new(QueryBuilder).OnSchema("some_schema")
+// ex: new(QueryBuilder).OnSchema("some_schema")
 func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 	builder.schema = strings.Trim(schema, " ")
 
 	return builder
 }
 
-// Select
-// specify one or more columns to be query
+// Select specify one or more columns to be query
 // eg:
 //  	new(QueryBuilder).
 //   		Select("*", "something as something_else").
 //  		Select("something as something_else")
 // Apply only second Select() called
 func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
-	builder.pick = &Clause{
-		prefix:     "SELECT",
+	builder.pick = &clause{
+		prefix:     _SELECT,
 		expression: concatStrings(selections, ", "),
 	}
 
@@ -59,11 +70,11 @@ func (builder *QueryBuilder) Select(selections ...string) *QueryBuilder {
 }
 
 // From specify table that query will be executed on
-// new(QueryBuilder).Select(..).From("user")
-// new(QueryBuilder).Select(..).From("user as u")
+// ex: 	new(QueryBuilder).Select(..).From("user")
+// 		new(QueryBuilder).Select(..).From("user as u")
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
-	builder.from = &Clause{
-		prefix:     "FROM",
+	builder.from = &clause{
+		prefix: _FROM,
 		// @TODO: temporary hack for DB with schema like postgresql, mssql
 		expression: _platform().getSchemaAccessName(builder.schema, expression),
 	}
@@ -71,63 +82,67 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	return builder
 }
 
-// Where
-// eg:
-// builder.Where("name = '%s'", "Luan Phan")
+// Where apply filter to query
+// ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
-		prefix:     "WHERE",
+	filter := &clause{
+		prefix:     _WHERE,
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
-// AndWhere
-// builder.
-// 	Where("name = '%s'", "Luan Phan").
-//	AndWhere("age > %d", 10)
+// AndWhere chaining filter on query
+// ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
-		prefix:     "AND",
+	filter := &clause{
+		prefix:     _AND,
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
-// OrWhere
-// Join where statement
+// OrWhere chaining filter on query
+// ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
-	clause := &Clause{
-		prefix:     "OR",
+	filter := &clause{
+		prefix:     _OR,
 		expression: expression,
 		args:       args,
 		postfix:    "",
 	}
 
-	builder.filters = append(builder.filters, clause)
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
-// BuildQuery
-// use GetQuery to get SQL declaration
-func (builder *QueryBuilder) BuildQuery() *QueryBuilder {
-	builder.query = builder.buildQuery()
-	builder.built = true
+// OrderBy apply order in query
+// ex: builder.OrderBy("id ASC", "name")
+func (builder *QueryBuilder) OrderBy(expression ...string) *QueryBuilder {
+	filter := &clause{
+		prefix:     _ORDER_BY,
+		expression: concatStrings(expression, ", "),
+		args:       nil,
+		postfix:    "",
+	}
+
+	builder.filters = append(builder.filters, filter)
 	return builder
 }
 
 // GetQuery returns a built query
 func (builder *QueryBuilder) GetQuery() string {
 	if ! builder.built {
-		builder.BuildQuery()
+		builder.query = builder.buildQuery()
+		builder.built = true
 	}
 
 	return builder.query
@@ -155,14 +170,31 @@ func (builder *QueryBuilder) buildQuery() string {
 	return concatStrings(declarations, "\n")
 }
 
-func (clause *Clause) build() string {
+func (clause *clause) build() string {
 	partials := make([]string, 0)
 	partials = append(partials, clause.prefix, clause.expression, clause.postfix)
 	expression := concatStrings(partials, " ")
 
-	if len(clause.args) > 0 {
-		return fmt.Sprintf(expression, clause.args...)
+	if args := clause.args; len(args) > 0 {
+		parsedArgs := make([]interface{}, 0)
+		for _, arg := range args {
+			parsedArgs = append(parsedArgs, clause.parseArg(arg))
+		}
+
+		return fmt.Sprintf(expression, parsedArgs...)
 	}
 
 	return expression
+}
+
+func (clause *clause) parseArg(arg interface{}) interface{} {
+	rt := reflect.TypeOf(arg)
+	switch rt.Kind() {
+	case reflect.Slice:
+		return getContentOutOfArraySyntax(arg)
+	case reflect.Array:
+		return getContentOutOfArraySyntax(arg)
+	}
+
+	return arg
 }

@@ -10,6 +10,8 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
 * [Query builder](#query-builder)
     * [Select](#query-builder-select)
     * [Where](#query-builder-where)
+    * [IN (...)](#query-builder-in)
+    * [Order By](#query-builder-order-by)
 * [Issues](#issues)
 * [TODO](#todo)
 
@@ -78,21 +80,22 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
 <a name="query-builder-select"></a>
 #### Select
 ```go
-employeeQuery := new(QueryBuilder).OnSchema("company").
+NewQueryBuilder().
+    OnSchema("company").
     Select("valid", "name", "age").
     From("employee").
-    BuildQuery().
     GetQuery()
 ```
 <a name="query-builder-where"></a>
 #### Where
 * Single where
 ```go
-query = NewQueryBuilder().
+NewQueryBuilder().
     OnSchema("company").
     Select("*").
     From("employee").
-    Where("(id = %d)", 1)
+    Where("(id = %d)", 1).
+    GetQuery()
 ```
 
 * AndWhere | OrWhere
@@ -102,7 +105,6 @@ NewQueryBuilder().OnSchema("company").
     From("employee").
     Where("id = %d", 1).
     AndWhere("name = '%s'", "Luan Phan"). // OrWhere("name = '%s'", "Luan Phan").
-    BuildQuery().
     GetQuery()
 ```
 
@@ -113,7 +115,33 @@ NewQueryBuilder().
     From("employee").
     Where("(id = %d AND name = '%s')", 1, "Luan Phan").
     OrWhere("department_id = %d", 1).
-    BuildQuery().
+    GetQuery()
+```
+
+<a name="query-builder-in"></a>
+#### IN (...)
+```go
+NewQueryBuilder().
+    OnSchema("company").
+    From("employee").
+    Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
+    GetQuery()
+
+query = NewQueryBuilder().
+    OnSchema("company").
+    From("employee").
+    Where("name IN (%v)", []string{"Luan", "Phan"}).
+    GetQuery()
+```
+
+<a name="query-builder-order-by"></a>
+#### Order By
+```go
+query = NewQueryBuilder().
+    OnSchema("company").
+    From("employee").
+    Where("name = '%s'", "Luan").
+    OrderBy("id ASC", "name").
     GetQuery()
 ```
 

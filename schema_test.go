@@ -181,7 +181,10 @@ func TestSchemaWorks(t *testing.T) {
 		assertNotHasError(t, err)
 	}
 
-	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan Phan', 22, 1)", employee))
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan', 22, 1)", employee))
+	assertNotHasError(t, err)
+
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Phan', 23, 1)", employee))
 	assertNotHasError(t, err)
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (room, description) VALUES ('ROOMC1', 'BOOM')", storage))
@@ -194,19 +197,31 @@ func TestSchemaWorks(t *testing.T) {
 		Select("valid", "name", "age").
 		From("employee").
 		Where("id > %d", 0).
-		AndWhere("name = '%s'", "Luan Phan").
-		BuildQuery().
+		AndWhere("name = '%s'", "Luan").
 		GetQuery()
 
 	err = db.QueryRow(employeeQuery).Scan(&valid, &name, &age)
 	assertNotHasError(t, err)
-	assertStringEquals(t, "Luan Phan", name)
+	assertStringEquals(t, "Luan", name)
 	assertIntEquals(t, 22, age)
+	assertIntEquals(t, 1, valid)
+
+	employeeOrderedByAgeQuery := NewQueryBuilder().OnSchema("company").
+		Select("valid", "name", "age").
+		From("employee").
+		Where("id > %d", 0).
+		OrderBy("age DESC").
+		GetQuery()
+	err = db.QueryRow(employeeOrderedByAgeQuery).Scan(&valid, &name, &age)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Phan", name)
+	assertIntEquals(t, 23, age)
 	assertIntEquals(t, 1, valid)
 
 	departmentQuery := NewQueryBuilder().OnSchema("company").
 		Select("name, position, revenue").
 		From("department").
+		Where("name IN (%v)", []string{"Luan Phan Corps"}).
 		GetQuery()
 
 	err = db.QueryRow(departmentQuery).Scan(&name, &position, &revenue)
