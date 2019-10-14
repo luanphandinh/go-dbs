@@ -49,4 +49,30 @@ WHERE name = 'Luan'
 ORDER BY id ASC, name`,
 		query,
 	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		From("employee").
+		Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
+		GetQuery()
+
+	assertStringEquals(t,
+		`SELECT *
+FROM employee
+WHERE id IN (1, 2) AND name = 'Luan'`,
+		query,
+	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		From("employee").
+		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		GetQuery()
+
+	assertStringEquals(t,
+		`SELECT *
+FROM employee
+WHERE name IN ('Luan', 'Phan')`,
+		query,
+	)
 }

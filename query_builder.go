@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -174,9 +175,26 @@ func (clause *clause) build() string {
 	partials = append(partials, clause.prefix, clause.expression, clause.postfix)
 	expression := concatStrings(partials, " ")
 
-	if len(clause.args) > 0 {
-		return fmt.Sprintf(expression, clause.args...)
+	if args := clause.args; len(args) > 0 {
+		parsedArgs := make([]interface{}, 0)
+		for _, arg := range args {
+			parsedArgs = append(parsedArgs, clause.parseArg(arg))
+		}
+
+		return fmt.Sprintf(expression, parsedArgs...)
 	}
 
 	return expression
+}
+
+func (clause *clause) parseArg(arg interface{}) interface{} {
+	rt := reflect.TypeOf(arg)
+	switch rt.Kind() {
+	case reflect.Slice:
+		return getContentOutOfArraySyntax(arg)
+	case reflect.Array:
+		return getContentOutOfArraySyntax(arg)
+	}
+
+	return arg
 }

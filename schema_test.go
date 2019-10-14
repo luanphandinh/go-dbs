@@ -221,6 +221,7 @@ func TestSchemaWorks(t *testing.T) {
 	departmentQuery := NewQueryBuilder().OnSchema("company").
 		Select("name, position, revenue").
 		From("department").
+		Where("name IN (%v)", []string{"Luan Phan Corps"}).
 		GetQuery()
 
 	err = db.QueryRow(departmentQuery).Scan(&name, &position, &revenue)
