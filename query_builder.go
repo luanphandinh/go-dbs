@@ -28,6 +28,7 @@ type QueryBuilder struct {
 }
 
 // clause is a simple expression with args.
+// @TODO: review performance of parsing each clause with args, could be faster if we merge all clauses then parse all args??
 type clause struct {
 	prefix     string
 	expression string
