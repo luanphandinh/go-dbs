@@ -16,10 +16,10 @@ func (platform *dbPostgresPlatform) getDriverName() string {
 
 func (platform *dbPostgresPlatform) getDBConnectionString(server string, port int, user string, password string, dbName string) string {
 	info := make([]string, 0)
-	info = append(info, "host=" + server)
-	info = append(info, "user=" + user)
-	info = append(info, "password=" + password)
-	info = append(info, "dbname=" + dbName)
+	info = append(info, "host="+server)
+	info = append(info, "user="+user)
+	info = append(info, "password="+password)
+	info = append(info, "dbname="+dbName)
 	info = append(info, "sslmode=disable")
 
 	return concatStrings(info, " ")
@@ -34,7 +34,7 @@ func (platform *dbPostgresPlatform) getTypeDeclaration(col *Column) string {
 
 	// @TODO: make some type reference that centralized all types together across platforms
 	if colType == NVARCHAR {
-		 colType = VARCHAR
+		colType = VARCHAR
 	}
 
 	if col.length > 0 {
@@ -83,7 +83,7 @@ func (platform *dbPostgresPlatform) getColumnsCommentDeclaration(schema string, 
 		if col.comment != "" {
 			colName := tableName + "." + col.name
 			comment := " IS '" + col.comment + "'"
-			comments = append(comments, "COMMENT ON COLUMN " + colName + comment)
+			comments = append(comments, "COMMENT ON COLUMN "+colName+comment)
 		}
 	}
 
@@ -148,7 +148,7 @@ func (platform *dbPostgresPlatform) buildTableCreateSQL(schema string, table *Ta
 	// Auto increment
 	for _, col := range table.columns {
 		if col.autoIncrement {
-			seqName := platform.getSchemaAccessName(schema, table.name + "_" + col.name+  "_seq")
+			seqName := platform.getSchemaAccessName(schema, table.name+"_"+col.name+"_seq")
 			alterTableCommand := "ALTER TABLE " + tableName + " ALTER " + col.name + " SET DEFAULT NEXTVAL('" + seqName + "')"
 			commands = append(commands, platform.getSequenceCreateSQL(seqName))
 			commands = append(commands, alterTableCommand)
@@ -191,7 +191,7 @@ func (platform *dbPostgresPlatform) getTableColumnNamesSQL(schema string, table 
 }
 
 // column_name
-func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string , table string) string {
+func (platform *dbPostgresPlatform) getTableColumnsSQL(schema string, table string) string {
 	return "SELECT column_name from information_schema.columns WHERE table_name = '" + table + "'" + " AND table_schema='" + schema + "'"
 }
 
@@ -213,4 +213,13 @@ func (platform *dbPostgresPlatform) parseTableColumns(rows *sql.Rows) []*Column 
 
 func (platform *dbPostgresPlatform) columnDiff(col1 *Column, col2 *Column) bool {
 	return false
+}
+
+// Query
+func (platform *dbPostgresPlatform) getQueryOffsetDeclaration(offset int) string {
+	return "OFFSET " + strconv.Itoa(offset)
+}
+
+func (platform *dbPostgresPlatform) getQueryLimitDeclaration(limit int) string {
+	return "LIMIT " + strconv.Itoa(limit)
 }

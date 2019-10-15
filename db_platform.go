@@ -49,6 +49,10 @@ type dbPlatform interface {
 
 	getTableColumnNamesSQL(schema string, table string) string
 
+	// Query
+	getQueryLimitDeclaration(limit int) string
+	getQueryOffsetDeclaration(offset int) string
+
 	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
 	parseTableColumns(rows *sql.Rows) []*Column // parse rows returned from getTableColumnsSQL()

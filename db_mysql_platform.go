@@ -156,7 +156,7 @@ func (platform *dbMySQLPlatform) getTableColumnNamesSQL(schema string, table str
 // Field | dbType 			| Null 	| Key 	| defaultValue 	| Extra
 // id    | int(10) unsigned	| NO	| PRI	| NULL		| auto_increment
 //		 |					| YES	| UNI	| 1			| ""
-func (platform *dbMySQLPlatform) getTableColumnsSQL(schema string , table string) string {
+func (platform *dbMySQLPlatform) getTableColumnsSQL(schema string, table string) string {
 	return "SHOW COLUMNS FROM " + platform.getSchemaAccessName(schema, table)
 }
 
@@ -220,4 +220,13 @@ func _parseColumnMySQL(field string, dbType string, nullable string, key string,
 
 func (platform *dbMySQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
 	return false
+}
+
+// Query
+func (platform *dbMySQLPlatform) getQueryOffsetDeclaration(offset int) string {
+	return "OFFSET " + strconv.Itoa(offset)
+}
+
+func (platform *dbMySQLPlatform) getQueryLimitDeclaration(limit int) string {
+	return "LIMIT " + strconv.Itoa(limit)
 }
