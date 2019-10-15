@@ -14,13 +14,15 @@ func concatStrings(values []string, glue string) (s string) {
 		return s
 	}
 
-	for index, value := range values {
+	firstEl := true
+	for _, value := range values {
 		if value == "" {
 			continue
 		}
 
-		if index == 0 {
+		if firstEl {
 			s += value
+			firstEl = false
 		} else {
 			s += glue + value
 		}
