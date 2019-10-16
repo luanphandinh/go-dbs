@@ -12,6 +12,8 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Where](#query-builder-where)
     * [IN (...)](#query-builder-in)
     * [Order By](#query-builder-order-by)
+    * [Offset](#query-builder-offset)
+    * [Limit](#query-builder-limit)
 * [Issues](#issues)
 * [TODO](#todo)
 
@@ -142,6 +144,26 @@ query = NewQueryBuilder().
     From("employee").
     Where("name = '%s'", "Luan").
     OrderBy("id ASC", "name").
+    GetQuery()
+```
+
+<a name="query-builder-offset"></a>
+#### Offset
+```go
+query = NewQueryBuilder().
+    Select("*").
+    From("employee").
+    Offset(10).
+    GetQuery()
+```
+
+<a name="query-builder-limit"></a>
+#### Limit
+```go
+query = NewQueryBuilder().
+    Select("*").
+    From("employee").
+    Limit(10).
     GetQuery()
 ```
 

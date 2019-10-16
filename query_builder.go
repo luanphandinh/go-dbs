@@ -21,6 +21,8 @@ type QueryBuilder struct {
 	pick    *clause
 	from    *clause
 	filters []*clause
+	offset  int
+	limit   int
 
 	query string
 	built bool
@@ -139,6 +141,22 @@ func (builder *QueryBuilder) OrderBy(expression ...string) *QueryBuilder {
 	return builder
 }
 
+// Offset apply offset in query
+// ex: builder.Offset(10)
+func (builder *QueryBuilder) Offset(offset int) *QueryBuilder {
+	builder.offset = offset
+
+	return builder
+}
+
+// Limit apply limit in query
+// ex: builder.Limit(10)
+func (builder *QueryBuilder) Limit(limit int) *QueryBuilder {
+	builder.limit = limit
+
+	return builder
+}
+
 // GetQuery returns a built query
 func (builder *QueryBuilder) GetQuery() string {
 	if ! builder.built {
@@ -168,13 +186,13 @@ func (builder *QueryBuilder) buildQuery() string {
 		}
 	}
 
+	declarations = append(declarations, _platform().getPagingDeclaration(builder.limit, builder.offset))
+
 	return concatStrings(declarations, "\n")
 }
 
 func (clause *clause) build() string {
-	partials := make([]string, 0)
-	partials = append(partials, clause.prefix, clause.expression, clause.postfix)
-	expression := concatStrings(partials, " ")
+	expression := concatStrings([]string{clause.prefix, clause.expression, clause.postfix}, " ")
 
 	if args := clause.args; len(args) > 0 {
 		parsedArgs := make([]interface{}, 0)
