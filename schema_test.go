@@ -176,9 +176,6 @@ func TestSchemaWorks(t *testing.T) {
 
 		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES (NULL, 22)", employee))
 		assertHasError(t, err)
-
-		_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age) VALUES ('Luan Phan', 22)", employee))
-		assertNotHasError(t, err)
 	}
 
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (name, age, department_id) VALUES ('Luan', 22, 1)", employee))
@@ -209,13 +206,25 @@ func TestSchemaWorks(t *testing.T) {
 	employeeOrderedByAgeQuery := NewQueryBuilder().OnSchema("company").
 		Select("valid", "name", "age").
 		From("employee").
-		Where("id > %d", 0).
 		OrderBy("age DESC").
 		GetQuery()
 	err = db.QueryRow(employeeOrderedByAgeQuery).Scan(&valid, &name, &age)
 	assertNotHasError(t, err)
 	assertStringEquals(t, "Phan", name)
 	assertIntEquals(t, 23, age)
+	assertIntEquals(t, 1, valid)
+
+	employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().OnSchema("company").
+		Select("valid", "name", "age").
+		From("employee").
+		OrderBy("age DESC").
+		Limit(1).
+		Offset(1).
+		GetQuery()
+	err = db.QueryRow(employeeOrderedByAgeWithOffsetQuery).Scan(&valid, &name, &age)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan", name)
+	assertIntEquals(t, 22, age)
 	assertIntEquals(t, 1, valid)
 
 	departmentQuery := NewQueryBuilder().OnSchema("company").

@@ -206,3 +206,26 @@ func _parseColumnMSSQL(field string, dbType string, notnull string, dVal string)
 func (platform *dbMsSQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
 	return false
 }
+
+// Query
+func (platform *dbMsSQLPlatform) getQueryOffsetDeclaration(offset int) string {
+	return "OFFSET " + strconv.Itoa(offset) + " ROWS"
+}
+
+func (platform *dbMsSQLPlatform) getQueryLimitDeclaration(limit int) string {
+	return "FETCH NEXT " + strconv.Itoa(limit) + " ROWS ONLY"
+}
+
+func (platform *dbMsSQLPlatform) getPagingDeclaration(limit int, offset int) string {
+	query := make([]string, 0)
+
+	if offset > 0 {
+		query = append(query, platform.getQueryOffsetDeclaration(offset))
+	}
+
+	if limit > 0 {
+		query = append(query, platform.getQueryLimitDeclaration(limit))
+	}
+
+	return concatStrings(query, " ")
+}

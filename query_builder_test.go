@@ -75,4 +75,35 @@ FROM employee
 WHERE name IN ('Luan', 'Phan')`,
 		query,
 	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		From("employee").
+		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Offset(10).
+		GetQuery()
+
+	assertStringEquals(t,
+		`SELECT *
+FROM employee
+WHERE name IN ('Luan', 'Phan')
+OFFSET 10`,
+		query,
+	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		From("employee").
+		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Limit(10).
+		Offset(10).
+		GetQuery()
+
+	assertStringEquals(t,
+		`SELECT *
+FROM employee
+WHERE name IN ('Luan', 'Phan')
+LIMIT 10 OFFSET 10`,
+		query,
+	)
 }

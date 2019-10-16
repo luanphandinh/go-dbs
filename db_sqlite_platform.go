@@ -213,3 +213,16 @@ func _parseColumnMySQLite(field string, dbType string, notnull bool, dVal string
 func (platform *dbSqlitePlatform) columnDiff(col1 *Column, col2 *Column) bool {
 	return false
 }
+
+// Query
+func (platform *dbSqlitePlatform) getQueryOffsetDeclaration(offset int) string {
+	return "OFFSET " + strconv.Itoa(offset)
+}
+
+func (platform *dbSqlitePlatform) getQueryLimitDeclaration(limit int) string {
+	return "LIMIT " + strconv.Itoa(limit)
+}
+
+func (platform *dbSqlitePlatform) getPagingDeclaration(limit int, offset int) string {
+	return _getPagingDeclaration(platform, limit, offset)
+}
