@@ -222,3 +222,7 @@ func (platform *dbSqlitePlatform) getQueryOffsetDeclaration(offset int) string {
 func (platform *dbSqlitePlatform) getQueryLimitDeclaration(limit int) string {
 	return "LIMIT " + strconv.Itoa(limit)
 }
+
+func (platform *dbSqlitePlatform) getPagingDeclaration(limit int, offset int) string {
+	return _getPagingDeclaration(platform, limit, offset)
+}

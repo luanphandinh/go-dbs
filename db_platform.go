@@ -52,6 +52,8 @@ type dbPlatform interface {
 	// Query
 	getQueryLimitDeclaration(limit int) string
 	getQueryOffsetDeclaration(offset int) string
+	// Combine of getQueryLimitDeclaration() & getQueryOffsetDeclaration()
+	getPagingDeclaration(limit int, offset int) string
 
 	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
@@ -185,4 +187,17 @@ func _buildTableCreateSQL(platform dbPlatform, schema string, table *Table) stri
 
 func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
+}
+
+func _getPagingDeclaration(platform dbPlatform, limit int, offset int) string {
+	query := make([]string, 0)
+	if limit > 0 {
+		query = append(query, platform.getQueryLimitDeclaration(limit))
+	}
+
+	if offset > 0 {
+		query = append(query, platform.getQueryOffsetDeclaration(offset))
+	}
+
+	return concatStrings(query, " ")
 }

@@ -223,3 +223,7 @@ func (platform *dbPostgresPlatform) getQueryOffsetDeclaration(offset int) string
 func (platform *dbPostgresPlatform) getQueryLimitDeclaration(limit int) string {
 	return "LIMIT " + strconv.Itoa(limit)
 }
+
+func (platform *dbPostgresPlatform) getPagingDeclaration(limit int, offset int) string {
+	return _getPagingDeclaration(platform, limit, offset)
+}

@@ -230,3 +230,7 @@ func (platform *dbMySQLPlatform) getQueryOffsetDeclaration(offset int) string {
 func (platform *dbMySQLPlatform) getQueryLimitDeclaration(limit int) string {
 	return "LIMIT " + strconv.Itoa(limit)
 }
+
+func (platform *dbMySQLPlatform) getPagingDeclaration(limit int, offset int) string {
+	return _getPagingDeclaration(platform, limit, offset)
+}
