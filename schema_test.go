@@ -191,7 +191,7 @@ func TestSchemaWorks(t *testing.T) {
 	var name string
 	var revenue float32
 	employeeQuery := NewQueryBuilder().OnSchema("company").
-		Select("valid", "name", "age").
+		Select("valid, name, age").
 		From("employee").
 		Where("id > %d", 0).
 		AndWhere("name = '%s'", "Luan").
@@ -204,7 +204,7 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 1, valid)
 
 	employeeOrderedByAgeQuery := NewQueryBuilder().OnSchema("company").
-		Select("valid", "name", "age").
+		Select("valid, name, age").
 		From("employee").
 		OrderBy("age DESC").
 		GetQuery()
@@ -215,7 +215,7 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 1, valid)
 
 	employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().OnSchema("company").
-		Select("valid", "name", "age").
+		Select("valid, name, age").
 		From("employee").
 		OrderBy("age DESC").
 		Limit(1).

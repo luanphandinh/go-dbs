@@ -1,23 +1,29 @@
 package dbs
 
-import "testing"
+import (
+	"regexp"
+	"strings"
+	"testing"
+)
+
+func removeSpaces(str string) string {
+	space := regexp.MustCompile(`\s+`)
+	return strings.TrimSpace(space.ReplaceAllString(str, " "))
+}
 
 func TestQueryBuilder_BuildQuery(t *testing.T) {
 	SetPlatform(sqlite3, nil)
 	query := NewQueryBuilder().
 		OnSchema("company").
-		Select("*", "last_name as lname", "fname").
+		Select("*, last_name as lname, fname").
 		From("employee").
 		Where("employee.id = %d", 10).
 		AndWhere("employee.name = '%s'", "Luan").
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *, last_name as lname, fname
-FROM employee
-WHERE employee.id = 10
-AND employee.name = 'Luan'`,
-		query,
+		"SELECT *, last_name as lname, fname FROM employee WHERE employee.id = 10 AND employee.name = 'Luan'",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
@@ -28,26 +34,20 @@ AND employee.name = 'Luan'`,
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE (id = 1 AND name = 'Luan')
-OR department_id = 1`,
-		query,
+		"SELECT * FROM employee WHERE (id = 1 AND name = 'Luan') OR department_id = 1",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		OnSchema("company").
 		From("employee").
 		Where("name = '%s'", "Luan").
-		OrderBy("id ASC", "name").
+		OrderBy("id ASC, name").
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE name = 'Luan'
-ORDER BY id ASC, name`,
-		query,
+		"SELECT * FROM employee WHERE name = 'Luan' ORDER BY id ASC, name",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
@@ -57,10 +57,8 @@ ORDER BY id ASC, name`,
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE id IN (1, 2) AND name = 'Luan'`,
-		query,
+		"SELECT * FROM employee WHERE id IN (1, 2) AND name = 'Luan'",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
@@ -70,10 +68,8 @@ WHERE id IN (1, 2) AND name = 'Luan'`,
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE name IN ('Luan', 'Phan')`,
-		query,
+		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan')",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
@@ -84,11 +80,8 @@ WHERE name IN ('Luan', 'Phan')`,
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE name IN ('Luan', 'Phan')
-OFFSET 10`,
-		query,
+		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan') OFFSET 10",
+		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
@@ -100,10 +93,7 @@ OFFSET 10`,
 		GetQuery()
 
 	assertStringEquals(t,
-		`SELECT *
-FROM employee
-WHERE name IN ('Luan', 'Phan')
-LIMIT 10 OFFSET 10`,
-		query,
+		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan') LIMIT 10 OFFSET 10",
+		removeSpaces(query),
 	)
 }
