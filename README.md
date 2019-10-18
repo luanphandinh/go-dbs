@@ -103,7 +103,7 @@ NewQueryBuilder().
 * AndWhere | OrWhere
 ```go
 NewQueryBuilder().OnSchema("company").
-    Select("valid", "name", "age").
+    Select("name, age").
     From("employee").
     Where("id = %d", 1).
     AndWhere("name = '%s'", "Luan Phan"). // OrWhere("name = '%s'", "Luan Phan").
@@ -143,7 +143,7 @@ query = NewQueryBuilder().
     OnSchema("company").
     From("employee").
     Where("name = '%s'", "Luan").
-    OrderBy("id ASC", "name").
+    OrderBy("id ASC, name").
     GetQuery()
 ```
 
