@@ -12,6 +12,7 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Where](#query-builder-where)
     * [IN (...)](#query-builder-in)
     * [Group By](#query-builder-group-by)
+    * [Having](#query-builder-having)
     * [Order By](#query-builder-order-by)
     * [Offset](#query-builder-offset)
     * [Limit](#query-builder-limit)
@@ -142,9 +143,21 @@ query = NewQueryBuilder().
 ```go
 NewQueryBuilder().
     OnSchema("company").
-    Select("room, COUNT(room)").
+    Select("room, COUNT(room) as c_room").
     From("storage").
     GroupBy("room").
+    GetQuery()
+```
+
+<a name="query-builder-having"></a>
+#### Having
+```go
+NewQueryBuilder().
+    OnSchema("company").
+    Select("room, COUNT(room) as c_room").
+    From("storage").
+    GroupBy("room").
+    Having("COUNT(room) > %d", 1).
     GetQuery()
 ```
 

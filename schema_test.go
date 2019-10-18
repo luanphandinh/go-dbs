@@ -245,9 +245,19 @@ func TestSchemaWorks(t *testing.T) {
 	var storageName string
 	var storageCount int
 	storageQuery := NewQueryBuilder().OnSchema("company").
-		Select("room, COUNT(room)").
+		Select("room, COUNT(room) as c_room").
 		From("storage").
 		GroupBy("room").
+		GetQuery()
+	err = db.QueryRow(storageQuery).Scan(&storageName, &storageCount)
+	assertStringEquals(t, "ROOMC1", storageName)
+	assertIntEquals(t, 2, storageCount)
+
+	storageQuery = NewQueryBuilder().OnSchema("company").
+		Select("room, COUNT(room) as c_room").
+		From("storage").
+		GroupBy("room").
+		Having("COUNT(room) > %d", 1).
 		GetQuery()
 	err = db.QueryRow(storageQuery).Scan(&storageName, &storageCount)
 	assertStringEquals(t, "ROOMC1", storageName)
