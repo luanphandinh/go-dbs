@@ -17,6 +17,17 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		OnSchema("company").
 		Select("*, last_name as lname, fname").
 		From("employee").
+		GetQuery()
+
+	assertStringEquals(t,
+		"SELECT *, last_name as lname, fname FROM employee",
+		removeSpaces(query),
+	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		Select("*, last_name as lname, fname").
+		From("employee").
 		Where("employee.id = %d", 10).
 		AndWhere("employee.name = '%s'", "Luan").
 		GetQuery()
@@ -99,16 +110,26 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
-		Select("COUNT(name) as c_name").
-		From("employee").
-		Where("name IN (%v)", []string{"Luan", "Phan"}).
-		Limit(10).
-		Offset(10).
-		GroupBy("c_name").
+		Select("room, COUNT(room) as c_room").
+		From("storage").
+		GroupBy("room").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT COUNT(name) as c_name FROM employee WHERE name IN ('Luan', 'Phan') GROUP BY c_name LIMIT 10 OFFSET 10",
+		"SELECT room, COUNT(room) as c_room FROM storage GROUP BY room",
+		removeSpaces(query),
+	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		Select("room, COUNT(room) as c_room").
+		From("storage").
+		GroupBy("room").
+		Having("COUNT(room) > %d", 1).
+		GetQuery()
+
+	assertStringEquals(t,
+		"SELECT room, COUNT(room) as c_room FROM storage GROUP BY room HAVING COUNT(room) > 1",
 		removeSpaces(query),
 	)
 }

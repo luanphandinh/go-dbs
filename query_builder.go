@@ -13,10 +13,12 @@ type QueryBuilder struct {
 	from       string
 	filters    string
 	groupBy    string
+	having     string
 	order      string
 	offset     int
 	limit      int
-	args       []interface{}
+	filterArgs []interface{}
+	havingArgs []interface{}
 
 	query string
 	built bool
@@ -63,7 +65,7 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 // ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
 	builder.filters += "WHERE " + expression
-	builder.args = append(builder.args, args...)
+	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
 }
@@ -72,7 +74,7 @@ func (builder *QueryBuilder) Where(expression string, args ...interface{}) *Quer
 // ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
 	builder.filters += " AND " + expression
-	builder.args = append(builder.args, args...)
+	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
 }
@@ -81,7 +83,7 @@ func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *Q
 // ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
 	builder.filters += " OR " + expression
-	builder.args = append(builder.args, args...)
+	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
 }
@@ -90,6 +92,15 @@ func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *Qu
 // ex: builder.GroupBy("name")
 func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
 	builder.groupBy = "GROUP BY " + expression
+
+	return builder
+}
+
+// Having apply having clause in query
+// ex: builder.Having("age > 20")
+func (builder *QueryBuilder) Having(expression string, args ...interface{}) *QueryBuilder {
+	builder.having = "HAVING " + expression
+	builder.havingArgs = args
 
 	return builder
 }
@@ -142,10 +153,11 @@ func (builder *QueryBuilder) buildQuery() string {
 		builder.from + " " +
 		builder.filters + " " +
 		builder.groupBy + " " +
+		builder.having + " " +
 		builder.order + " " +
 		_platform().getPagingDeclaration(builder.limit, builder.offset)
 
-	if args := builder.args; len(args) > 0 {
+	if args := append(builder.filterArgs, builder.havingArgs...); len(args) > 0 {
 		return fmt.Sprintf(declaration, parseArgs(args[0:])...)
 	}
 
