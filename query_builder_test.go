@@ -96,4 +96,19 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan') LIMIT 10 OFFSET 10",
 		removeSpaces(query),
 	)
+
+	query = NewQueryBuilder().
+		OnSchema("company").
+		Select("COUNT(name) as c_name").
+		From("employee").
+		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Limit(10).
+		Offset(10).
+		GroupBy("c_name").
+		GetQuery()
+
+	assertStringEquals(t,
+		"SELECT COUNT(name) as c_name FROM employee WHERE name IN ('Luan', 'Phan') GROUP BY c_name LIMIT 10 OFFSET 10",
+		removeSpaces(query),
+	)
 }
