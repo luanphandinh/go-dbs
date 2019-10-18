@@ -178,7 +178,7 @@ query = NewQueryBuilder().
 query = NewQueryBuilder().
     Select("*").
     From("employee").
-    Offset(10).
+    Offset("10").
     GetQuery()
 ```
 
@@ -188,7 +188,7 @@ query = NewQueryBuilder().
 query = NewQueryBuilder().
     Select("*").
     From("employee").
-    Limit(10).
+    Limit("10").
     GetQuery()
 ```
 

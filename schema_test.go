@@ -221,8 +221,8 @@ func TestSchemaWorks(t *testing.T) {
 		Select("valid, name, age").
 		From("employee").
 		OrderBy("age DESC").
-		Limit(1).
-		Offset(1).
+		Limit("1").
+		Offset("1").
 		GetQuery()
 	err = db.QueryRow(employeeOrderedByAgeWithOffsetQuery).Scan(&valid, &name, &age)
 	assertNotHasError(t, err)

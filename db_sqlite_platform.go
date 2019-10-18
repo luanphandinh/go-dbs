@@ -215,14 +215,14 @@ func (platform *dbSqlitePlatform) columnDiff(col1 *Column, col2 *Column) bool {
 }
 
 // Query
-func (platform *dbSqlitePlatform) getQueryOffsetDeclaration(offset int) string {
-	return "OFFSET " + strconv.Itoa(offset)
+func (platform *dbSqlitePlatform) getQueryOffsetDeclaration(offset string) string {
+	return "OFFSET " + offset
 }
 
-func (platform *dbSqlitePlatform) getQueryLimitDeclaration(limit int) string {
-	return "LIMIT " + strconv.Itoa(limit)
+func (platform *dbSqlitePlatform) getQueryLimitDeclaration(limit string) string {
+	return "LIMIT " + limit
 }
 
-func (platform *dbSqlitePlatform) getPagingDeclaration(limit int, offset int) string {
+func (platform *dbSqlitePlatform) getPagingDeclaration(limit string, offset string) string {
 	return _getPagingDeclaration(platform, limit, offset)
 }

@@ -223,14 +223,14 @@ func (platform *dbMySQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
 }
 
 // Query
-func (platform *dbMySQLPlatform) getQueryOffsetDeclaration(offset int) string {
-	return "OFFSET " + strconv.Itoa(offset)
+func (platform *dbMySQLPlatform) getQueryOffsetDeclaration(offset string) string {
+	return "OFFSET " + offset
 }
 
-func (platform *dbMySQLPlatform) getQueryLimitDeclaration(limit int) string {
-	return "LIMIT " + strconv.Itoa(limit)
+func (platform *dbMySQLPlatform) getQueryLimitDeclaration(limit string) string {
+	return "LIMIT " + limit
 }
 
-func (platform *dbMySQLPlatform) getPagingDeclaration(limit int, offset int) string {
+func (platform *dbMySQLPlatform) getPagingDeclaration(limit string, offset string) string {
 	return _getPagingDeclaration(platform, limit, offset)
 }

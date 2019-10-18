@@ -50,10 +50,10 @@ type dbPlatform interface {
 	getTableColumnNamesSQL(schema string, table string) string
 
 	// Query
-	getQueryLimitDeclaration(limit int) string
-	getQueryOffsetDeclaration(offset int) string
+	getQueryLimitDeclaration(limit string) string
+	getQueryOffsetDeclaration(offset string) string
 	// Combine of getQueryLimitDeclaration() & getQueryOffsetDeclaration()
-	getPagingDeclaration(limit int, offset int) string
+	getPagingDeclaration(limit string, offset string) string
 
 	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
@@ -189,13 +189,13 @@ func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
 }
 
-func _getPagingDeclaration(platform dbPlatform, limit int, offset int) string {
+func _getPagingDeclaration(platform dbPlatform, limit string, offset string) string {
 	query := make([]string, 0)
-	if limit > 0 {
+	if limit != "" {
 		query = append(query, platform.getQueryLimitDeclaration(limit))
 	}
 
-	if offset > 0 {
+	if offset != "" {
 		query = append(query, platform.getQueryOffsetDeclaration(offset))
 	}
 
