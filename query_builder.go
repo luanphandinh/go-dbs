@@ -157,6 +157,7 @@ func (builder *QueryBuilder) buildQuery() string {
 		builder.order + " " +
 		_platform().getPagingDeclaration(builder.limit, builder.offset)
 
+	// Using this cause a really bad performance
 	if args := append(builder.filterArgs, builder.havingArgs...); len(args) > 0 {
 		return fmt.Sprintf(declaration, parseArgs(args[0:])...)
 	}
