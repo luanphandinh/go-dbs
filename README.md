@@ -11,6 +11,7 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Select](#query-builder-select)
     * [Where](#query-builder-where)
     * [IN (...)](#query-builder-in)
+    * [Group By](#query-builder-group-by)
     * [Order By](#query-builder-order-by)
     * [Offset](#query-builder-offset)
     * [Limit](#query-builder-limit)
@@ -133,6 +134,17 @@ query = NewQueryBuilder().
     OnSchema("company").
     From("employee").
     Where("name IN (%v)", []string{"Luan", "Phan"}).
+    GetQuery()
+```
+
+<a name="query-builder-group-by"></a>
+#### Group By
+```go
+NewQueryBuilder().
+    OnSchema("company").
+    Select("room, COUNT(room)").
+    From("storage").
+    GroupBy("room").
     GetQuery()
 ```
 

@@ -12,6 +12,7 @@ type QueryBuilder struct {
 	selections string
 	from       string
 	filters    string
+	groupBy    string
 	order      string
 	offset     int
 	limit      int
@@ -85,6 +86,14 @@ func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *Qu
 	return builder
 }
 
+// GroupBy apply group by in query
+// ex: builder.GroupBy("name")
+func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
+	builder.groupBy = "GROUP BY " + expression
+
+	return builder
+}
+
 // OrderBy apply order in query
 // ex: builder.OrderBy("id ASC, name")
 func (builder *QueryBuilder) OrderBy(expression string) *QueryBuilder {
@@ -132,6 +141,7 @@ func (builder *QueryBuilder) buildQuery() string {
 	declaration := builder.selections + " " +
 		builder.from + " " +
 		builder.filters + " " +
+		builder.groupBy + " " +
 		builder.order + " " +
 		_platform().getPagingDeclaration(builder.limit, builder.offset)
 

@@ -187,6 +187,9 @@ func TestSchemaWorks(t *testing.T) {
 	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (room, description) VALUES ('ROOMC1', 'BOOM')", storage))
 	assertNotHasError(t, err)
 
+	_, err = db.Exec(fmt.Sprintf("INSERT INTO %s (room, description) VALUES ('ROOMC1', 'BOOMBOOM')", storage))
+	assertNotHasError(t, err)
+
 	var valid, age, position int
 	var name string
 	var revenue float32
@@ -239,5 +242,17 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
 
+	var storageName string
+	var storageCount int
+	storageQuery := NewQueryBuilder().OnSchema("company").
+		Select("room, COUNT(room)").
+		From("storage").
+		GroupBy("room").
+		GetQuery()
+	err = db.QueryRow(storageQuery).Scan(&storageName, &storageCount)
+	assertStringEquals(t, "ROOMC1", storageName)
+	assertIntEquals(t, 2, storageCount)
+
+	assertNotHasError(t, err)
 	assertNotHasError(t, Install(dbSchema))
 }
