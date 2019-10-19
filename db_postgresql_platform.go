@@ -216,14 +216,14 @@ func (platform *dbPostgresPlatform) columnDiff(col1 *Column, col2 *Column) bool 
 }
 
 // Query
-func (platform *dbPostgresPlatform) getQueryOffsetDeclaration(offset int) string {
-	return "OFFSET " + strconv.Itoa(offset)
+func (platform *dbPostgresPlatform) getQueryOffsetDeclaration(offset string) string {
+	return "OFFSET " + offset
 }
 
-func (platform *dbPostgresPlatform) getQueryLimitDeclaration(limit int) string {
-	return "LIMIT " + strconv.Itoa(limit)
+func (platform *dbPostgresPlatform) getQueryLimitDeclaration(limit string) string {
+	return "LIMIT " + limit
 }
 
-func (platform *dbPostgresPlatform) getPagingDeclaration(limit int, offset int) string {
+func (platform *dbPostgresPlatform) getPagingDeclaration(limit string, offset string) string {
 	return _getPagingDeclaration(platform, limit, offset)
 }

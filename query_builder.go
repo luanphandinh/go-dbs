@@ -15,8 +15,8 @@ type QueryBuilder struct {
 	groupBy    string
 	having     string
 	order      string
-	offset     int
-	limit      int
+	offset     string
+	limit      string
 	filterArgs []interface{}
 	havingArgs []interface{}
 
@@ -115,7 +115,7 @@ func (builder *QueryBuilder) OrderBy(expression string) *QueryBuilder {
 
 // Offset apply offset in query
 // ex: builder.Offset(10)
-func (builder *QueryBuilder) Offset(offset int) *QueryBuilder {
+func (builder *QueryBuilder) Offset(offset string) *QueryBuilder {
 	builder.offset = offset
 
 	return builder
@@ -123,7 +123,7 @@ func (builder *QueryBuilder) Offset(offset int) *QueryBuilder {
 
 // Limit apply limit in query
 // ex: builder.Limit(10)
-func (builder *QueryBuilder) Limit(limit int) *QueryBuilder {
+func (builder *QueryBuilder) Limit(limit string) *QueryBuilder {
 	builder.limit = limit
 
 	return builder
@@ -157,6 +157,7 @@ func (builder *QueryBuilder) buildQuery() string {
 		builder.order + " " +
 		_platform().getPagingDeclaration(builder.limit, builder.offset)
 
+	// Using this cause a really bad performance
 	if args := append(builder.filterArgs, builder.havingArgs...); len(args) > 0 {
 		return fmt.Sprintf(declaration, parseArgs(args[0:])...)
 	}

@@ -208,22 +208,22 @@ func (platform *dbMsSQLPlatform) columnDiff(col1 *Column, col2 *Column) bool {
 }
 
 // Query
-func (platform *dbMsSQLPlatform) getQueryOffsetDeclaration(offset int) string {
-	return "OFFSET " + strconv.Itoa(offset) + " ROWS"
+func (platform *dbMsSQLPlatform) getQueryOffsetDeclaration(offset string) string {
+	return "OFFSET " + offset + " ROWS"
 }
 
-func (platform *dbMsSQLPlatform) getQueryLimitDeclaration(limit int) string {
-	return "FETCH NEXT " + strconv.Itoa(limit) + " ROWS ONLY"
+func (platform *dbMsSQLPlatform) getQueryLimitDeclaration(limit string) string {
+	return "FETCH NEXT " + limit + " ROWS ONLY"
 }
 
-func (platform *dbMsSQLPlatform) getPagingDeclaration(limit int, offset int) string {
+func (platform *dbMsSQLPlatform) getPagingDeclaration(limit string, offset string) string {
 	query := make([]string, 0)
 
-	if offset > 0 {
+	if offset != "" {
 		query = append(query, platform.getQueryOffsetDeclaration(offset))
 	}
 
-	if limit > 0 {
+	if limit != "" {
 		query = append(query, platform.getQueryLimitDeclaration(limit))
 	}
 

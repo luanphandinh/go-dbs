@@ -4,7 +4,7 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
 ```
 ## Contents
 * [Schema](#schema)
-    * [Set platform](#1-set-platform)   
+    * [Set platform](#1-set-platform)
     * [Define schema](#2-define-schema)
     * [Install](#3-install)
 * [Query builder](#query-builder)
@@ -178,7 +178,7 @@ query = NewQueryBuilder().
 query = NewQueryBuilder().
     Select("*").
     From("employee").
-    Offset(10).
+    Offset("10").
     GetQuery()
 ```
 
@@ -188,7 +188,7 @@ query = NewQueryBuilder().
 query = NewQueryBuilder().
     Select("*").
     From("employee").
-    Limit(10).
+    Limit("10").
     GetQuery()
 ```
 
@@ -198,7 +198,18 @@ query = NewQueryBuilder().
 * Currently `go-dbs` *doest not support* centralized data types across platforms
 * Any error or failure will resulted int `log.Fatal()` since the schema installation is important,
 so thing need to be failed as soon as possible 
-
+* Really bad performance, need to tune up somehow when query related to params `BenchmarkQueryBuilderComplex`
+```bash
+go test -cpu 1 -run none -bench . -benchtime 3s
+goos: darwin
+goarch: amd64
+pkg: github.com/luanphandinh/go-dbs
+BenchmarkQueryBuilder           20000000               294 ns/op
+BenchmarkQueryBuilderComplex     1000000              5470 ns/op
+BenchmarkRawQuery               5000000000               0.29 ns/op
+PASS
+ok      github.com/luanphandinh/go-dbs  13.745s
+```
 <a name="todo"></a>
 # TODO
 * Query Builder

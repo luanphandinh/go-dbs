@@ -87,7 +87,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		OnSchema("company").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
-		Offset(10).
+		Offset("10").
 		GetQuery()
 
 	assertStringEquals(t,
@@ -99,8 +99,8 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		OnSchema("company").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
-		Limit(10).
-		Offset(10).
+		Limit("10").
+		Offset("10").
 		GetQuery()
 
 	assertStringEquals(t,
