@@ -217,18 +217,20 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 23, age)
 	assertIntEquals(t, 1, valid)
 
-	employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().OnSchema("company").
-		Select("valid, name, age").
-		From("employee").
-		OrderBy("age DESC").
-		Limit("1").
-		Offset("1").
-		GetQuery()
-	err = db.QueryRow(employeeOrderedByAgeWithOffsetQuery).Scan(&valid, &name, &age)
-	assertNotHasError(t, err)
-	assertStringEquals(t, "Luan", name)
-	assertIntEquals(t, 22, age)
-	assertIntEquals(t, 1, valid)
+	if _platform().getDriverName() != mssql {
+		employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().OnSchema("company").
+			Select("valid, name, age").
+			From("employee").
+			OrderBy("age DESC").
+			Limit("1").
+			Offset("1").
+			GetQuery()
+		err = db.QueryRow(employeeOrderedByAgeWithOffsetQuery).Scan(&valid, &name, &age)
+		assertNotHasError(t, err)
+		assertStringEquals(t, "Luan", name)
+		assertIntEquals(t, 22, age)
+		assertIntEquals(t, 1, valid)
+	}
 
 	departmentQuery := NewQueryBuilder().OnSchema("company").
 		Select("name, position, revenue").
