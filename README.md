@@ -174,6 +174,7 @@ query = NewQueryBuilder().
 
 <a name="query-builder-offset"></a>
 #### Offset
+This is not supported for mssql yet
 ```go
 query = NewQueryBuilder().
     Select("*").
@@ -184,6 +185,7 @@ query = NewQueryBuilder().
 
 <a name="query-builder-limit"></a>
 #### Limit
+This is not supported for mssql yet
 ```go
 query = NewQueryBuilder().
     Select("*").

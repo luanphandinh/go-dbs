@@ -53,7 +53,7 @@ type dbPlatform interface {
 	getQueryLimitDeclaration(limit string) string
 	getQueryOffsetDeclaration(offset string) string
 	// Combine of getQueryLimitDeclaration() & getQueryOffsetDeclaration()
-	getPagingDeclaration(limit string, offset string) string
+	getPagingDeclaration(limit string, offset string) []byte
 
 	// @TODO: these are experiment methods and have no actual value for now.
 	getTableColumnsSQL(schema string , table string) string
@@ -189,15 +189,29 @@ func _getTableDropSQL(platform dbPlatform, schema string, table string) string {
 	return "DROP TABLE IF EXISTS " + platform.getSchemaAccessName(schema, table)
 }
 
-func _getPagingDeclaration(platform dbPlatform, limit string, offset string) string {
-	query := make([]string, 0)
+func _getPagingDeclaration(platform dbPlatform, limit string, offset string) []byte {
+	length := 0
+
 	if limit != "" {
-		query = append(query, platform.getQueryLimitDeclaration(limit))
+		// "LIMIT " = (6 + len) * 4 bytes
+		length += (len(limit) + 6) * 4
 	}
 
 	if offset != "" {
-		query = append(query, platform.getQueryOffsetDeclaration(offset))
+		// "OFFSET " = (7 + len) * 4 bytes
+		length += (len(limit) + 7) * 4
 	}
 
-	return concatStrings(query, " ")
+	query := make([]byte, 0, length)
+	if limit != "" {
+		query = append(query, []byte("LIMIT ")...)
+		query = append(query, []byte(limit)...)
+	}
+
+	if offset != "" {
+		query = append(query, []byte("OFFSET ")...)
+		query = append(query, []byte(offset)...)
+	}
+
+	return query
 }

@@ -223,6 +223,6 @@ func (platform *dbSqlitePlatform) getQueryLimitDeclaration(limit string) string 
 	return "LIMIT " + limit
 }
 
-func (platform *dbSqlitePlatform) getPagingDeclaration(limit string, offset string) string {
+func (platform *dbSqlitePlatform) getPagingDeclaration(limit string, offset string) []byte {
 	return _getPagingDeclaration(platform, limit, offset)
 }
