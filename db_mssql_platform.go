@@ -216,16 +216,17 @@ func (platform *dbMsSQLPlatform) getQueryLimitDeclaration(limit string) string {
 	return "FETCH NEXT " + limit + " ROWS ONLY"
 }
 
-func (platform *dbMsSQLPlatform) getPagingDeclaration(limit string, offset string) string {
-	query := make([]string, 0)
-
-	if offset != "" {
-		query = append(query, platform.getQueryOffsetDeclaration(offset))
-	}
-
-	if limit != "" {
-		query = append(query, platform.getQueryLimitDeclaration(limit))
-	}
-
-	return concatStrings(query, " ")
+func (platform *dbMsSQLPlatform) getPagingDeclaration(limit string, offset string) []byte {
+	// query := make([]string, 0)
+	//
+	// if offset != "" {
+	// 	query = append(query, platform.getQueryOffsetDeclaration(offset))
+	// }
+	//
+	// if limit != "" {
+	// 	query = append(query, platform.getQueryLimitDeclaration(limit))
+	// }
+	//
+	// return concatStrings(query, " ")
+	return nil
 }

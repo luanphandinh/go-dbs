@@ -224,6 +224,6 @@ func (platform *dbPostgresPlatform) getQueryLimitDeclaration(limit string) strin
 	return "LIMIT " + limit
 }
 
-func (platform *dbPostgresPlatform) getPagingDeclaration(limit string, offset string) string {
+func (platform *dbPostgresPlatform) getPagingDeclaration(limit string, offset string) []byte {
 	return _getPagingDeclaration(platform, limit, offset)
 }

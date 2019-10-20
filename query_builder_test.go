@@ -39,6 +39,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("(id = %d AND name = '%s')", 1, "Luan").
 		OrWhere("department_id = %d", 1).
@@ -51,6 +52,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("name = '%s'", "Luan").
 		OrderBy("id ASC, name").
@@ -63,6 +65,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
 		GetQuery()
@@ -74,6 +77,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
 		GetQuery()
@@ -85,6 +89,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
 		Offset("10").
@@ -97,6 +102,7 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 
 	query = NewQueryBuilder().
 		OnSchema("company").
+		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
 		Limit("10").
