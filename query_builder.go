@@ -53,7 +53,7 @@ type QueryBuilder struct {
 }
 
 // Using byte to concat string is faster
-func (builder *QueryBuilder) appendClause(clause Clause, expression []byte) {
+func (builder *QueryBuilder) appendClause(clause Clause, expression string) {
 	if clause > EMPTY {
 		builder.sql = append(builder.sql[:], sqlClauses[clause][:]...)
 	}
@@ -89,7 +89,7 @@ func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
 //   		Select("*, something as something_else").
 // Apply only second Select() called
 func (builder *QueryBuilder) Select(selections string) *QueryBuilder {
-	builder.appendClause(SELECT, []byte(selections))
+	builder.appendClause(SELECT, selections)
 
 	return builder
 }
@@ -103,7 +103,7 @@ func (builder *QueryBuilder) Select(selections string) *QueryBuilder {
 // but you can use new(QueryBuilder).Select(..).From("<schema_name>.<table_name> as <alias>") as a replace
 // and don't call OnSchema().
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
-	builder.appendClause(FROM, []byte(_platform().getSchemaAccessName(builder.schema, expression)))
+	builder.appendClause(FROM, _platform().getSchemaAccessName(builder.schema, expression))
 
 	return builder
 }
@@ -111,7 +111,7 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 // Where apply filter to query
 // ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
-	builder.appendClause(WHERE, []byte(expression))
+	builder.appendClause(WHERE, expression)
 	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
@@ -120,7 +120,7 @@ func (builder *QueryBuilder) Where(expression string, args ...interface{}) *Quer
 // AndWhere chaining filter on query
 // ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
-	builder.appendClause(AND, []byte(expression))
+	builder.appendClause(AND, expression)
 	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
@@ -129,7 +129,7 @@ func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *Q
 // OrWhere chaining filter on query
 // ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
-	builder.appendClause(OR, []byte(expression))
+	builder.appendClause(OR, expression)
 	builder.filterArgs = append(builder.filterArgs, args...)
 
 	return builder
@@ -138,7 +138,7 @@ func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *Qu
 // GroupBy apply group by in query
 // ex: builder.GroupBy("name")
 func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
-	builder.appendClause(GROUP_BY, []byte(expression))
+	builder.appendClause(GROUP_BY, expression)
 
 	return builder
 }
@@ -146,7 +146,7 @@ func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
 // Having apply having clause in query
 // ex: builder.Having("age > 20")
 func (builder *QueryBuilder) Having(expression string, args ...interface{}) *QueryBuilder {
-	builder.appendClause(HAVING, []byte(expression))
+	builder.appendClause(HAVING, expression)
 	builder.havingArgs = args
 
 	return builder
@@ -155,7 +155,7 @@ func (builder *QueryBuilder) Having(expression string, args ...interface{}) *Que
 // OrderBy apply order in query
 // ex: builder.OrderBy("id ASC, name")
 func (builder *QueryBuilder) OrderBy(expression string) *QueryBuilder {
-	builder.appendClause(ORDER_BY, []byte(expression))
+	builder.appendClause(ORDER_BY, expression)
 
 	return builder
 }
@@ -163,7 +163,7 @@ func (builder *QueryBuilder) OrderBy(expression string) *QueryBuilder {
 // Offset apply offset in query
 // ex: builder.Offset(10)
 func (builder *QueryBuilder) Offset(offset string) *QueryBuilder {
-	builder.appendClause(OFFSET, []byte(offset))
+	builder.appendClause(OFFSET, offset)
 
 	return builder
 }
@@ -171,7 +171,7 @@ func (builder *QueryBuilder) Offset(offset string) *QueryBuilder {
 // Limit apply limit in query
 // ex: builder.Limit(10)
 func (builder *QueryBuilder) Limit(limit string) *QueryBuilder {
-	builder.appendClause(LIMIT, []byte(limit))
+	builder.appendClause(LIMIT, limit)
 
 	return builder
 }

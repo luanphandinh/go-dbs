@@ -7,11 +7,11 @@ import "testing"
 // goos: darwin
 // goarch: amd64
 // pkg: github.com/luanphandinh/go-dbs
-// BenchmarkQueryBuilder           20000000               291 ns/op             128 B/op          1 allocs/op
-// BenchmarkQueryBuilderComplex     3000000              1073 ns/op             576 B/op          5 allocs/op
-// BenchmarkRawQuery               5000000000               0.34 ns/op            0 B/op          0 allocs/op
+// BenchmarkQueryBuilder           20000000               210 ns/op             128 B/op          1 allocs/op
+// BenchmarkQueryBuilderComplex    10000000               737 ns/op             576 B/op          5 allocs/op
+// BenchmarkRawQuery               5000000000               0.29 ns/op            0 B/op          0 allocs/op
 // PASS
-// ok      github.com/luanphandinh/go-dbs  13.399s
+// ok      github.com/luanphandinh/go-dbs  14.449s
 
 func doQueryBuilder() string {
 	return NewQueryBuilder().
