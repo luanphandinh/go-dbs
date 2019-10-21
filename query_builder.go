@@ -3,7 +3,7 @@ package dbs
 import (
 	"fmt"
 	"reflect"
-	"strings"
+	"unsafe"
 )
 
 type Clause int
@@ -27,7 +27,7 @@ const (
 
 // All possible sqlClauses that are supported in this packages
 // Access through constants defined above
-var sqlClauses = [][]byte{
+var sqlClauses = [10][]byte{
 	[]byte(" SELECT "),
 	[]byte(" FROM "),
 	[]byte(" WHERE "),
@@ -64,9 +64,10 @@ func (builder *QueryBuilder) appendClause(clause Clause, expression []byte) {
 // NewQueryBuilder make new(QueryBuilder) along with some default config
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
-	// Initialize length for sql
-	// With the length of (32 chars * 4 bytes) = 256 bytes
-	builder.sql = make([]byte, 0, 100)
+
+	// Since all sqlClauses have len of 64
+	// It better that we initialize length for sql as 64 * 2 = 128
+	builder.sql = make([]byte, 0, 128)
 
 	return builder
 }
@@ -77,7 +78,7 @@ func NewQueryBuilder() *QueryBuilder {
 // This function is used particularly for query that involve schema access
 // See more on From()
 func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
-	builder.schema = strings.Trim(schema, " ")
+	builder.schema = schema
 
 	return builder
 }
@@ -180,14 +181,20 @@ func (builder *QueryBuilder) GetQuery() string {
 	return builder.buildSql()
 }
 
+// This func should be call at the very end of building process
+// This converts a slice of builder.sql bytes to a string without incurring overhead
+func (builder *QueryBuilder) sqlByteToString() string {
+	return *(*string)(unsafe.Pointer(&builder.sql))
+}
+
 func (builder *QueryBuilder) buildSql() string {
 	// Using this cause a really bad performance
 	// TODO: Need a faster solution
 	if args := append(builder.filterArgs, builder.havingArgs...); len(args) > 0 {
-		return fmt.Sprintf(string(builder.sql), parseArgs(args[0:])...)
+		return fmt.Sprintf(builder.sqlByteToString(), parseArgs(args[0:])...)
 	}
 
-	return string(builder.sql)
+	return builder.sqlByteToString()
 }
 
 func parseArgs(args []interface{}) []interface{} {
