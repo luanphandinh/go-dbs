@@ -193,9 +193,9 @@ func TestSchemaWorks(t *testing.T) {
 	var valid, age, position int
 	var name string
 	var revenue float32
-	employeeQuery := NewQueryBuilder().OnSchema("company").
+	employeeQuery := NewQueryBuilder().
 		Select("valid, name, age").
-		From("employee").
+		From(employee).
 		Where("id > %d", 0).
 		AndWhere("name = '%s'", "Luan").
 		GetQuery()
@@ -206,9 +206,9 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 22, age)
 	assertIntEquals(t, 1, valid)
 
-	employeeOrderedByAgeQuery := NewQueryBuilder().OnSchema("company").
+	employeeOrderedByAgeQuery := NewQueryBuilder().
 		Select("valid, name, age").
-		From("employee").
+		From(employee).
 		OrderBy("age DESC").
 		GetQuery()
 	err = db.QueryRow(employeeOrderedByAgeQuery).Scan(&valid, &name, &age)
@@ -218,9 +218,9 @@ func TestSchemaWorks(t *testing.T) {
 	assertIntEquals(t, 1, valid)
 
 	if _platform().getDriverName() != mssql {
-		employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().OnSchema("company").
+		employeeOrderedByAgeWithOffsetQuery := NewQueryBuilder().
 			Select("valid, name, age").
-			From("employee").
+			From(employee).
 			OrderBy("age DESC").
 			Limit("1").
 			Offset("1").
@@ -232,9 +232,9 @@ func TestSchemaWorks(t *testing.T) {
 		assertIntEquals(t, 1, valid)
 	}
 
-	departmentQuery := NewQueryBuilder().OnSchema("company").
+	departmentQuery := NewQueryBuilder().
 		Select("name, position, revenue").
-		From("department").
+		From(department).
 		Where("name IN (%v)", []string{"Luan Phan Corps"}).
 		GetQuery()
 
@@ -246,18 +246,18 @@ func TestSchemaWorks(t *testing.T) {
 
 	var storageName string
 	var storageCount int
-	storageQuery := NewQueryBuilder().OnSchema("company").
+	storageQuery := NewQueryBuilder().
 		Select("room, COUNT(room) as c_room").
-		From("storage").
+		From(storage).
 		GroupBy("room").
 		GetQuery()
 	err = db.QueryRow(storageQuery).Scan(&storageName, &storageCount)
 	assertStringEquals(t, "ROOMC1", storageName)
 	assertIntEquals(t, 2, storageCount)
 
-	storageQuery = NewQueryBuilder().OnSchema("company").
+	storageQuery = NewQueryBuilder().
 		Select("room, COUNT(room) as c_room").
-		From("storage").
+		From(storage).
 		GroupBy("room").
 		Having("COUNT(room) > %d", 1).
 		GetQuery()

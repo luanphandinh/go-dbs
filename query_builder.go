@@ -3,7 +3,6 @@ package dbs
 import (
 	"fmt"
 	"reflect"
-	"unsafe"
 )
 
 type Clause int
@@ -42,9 +41,6 @@ var sqlClauses = [10][]byte{
 
 // QueryBuilder create query builder
 type QueryBuilder struct {
-	schema     string
-	offset     string
-	limit      string
 	filterArgs []interface{}
 	havingArgs []interface{}
 
@@ -72,22 +68,8 @@ func NewQueryBuilder() *QueryBuilder {
 	return builder
 }
 
-// OnSchema specify schema that query will be executed on
-// ex: new(QueryBuilder).OnSchema("some_schema")
-// postgresql and mssql required schema
-// This function is used particularly for query that involve schema access
-// See more on From()
-func (builder *QueryBuilder) OnSchema(schema string) *QueryBuilder {
-	builder.schema = schema
-
-	return builder
-}
-
 // Select specify one or more columns to be query
-// eg:
-//  	new(QueryBuilder).
-//   		Select("*, something as something_else").
-// Apply only second Select() called
+// eg: new(QueryBuilder).Select("*, something as something_else").
 func (builder *QueryBuilder) Select(selections string) *QueryBuilder {
 	builder.appendClause(SELECT, selections)
 
@@ -97,13 +79,8 @@ func (builder *QueryBuilder) Select(selections string) *QueryBuilder {
 // From specify table that query will be executed on
 // ex: 	new(QueryBuilder).Select(..).From("user")
 // 		new(QueryBuilder).Select(..).From("user as u")
-// Some platforms like postgresql and mssql is using schema access name
-// Using _platform().getSchemaAccessName(builder.schema, expression)
-// is a temporary hack for accessing correct resource
-// but you can use new(QueryBuilder).Select(..).From("<schema_name>.<table_name> as <alias>") as a replace
-// and don't call OnSchema().
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
-	builder.appendClause(FROM, _platform().getSchemaAccessName(builder.schema, expression))
+	builder.appendClause(FROM, expression)
 
 	return builder
 }
@@ -184,7 +161,7 @@ func (builder *QueryBuilder) GetQuery() string {
 // This func should be call at the very end of building process
 // This converts a slice of builder.sql bytes to a string without incurring overhead
 func (builder *QueryBuilder) sqlByteToString() string {
-	return *(*string)(unsafe.Pointer(&builder.sql))
+	return bytesToString(builder.sql)
 }
 
 func (builder *QueryBuilder) buildSql() string {

@@ -2,7 +2,9 @@ package dbs
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
+	"unsafe"
 )
 
 func concatStrings(values []string, glue string) (s string) {
@@ -39,6 +41,13 @@ func inStringArray(needle string, values []string) bool  {
 	}
 
 	return false
+}
+
+func bytesToString(b []byte) string {
+	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	sh := reflect.StringHeader{Data: bh.Data, Len: bh.Len}
+
+	return *(*string)(unsafe.Pointer(&sh))
 }
 
 // fmt.Sprintf("%#v", arg) will return a Go-syntax representation of the value
