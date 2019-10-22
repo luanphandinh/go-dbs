@@ -41,8 +41,7 @@ var sqlClauses = [10][]byte{
 
 // QueryBuilder create query builder
 type QueryBuilder struct {
-	filterArgs []interface{}
-	havingArgs []interface{}
+	args []interface{}
 
 	// sql for select query
 	sql []byte
@@ -89,7 +88,7 @@ func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 // ex: builder.Where("name = '%s'", "Luan Phan")
 func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
 	builder.appendClause(WHERE, expression)
-	builder.filterArgs = append(builder.filterArgs, args...)
+	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -98,7 +97,7 @@ func (builder *QueryBuilder) Where(expression string, args ...interface{}) *Quer
 // ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
 func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
 	builder.appendClause(AND, expression)
-	builder.filterArgs = append(builder.filterArgs, args...)
+	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -107,7 +106,7 @@ func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *Q
 // ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
 func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
 	builder.appendClause(OR, expression)
-	builder.filterArgs = append(builder.filterArgs, args...)
+	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -124,7 +123,7 @@ func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
 // ex: builder.Having("age > 20")
 func (builder *QueryBuilder) Having(expression string, args ...interface{}) *QueryBuilder {
 	builder.appendClause(HAVING, expression)
-	builder.havingArgs = args
+	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -167,7 +166,7 @@ func (builder *QueryBuilder) sqlByteToString() string {
 func (builder *QueryBuilder) buildSql() string {
 	// Using this cause a really bad performance
 	// TODO: Need a faster solution
-	if args := append(builder.filterArgs, builder.havingArgs...); len(args) > 0 {
+	if args := builder.args; len(args) > 0 {
 		return fmt.Sprintf(builder.sqlByteToString(), parseArgs(args[0:])...)
 	}
 
