@@ -14,7 +14,6 @@ func removeSpaces(str string) string {
 func TestQueryBuilder_BuildQuery(t *testing.T) {
 	SetPlatform(sqlite3, nil)
 	query := NewQueryBuilder().
-		OnSchema("company").
 		Select("*, last_name as lname, fname").
 		From("employee").
 		GetQuery()
@@ -25,7 +24,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*, last_name as lname, fname").
 		From("employee").
 		Where("employee.id = %d", 10).
@@ -38,7 +36,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("(id = %d AND name = '%s')", 1, "Luan").
@@ -51,7 +48,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("name = '%s'", "Luan").
@@ -64,7 +60,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
@@ -76,7 +71,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
@@ -88,7 +82,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
@@ -101,7 +94,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("*").
 		From("employee").
 		Where("name IN (%v)", []string{"Luan", "Phan"}).
@@ -115,7 +107,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("room, COUNT(room) as c_room").
 		From("storage").
 		GroupBy("room").
@@ -127,7 +118,6 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	)
 
 	query = NewQueryBuilder().
-		OnSchema("company").
 		Select("room, COUNT(room) as c_room").
 		From("storage").
 		GroupBy("room").

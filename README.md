@@ -85,7 +85,6 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
 #### Select
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     Select("valid", "name", "age").
     From("employee").
     GetQuery()
@@ -95,7 +94,6 @@ NewQueryBuilder().
 * Single where
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     Select("*").
     From("employee").
     Where("(id = %d)", 1).
@@ -104,7 +102,7 @@ NewQueryBuilder().
 
 * AndWhere | OrWhere
 ```go
-NewQueryBuilder().OnSchema("company").
+NewQueryBuilder().
     Select("name, age").
     From("employee").
     Where("id = %d", 1).
@@ -115,7 +113,6 @@ NewQueryBuilder().OnSchema("company").
 * Mixed where query
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     From("employee").
     Where("(id = %d AND name = '%s')", 1, "Luan Phan").
     OrWhere("department_id = %d", 1).
@@ -126,13 +123,11 @@ NewQueryBuilder().
 #### IN (...)
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     From("employee").
     Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
     GetQuery()
 
 query = NewQueryBuilder().
-    OnSchema("company").
     From("employee").
     Where("name IN (%v)", []string{"Luan", "Phan"}).
     GetQuery()
@@ -142,7 +137,6 @@ query = NewQueryBuilder().
 #### Group By
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     Select("room, COUNT(room) as c_room").
     From("storage").
     GroupBy("room").
@@ -153,7 +147,6 @@ NewQueryBuilder().
 #### Having
 ```go
 NewQueryBuilder().
-    OnSchema("company").
     Select("room, COUNT(room) as c_room").
     From("storage").
     GroupBy("room").
@@ -165,7 +158,6 @@ NewQueryBuilder().
 #### Order By
 ```go
 query = NewQueryBuilder().
-    OnSchema("company").
     From("employee").
     Where("name = '%s'", "Luan").
     OrderBy("id ASC, name").
