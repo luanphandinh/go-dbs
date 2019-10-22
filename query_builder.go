@@ -22,11 +22,15 @@ const (
 	ORDER_BY
 	LIMIT
 	OFFSET
+	JOIN
+	LEFT_JOIN
+	RIGHT_JOIN
+	ON
 )
 
 // All possible sqlClauses that are supported in this packages
 // Access through constants defined above
-var sqlClauses = [10][]byte{
+var sqlClauses = [14][]byte{
 	[]byte(" SELECT "),
 	[]byte(" FROM "),
 	[]byte(" WHERE "),
@@ -37,6 +41,10 @@ var sqlClauses = [10][]byte{
 	[]byte(" ORDER BY "),
 	[]byte(" LIMIT "),
 	[]byte(" OFFSET "),
+	[]byte(" JOIN "),
+	[]byte(" LEFT JOIN "),
+	[]byte(" RIGHT JOIN "),
+	[]byte(" ON "),
 }
 
 // QueryBuilder create query builder
@@ -60,7 +68,7 @@ func (builder *QueryBuilder) appendClause(clause Clause, expression string) {
 func NewQueryBuilder() *QueryBuilder {
 	builder := new(QueryBuilder)
 
-	// Since all sqlClauses have len of 64
+	// Since all basic sqlClauses have len of ~64
 	// It better that we initialize length for sql as 64 * 2 = 128
 	builder.sql = make([]byte, 0, 128)
 
@@ -80,6 +88,38 @@ func (builder *QueryBuilder) Select(selections string) *QueryBuilder {
 // 		new(QueryBuilder).Select(..).From("user as u")
 func (builder *QueryBuilder) From(expression string) *QueryBuilder {
 	builder.appendClause(FROM, expression)
+
+	return builder
+}
+
+// Join table
+// ex: builder.Select(*).From('table1').Join('table2')
+func (builder *QueryBuilder) Join(tableExpression string) *QueryBuilder {
+	builder.appendClause(JOIN, tableExpression)
+
+	return builder
+}
+
+// LeftJoin table
+// ex: builder.Select(*).From('table1').LeftJoin('table2')
+func (builder *QueryBuilder) LeftJoin(tableExpression string) *QueryBuilder {
+	builder.appendClause(LEFT_JOIN, tableExpression)
+
+	return builder
+}
+
+// RightJoin table
+// ex: builder.Select(*).From('table1').RightJoin('table2')
+func (builder *QueryBuilder) RightJoin(tableExpression string) *QueryBuilder {
+	builder.appendClause(RIGHT_JOIN, tableExpression)
+
+	return builder
+}
+
+// On conditions, apply for join query
+// ex: builder.Select(*).From("table1").Join("table2").On("table1.id = table2.table1_id")
+func (builder *QueryBuilder) On(condition string) *QueryBuilder {
+	builder.appendClause(ON, condition)
 
 	return builder
 }

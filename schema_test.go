@@ -191,7 +191,7 @@ func TestSchemaWorks(t *testing.T) {
 	assertNotHasError(t, err)
 
 	var valid, age, position int
-	var name string
+	var name, departmentName string
 	var revenue float32
 	employeeQuery := NewQueryBuilder().
 		Select("valid, name, age").
@@ -238,11 +238,52 @@ func TestSchemaWorks(t *testing.T) {
 		Where("name IN (%v)", []string{"Luan Phan Corps"}).
 		GetQuery()
 
-	err = db.QueryRow(departmentQuery).Scan(&name, &position, &revenue)
+	err = db.QueryRow(departmentQuery).Scan(&departmentName, &position, &revenue)
 	assertNotHasError(t, err)
-	assertStringEquals(t, "Luan Phan Corps", name)
+	assertStringEquals(t, "Luan Phan Corps", departmentName)
 	assertIntEquals(t, 1, position)
 	assertFloatEquals(t, 1.01, revenue)
+
+	joinQuery := NewQueryBuilder().
+		Select("e.name, d.name").
+		From(employee + " e").
+		Join(department + " d").
+		On("e.department_id = d.id").
+		OrderBy("age DESC").
+		GetQuery()
+
+	err = db.QueryRow(joinQuery).Scan(&name, &departmentName)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan Corps", departmentName)
+	assertStringEquals(t, "Phan", name)
+
+	joinQuery = NewQueryBuilder().
+		Select("e.name, d.name").
+		From(employee + " e").
+		LeftJoin(department + " d").
+		On("e.department_id = d.id").
+		OrderBy("age DESC").
+		GetQuery()
+
+	err = db.QueryRow(joinQuery).Scan(&name, &departmentName)
+	assertNotHasError(t, err)
+	assertStringEquals(t, "Luan Phan Corps", departmentName)
+	assertStringEquals(t, "Phan", name)
+
+	if _platform().getDriverName() != sqlite3 { // Currently not supported RIGHT JOIN
+		joinQuery = NewQueryBuilder().
+			Select("e.name, d.name").
+			From(employee + " e").
+			RightJoin(department + " d").
+			On("e.department_id = d.id").
+			OrderBy("age DESC").
+			GetQuery()
+
+		err = db.QueryRow(joinQuery).Scan(&name, &departmentName)
+		assertNotHasError(t, err)
+		assertStringEquals(t, "Luan Phan Corps", departmentName)
+		assertStringEquals(t, "Phan", name)
+	}
 
 	var storageName string
 	var storageCount int
