@@ -209,11 +209,11 @@ go test -cpu 1 -run none -bench . -benchtime 3s
 goos: darwin
 goarch: amd64
 pkg: github.com/luanphandinh/go-dbs
-BenchmarkQueryBuilder           20000000               294 ns/op
-BenchmarkQueryBuilderComplex     1000000              5470 ns/op
-BenchmarkRawQuery               5000000000               0.29 ns/op
+BenchmarkQueryBuilder           20000000               190 ns/op             384 B/op          2 allocs/op
+BenchmarkQueryBuilderComplex    10000000               684 ns/op             624 B/op          5 allocs/op
+BenchmarkRawQuery               5000000000               0.29 ns/op            0 B/op          0 allocs/op
 PASS
-ok      github.com/luanphandinh/go-dbs  13.745s
+ok      github.com/luanphandinh/go-dbs  13.690s
 ```
 <a name="todo"></a>
 # TODO

@@ -7,16 +7,16 @@ import "testing"
 // goos: darwin
 // goarch: amd64
 // pkg: github.com/luanphandinh/go-dbs
-// BenchmarkQueryBuilder           50000000                99.8 ns/op           128 B/op          1 allocs/op
-// BenchmarkQueryBuilderComplex    10000000               646 ns/op             576 B/op          5 allocs/op
+// BenchmarkQueryBuilder           20000000               190 ns/op             384 B/op          2 allocs/op
+// BenchmarkQueryBuilderComplex    10000000               684 ns/op             624 B/op          5 allocs/op
 // BenchmarkRawQuery               5000000000               0.29 ns/op            0 B/op          0 allocs/op
 // PASS
-// ok      github.com/luanphandinh/go-dbs  14.068s
+// ok      github.com/luanphandinh/go-dbs  13.690s
 
 func doQueryBuilder() string {
 	return NewQueryBuilder().
 		Select("*, last_name as lname, fname").
-		From("employee").
+		From("employee e").Join("department d").On("e.department_id = d.id").
 		GroupBy("last_name").
 		OrderBy("id DESC").
 		Offset("10").
@@ -27,7 +27,7 @@ func doQueryBuilder() string {
 func doQueryBuilderComplex() string {
 	return NewQueryBuilder().
 		Select("*, last_name as lname, fname").
-		From("employee").
+		From("employee e").Join("department d").On("e.department_id = d.id").
 		GroupBy("last_name").
 		OrderBy("id DESC").
 		Where("id > %d", 1).
