@@ -128,4 +128,15 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		"SELECT room, COUNT(room) as c_room FROM storage GROUP BY room HAVING COUNT(room) > 1",
 		removeSpaces(query),
 	)
+
+	query = NewQueryBuilder().
+		Select("*").
+		From("employee e").
+		Join("department d").On("e.department_id = d.id").
+		GetQuery()
+
+	assertStringEquals(t,
+		"SELECT * FROM employee e JOIN department d ON e.department_id = d.id",
+		removeSpaces(query),
+	)
 }

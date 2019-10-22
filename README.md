@@ -9,6 +9,7 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Install](#3-install)
 * [Query builder](#query-builder)
     * [Select](#query-builder-select)
+    * [Join](#query-builder-join)
     * [Where](#query-builder-where)
     * [IN (...)](#query-builder-in)
     * [Group By](#query-builder-group-by)
@@ -89,6 +90,16 @@ NewQueryBuilder().
     From("employee").
     GetQuery()
 ```
+
+<a name="query-builder-join"></a>
+#### Join
+```go
+NewQueryBuilder().
+    Select("*").
+    From("employee e").Join("department d").On("e.department_id = d.id") // or LeftJoin | RightJoin
+    GetQuery()
+```
+
 <a name="query-builder-where"></a>
 #### Where
 * Single where
