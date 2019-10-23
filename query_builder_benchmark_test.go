@@ -30,8 +30,8 @@ func doQueryBuilderComplex() string {
 		From("employee e").Join("department d").On("e.department_id = d.id").
 		GroupBy("last_name").
 		OrderBy("id DESC").
-		Where("id > %d", 1).
-		AndWhere("name = '%s'", "Luan").
+		Where("id > ?").
+		AndWhere("name = ?").
 		Offset("10").
 		Limit("10").
 		buildSql()

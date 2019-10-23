@@ -26,83 +26,83 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 	query = NewQueryBuilder().
 		Select("*, last_name as lname, fname").
 		From("employee").
-		Where("employee.id = %d", 10).
-		AndWhere("employee.name = '%s'", "Luan").
+		Where("employee.id = ?").
+		AndWhere("employee.name = ?").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT *, last_name as lname, fname FROM employee WHERE employee.id = 10 AND employee.name = 'Luan'",
+		"SELECT *, last_name as lname, fname FROM employee WHERE employee.id = ? AND employee.name = ?",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("(id = %d AND name = '%s')", 1, "Luan").
-		OrWhere("department_id = %d", 1).
+		Where("(id = ? AND name = ?)").
+		OrWhere("department_id = ?").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE (id = 1 AND name = 'Luan') OR department_id = 1",
+		"SELECT * FROM employee WHERE (id = ? AND name = ?) OR department_id = ?",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("name = '%s'", "Luan").
+		Where("name = ?").
 		OrderBy("id ASC, name").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE name = 'Luan' ORDER BY id ASC, name",
+		"SELECT * FROM employee WHERE name = ? ORDER BY id ASC, name",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
+		Where("id IN (?) AND name = ?").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE id IN (1, 2) AND name = 'Luan'",
+		"SELECT * FROM employee WHERE id IN (?) AND name = ?",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Where("name IN (?)").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan')",
+		"SELECT * FROM employee WHERE name IN (?)",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Where("name IN (?)").
 		Offset("10").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan') OFFSET 10",
+		"SELECT * FROM employee WHERE name IN (?) OFFSET 10",
 		removeSpaces(query),
 	)
 
 	query = NewQueryBuilder().
 		Select("*").
 		From("employee").
-		Where("name IN (%v)", []string{"Luan", "Phan"}).
+		Where("name IN (?)").
 		Limit("10").
 		Offset("10").
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT * FROM employee WHERE name IN ('Luan', 'Phan') LIMIT 10 OFFSET 10",
+		"SELECT * FROM employee WHERE name IN (?) LIMIT 10 OFFSET 10",
 		removeSpaces(query),
 	)
 
@@ -121,11 +121,11 @@ func TestQueryBuilder_BuildQuery(t *testing.T) {
 		Select("room, COUNT(room) as c_room").
 		From("storage").
 		GroupBy("room").
-		Having("COUNT(room) > %d", 1).
+		Having("COUNT(room) > ?", 1).
 		GetQuery()
 
 	assertStringEquals(t,
-		"SELECT room, COUNT(room) as c_room FROM storage GROUP BY room HAVING COUNT(room) > 1",
+		"SELECT room, COUNT(room) as c_room FROM storage GROUP BY room HAVING COUNT(room) > ?",
 		removeSpaces(query),
 	)
 
