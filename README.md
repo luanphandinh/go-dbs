@@ -11,7 +11,6 @@ Schema install, query builder for databases(sqlite3, mysql, postgres, sqlserver)
     * [Select](#query-builder-select)
     * [Join](#query-builder-join)
     * [Where](#query-builder-where)
-    * [IN (...)](#query-builder-in)
     * [Group By](#query-builder-group-by)
     * [Having](#query-builder-having)
     * [Order By](#query-builder-order-by)
@@ -125,22 +124,8 @@ NewQueryBuilder().
 ```go
 NewQueryBuilder().
     From("employee").
-    Where("(id = %d AND name = '%s')", 1, "Luan Phan").
-    OrWhere("department_id = %d", 1).
-    GetQuery()
-```
-
-<a name="query-builder-in"></a>
-#### IN (...)
-```go
-NewQueryBuilder().
-    From("employee").
-    Where("id IN (%v) AND name = '%s'", []int{1, 2}, "Luan").
-    GetQuery()
-
-query = NewQueryBuilder().
-    From("employee").
-    Where("name IN (%v)", []string{"Luan", "Phan"}).
+    Where("(id = %d AND name = ?)").
+    OrWhere("department_id = ?").
     GetQuery()
 ```
 
@@ -161,7 +146,7 @@ NewQueryBuilder().
     Select("room, COUNT(room) as c_room").
     From("storage").
     GroupBy("room").
-    Having("COUNT(room) > %d", 1).
+    Having("COUNT(room) > ?").
     GetQuery()
 ```
 
@@ -170,7 +155,7 @@ NewQueryBuilder().
 ```go
 query = NewQueryBuilder().
     From("employee").
-    Where("name = '%s'", "Luan").
+    Where("name = ?").
     OrderBy("id ASC, name").
     GetQuery()
 ```

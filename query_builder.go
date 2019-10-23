@@ -1,10 +1,5 @@
 package dbs
 
-import (
-	"fmt"
-	"reflect"
-)
-
 type Clause int
 
 const (
@@ -49,9 +44,6 @@ var sqlClauses = [14][]byte{
 
 // QueryBuilder create query builder
 type QueryBuilder struct {
-	args []interface{}
-
-	// sql for select query
 	sql []byte
 }
 
@@ -125,28 +117,25 @@ func (builder *QueryBuilder) On(condition string) *QueryBuilder {
 }
 
 // Where apply filter to query
-// ex: builder.Where("name = '%s'", "Luan Phan")
-func (builder *QueryBuilder) Where(expression string, args ...interface{}) *QueryBuilder {
+// ex: builder.Where("name = ?")
+func (builder *QueryBuilder) Where(expression string) *QueryBuilder {
 	builder.appendClause(WHERE, expression)
-	builder.args = append(builder.args, args...)
 
 	return builder
 }
 
 // AndWhere chaining filter on query
-// ex: builder.Where("name = '%s'", "Luan Phan").AndWhere("age > %d", 10)
-func (builder *QueryBuilder) AndWhere(expression string, args ...interface{}) *QueryBuilder {
+// ex: builder.Where("name = ?").AndWhere("age > ?")
+func (builder *QueryBuilder) AndWhere(expression string) *QueryBuilder {
 	builder.appendClause(AND, expression)
-	builder.args = append(builder.args, args...)
 
 	return builder
 }
 
 // OrWhere chaining filter on query
-// ex: builder.Where("name = '%s'", "Luan Phan").OrWhere("age > %d", 10)
-func (builder *QueryBuilder) OrWhere(expression string, args ...interface{}) *QueryBuilder {
+// ex: builder.Where("name = ?").OrWhere("age > ?")
+func (builder *QueryBuilder) OrWhere(expression string) *QueryBuilder {
 	builder.appendClause(OR, expression)
-	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -160,10 +149,9 @@ func (builder *QueryBuilder) GroupBy(expression string) *QueryBuilder {
 }
 
 // Having apply having clause in query
-// ex: builder.Having("age > 20")
+// ex: builder.Having("age > ?")
 func (builder *QueryBuilder) Having(expression string, args ...interface{}) *QueryBuilder {
 	builder.appendClause(HAVING, expression)
-	builder.args = append(builder.args, args...)
 
 	return builder
 }
@@ -199,36 +187,6 @@ func (builder *QueryBuilder) GetQuery() string {
 
 // This func should be call at the very end of building process
 // This converts a slice of builder.sql bytes to a string without incurring overhead
-func (builder *QueryBuilder) sqlByteToString() string {
-	return bytesToString(builder.sql)
-}
-
 func (builder *QueryBuilder) buildSql() string {
-	// Using this cause a really bad performance
-	// TODO: Need a faster solution
-	if args := builder.args; len(args) > 0 {
-		return fmt.Sprintf(builder.sqlByteToString(), parseArgs(args[0:])...)
-	}
-
-	return builder.sqlByteToString()
-}
-
-func parseArgs(args []interface{}) []interface{} {
-	for i := 0; i < len(args); i++ {
-		args[i] = parseArg(args[i])
-	}
-
-	return args
-}
-
-func parseArg(arg interface{}) interface{} {
-	rt := reflect.TypeOf(arg)
-	switch rt.Kind() {
-	case reflect.Slice:
-		return getContentOutOfArraySyntax(arg)
-	case reflect.Array:
-		return getContentOutOfArraySyntax(arg)
-	}
-
-	return arg
+	return bytesToString(builder.sql)
 }
