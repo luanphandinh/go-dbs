@@ -18,7 +18,7 @@ func SetPlatform(platform string, db *sql.DB) {
 
 // Install schema
 func Install(schema *Schema) error {
-	return install(schema)
+	return installConcurrent(schema)
 }
 
 // Drop schema
